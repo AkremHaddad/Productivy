@@ -1,4 +1,67 @@
+# =========================
+# Node.js & Common Folders
+# =========================
 node_modules/
-*.log
-.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# =========================
+# Build / Output Folders
+# =========================
 dist/
+build/
+out/
+.temp/
+.cache/
+
+# =========================
+# Environment & Config Files
+# =========================
+.env
+.env.local
+.env.*.local
+
+# =========================
+# Logs
+# =========================
+logs
+*.log
+*.log.*
+log.txt
+*.out
+*.err
+
+# =========================
+# OS Generated
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE / Editor Stuff
+# =========================
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Client (React/Vue/Angular/etc.)
+# =========================
+client/node_modules/
+client/build/
+client/dist/
+client/.env
+client/.cache/
+
+# =========================
+# Server (Node/Express/Nest/etc.)
+# =========================
+server/node_modules/
+server/dist/
+server/build/
+server/.env
