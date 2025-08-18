@@ -6,7 +6,7 @@ const Time = () => {
       <div className='font-normal text-md text-white  text-center'>Productive time today</div>
       <div className='font-normal text-md text-accent text-center'>1:22:33</div>
       <div className='flex justify-center max-h-[24px]'>
-        <img src="./worker.svg" alt="" />
+        <img src="../worker.svg" alt="" />
       </div>
     </div>
   )
