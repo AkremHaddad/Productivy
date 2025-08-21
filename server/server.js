@@ -11,6 +11,9 @@ import connectDB from "./config/db.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
+import productiveTimeRoutes from "./routes/productiveTimeRoutes.js";
+
+
 
 import passport from "./config/passport.js"; // your Google strategy + serialize/deserialize
 
@@ -79,6 +82,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/projects", projectRoutes); // GET/POST at /api/projects
 app.use("/api/auth", authRoutes);        // /login, /register, /google, /me, /logout
 app.use("/api/activity", activityRoutes);
+app.use("/api/productive-time", productiveTimeRoutes);
 
 // Start DB + server
 connectDB()

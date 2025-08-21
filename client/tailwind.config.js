@@ -10,7 +10,8 @@ export default {
     extend: {
       colors: {
         'primary-light': 'rgba(74, 111, 165, 1)',
-        'secondary-light': 'rgba(107, 140, 66, 1)',
+        // 'secondary-light': 'rgba(107, 140, 66, 1)',
+        'secondary-light': 'rgba(12, 118, 83, 1)',
         'background-light': 'rgba(224, 229, 236, 1)',
         'text-light': 'rgba(51, 51, 51, 1)',
         'ui-light': 'rgba(224, 229, 236, 1)', 

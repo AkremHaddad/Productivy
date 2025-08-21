@@ -59,3 +59,29 @@ export const cleanupOldActivities = async () => {
     console.error("Cleanup failed:", err.message);
   }
 };
+
+export const getTodayProductiveTime = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const record = await ProductiveTime.findOne({ user: userId, date: today });
+
+    if (!record) {
+      return res.json({ hours: 0, minutes: 0 });
+    }
+
+    const hours = Math.floor(record.minutes / 60);
+    const minutes = record.minutes % 60;
+
+    res.json({ hours, minutes });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch productive time" });
+  }
+};
+
+
+

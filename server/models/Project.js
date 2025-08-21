@@ -1,34 +1,22 @@
 import mongoose from "mongoose";
 
-const goalSchema = new mongoose.Schema({
+const TaskSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  description: String,
-  status: { type: String, enum: ['pending', 'in-progress', 'completed'], default: 'pending' },
+  completed: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
 });
 
-const taskSchema = new mongoose.Schema({
+const SprintSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  description: String,
-  status: { type: String, enum: ['todo', 'doing', 'finished'], default: 'todo' },
+  tasks: [TaskSchema],
+  createdAt: { type: Date, default: Date.now },
 });
 
-const listSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // e.g., 'todo', 'doing'
-  tasks: [taskSchema],
+const ProjectSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  name: { type: String, required: true },
+  sprints: [SprintSchema],
+  createdAt: { type: Date, default: Date.now },
 });
 
-const sprintSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // e.g., 'Sprint 1'
-  sprintGoals: [goalSchema],
-});
-
-const projectSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  title: { type: String, required: true },
-  sprints: [sprintSchema],
-  board: {
-    lists: [listSchema],
-  },
-}, { timestamps: true });
-
-export default mongoose.model('Project', projectSchema);
+export default mongoose.model("Project", ProjectSchema);

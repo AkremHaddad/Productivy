@@ -104,7 +104,7 @@ const Pomodoro = () => {
     >
       {/* Top text now shows Work/Break */}
       <div className="font-jaro text-xl text-white text-center">
-        {isWork ? "Work" : "Break"}
+        {isWork ? "work" : "break"}
       </div>
 
       <div className="font-jaro text-md text-accent text-center">

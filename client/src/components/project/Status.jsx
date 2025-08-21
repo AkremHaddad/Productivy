@@ -31,14 +31,19 @@ const Status = () => {
 
   // Handle activity change
   const saveActivity = async (activity) => {
-    try {
-      await axios.post(
-        "/api/activity",
-        { activity },
-        { withCredentials: true }
-      );
-      setCurrentActivity(activity);
+    // If user presses the same activity, just close popup
+    if (activity === currentActivity) {
       setShowPopup(false);
+      return;
+    }
+
+    // Close popup immediately
+    setShowPopup(false);
+
+    try {
+      // Send update to backend
+      await axios.post("/api/activity", { activity }, { withCredentials: true });
+      setCurrentActivity(activity);
     } catch (err) {
       console.error(err);
     }
@@ -52,8 +57,8 @@ const Status = () => {
         className="flex-1 bg-secondary-light dark:bg-secondary-dark h-[150px] rounded-md flex flex-col justify-between p-3 cursor-pointer"
         onClick={() => setShowPopup(true)}
       >
-        <div className="font-normal text-xl text-white text-center">My status</div>
-        <div className="font-normal text-md text-accent text-center">{currentActivity}</div>
+        <div className="font-normal text-xl text-white text-center font-jaro">status</div>
+        <div className="font-normal text-md text-accent text-center font-jaro">{currentActivity}</div>
         <div className="flex justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -96,36 +101,42 @@ const Status = () => {
       </div>
 
       {/* Popup */}
-      {showPopup && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-background-light dark:bg-background-dark p-6 rounded-xl shadow-2xl w-full max-w-md flex flex-col gap-4">
-            <h2 className="text-2xl font-bold text-center text-secondary-dark dark:text-accent">
-              Set Your Activity
-            </h2>
-            <div className="grid grid-cols-2 gap-3">
-              {activities.map((act) => (
-                <button
-                  key={act}
-                  className={`py-2 rounded-lg font-medium border-2 ${
-                    currentActivity === act
-                      ? "border-accent bg-accent text-black"
-                      : "border-gray-400 bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark"
-                  }`}
-                  onClick={() => saveActivity(act)}
-                >
-                  {act.charAt(0).toUpperCase() + act.slice(1)}
-                </button>
-              ))}
-            </div>
-            <button
-              className="mt-4 px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark hover:bg-opacity-80 transition-all font-medium border border-transparent hover:border-accent"
-              onClick={() => setShowPopup(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+     {showPopup && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+    <div className="bg-gray-300 dark:bg-background-dark p-6 rounded-xl shadow-2xl w-full max-w-md flex flex-col gap-4 border-2 border-secondary-dark dark:border-accent">
+      
+      <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
+        Set Your Activity
+      </h2>
+
+      <div className="grid grid-cols-2 gap-3">
+        {activities.map((act) => (
+          <button
+            key={act}
+            className={`py-2 rounded-lg font-medium border-2 transition-all duration-200 ${
+              currentActivity === act
+                ? "dark:border-accent border-secondary-dark bg-secondary-light dark:border-accent dark:bg-accent text-black"
+                : "dark:border-gray-400 bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark dark:hover:border-accent hover:secondary-light hover:bg-secondary-light border-primary-dark hover:border-primary-light dark:hover:bg-gray-700 dark:hover:bg-gray-700"
+            }`}
+            onClick={() => saveActivity(act)}
+          >
+            {act.charAt(0).toUpperCase() + act.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      <button
+        className="mt-4 px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark 
+                   hover:bg-opacity-80 transition-all border border-transparent dark:hover:border-accent font-jaro font-medium"
+        onClick={() => setShowPopup(false)}
+      >
+        Cancel
+      </button>
+      
+    </div>
+  </div>
+)}
+
     </>
   );
 };

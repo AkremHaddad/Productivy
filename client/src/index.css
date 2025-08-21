@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* index.css */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5); /* primary-light */
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(198, 217, 246, 0.8);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(224, 224, 224, 0.3); /* text-dark fade */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(224, 224, 224, 0.6);
+}
