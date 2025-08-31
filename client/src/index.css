@@ -9,7 +9,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -31,3 +31,4 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(224, 224, 224, 0.6);
 }
+

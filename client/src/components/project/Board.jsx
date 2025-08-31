@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import API from "../../api/API";
 import Column from "./Column";
 import LoadingSpinner from "../common/LoadingSpinner";
@@ -15,36 +14,43 @@ const Board = ({ projectId }) => {
   const [editBoardTitle, setEditBoardTitle] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
+  const boardsContainerRef = useRef(null);
+
+  // inline edit autosize refs
+  const inputRef = useRef(null);
+  const measureRef = useRef(null);
+
   const currentBoard = boards[currentBoardIndex];
 
   // Fetch project boards
   const fetchBoards = useCallback(async () => {
     if (!projectId) return;
-    
+
     setIsLoading(true);
     setError("");
-    
+
     try {
       const res = await API.get(`/api/projects/${projectId}`);
       let fetchedBoards = res.data.boards || [];
-      
-      // Ensure each board has a columns array
-      fetchedBoards = fetchedBoards.map(board => ({
-        ...board,
-        columns: Array.isArray(board.columns) ? board.columns : []
+
+      // Ensure columns arrays exist
+      fetchedBoards = fetchedBoards.map((b) => ({
+        ...b,
+        columns: Array.isArray(b.columns) ? b.columns : [],
       }));
-      
+
       // If no boards, create one automatically
       if (fetchedBoards.length === 0) {
-        const newBoardRes = await API.post(`/api/projects/${projectId}/boards`, {
-          title: "Main Board"
-        });
-        fetchedBoards = newBoardRes.data.map(board => ({
-          ...board,
-          columns: Array.isArray(board.columns) ? board.columns : []
+        const newBoardRes = await API.post(
+          `/api/projects/${projectId}/boards`,
+          { title: "Main Board" }
+        );
+        fetchedBoards = newBoardRes.data.map((b) => ({
+          ...b,
+          columns: Array.isArray(b.columns) ? b.columns : [],
         }));
       }
-      
+
       setBoards(fetchedBoards);
       setCurrentBoardIndex(0);
     } catch (err) {
@@ -59,18 +65,44 @@ const Board = ({ projectId }) => {
     fetchBoards();
   }, [fetchBoards]);
 
+  // Smooth horizontal scrolling with mouse wheel
+  useEffect(() => {
+    const container = boardsContainerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        container.scrollLeft += e.deltaY;
+      }
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
+  }, []);
+
+  // Autosize the inline input to its content
+  useEffect(() => {
+    if (!editingBoard || !inputRef.current || !measureRef.current) return;
+    // copy the text into the hidden measurer
+    measureRef.current.textContent = editBoardTitle || " ";
+    // add a tiny buffer so the caret isn't cramped
+    const w = measureRef.current.offsetWidth + 8;
+    inputRef.current.style.width = `${w}px`;
+  }, [editingBoard, editBoardTitle]);
+
   // Add board
   const handleAddBoard = async () => {
     try {
       const res = await API.post(`/api/projects/${projectId}/boards`, {
-        title: "New Board"
+        title: "New Board",
       });
-      const updatedBoards = res.data.map(board => ({
-        ...board,
-        columns: Array.isArray(board.columns) ? board.columns : []
+      const updated = res.data.map((b) => ({
+        ...b,
+        columns: Array.isArray(b.columns) ? b.columns : [],
       }));
-      setBoards(updatedBoards);
-      setCurrentBoardIndex(updatedBoards.length - 1);
+      setBoards(updated);
+      setCurrentBoardIndex(updated.length - 1);
     } catch (err) {
       console.error("Error adding board:", err);
       setError("Failed to add board. Please try again.");
@@ -79,19 +111,19 @@ const Board = ({ projectId }) => {
 
   // Edit board title
   const handleEditBoard = async (boardId) => {
+    // if cleared or unchanged, just exit
     if (!editBoardTitle.trim()) {
       setEditingBoard(null);
       setEditBoardTitle("");
       return;
     }
-    
+
     try {
-      const res = await API.patch(`/api/projects/${projectId}/boards/${boardId}`, {
-        title: editBoardTitle.trim(),
-      });
-      setBoards((prev) =>
-        prev.map((b) => (b._id === boardId ? res.data : b))
+      const res = await API.patch(
+        `/api/projects/${projectId}/boards/${boardId}`,
+        { title: editBoardTitle.trim() }
       );
+      setBoards((prev) => prev.map((b) => (b._id === boardId ? res.data : b)));
       setEditingBoard(null);
       setEditBoardTitle("");
     } catch (err) {
@@ -103,12 +135,14 @@ const Board = ({ projectId }) => {
   // Delete board
   const handleDeleteBoard = async (boardId) => {
     try {
-      const res = await API.delete(`/api/projects/${projectId}/boards/${boardId}`);
-      const updatedBoards = res.data.map(board => ({
-        ...board,
-        columns: Array.isArray(board.columns) ? board.columns : []
+      const res = await API.delete(
+        `/api/projects/${projectId}/boards/${boardId}`
+      );
+      const updated = res.data.map((b) => ({
+        ...b,
+        columns: Array.isArray(b.columns) ? b.columns : [],
       }));
-      setBoards(updatedBoards);
+      setBoards(updated);
       setDeleteConfirm(null);
       setCurrentBoardIndex(0);
     } catch (err) {
@@ -120,7 +154,7 @@ const Board = ({ projectId }) => {
   // Add column
   const handleAddColumn = async () => {
     if (!currentBoard?._id) return;
-    
+
     try {
       const res = await API.post(
         `/api/projects/${projectId}/boards/${currentBoard._id}/columns`,
@@ -138,23 +172,23 @@ const Board = ({ projectId }) => {
   };
 
   // Update columns after column operations
-  const updateColumns = useCallback((updater) => {
-    setBoards((prev) =>
-      prev.map((b, i) => {
-        if (i === currentBoardIndex) {
-          const newColumns = typeof updater === 'function' 
-            ? updater(b.columns || []) 
-            : updater;
-          return { ...b, columns: newColumns };
-        }
-        return b;
-      })
-    );
-  }, [currentBoardIndex]);
+  const updateColumns = useCallback(
+    (updater) => {
+      setBoards((prev) =>
+        prev.map((b, i) => {
+          if (i !== currentBoardIndex) return b;
+          const nextCols =
+            typeof updater === "function" ? updater(b.columns || []) : updater;
+          return { ...b, columns: nextCols };
+        })
+      );
+    },
+    [currentBoardIndex]
+  );
 
   if (error) {
     return (
-      <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full">
+      <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full ">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="text-red-500 mb-2">{error}</p>
@@ -171,112 +205,144 @@ const Board = ({ projectId }) => {
   }
 
   return (
-    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full">
-      {/* Header */}
-      <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-center justify-between pl-4 pr-4 rounded-t-md">
-        <div className="flex gap-2 overflow-x-auto">
-          {boards.map((board, index) => (
-            <div key={board._id} className="flex items-center gap-1 flex-shrink-0">
-              {editingBoard === board._id ? (
-                <input
-                  type="text"
-                  value={editBoardTitle}
-                  onChange={(e) => setEditBoardTitle(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleEditBoard(board._id);
-                    else if (e.key === "Escape") {
-                      setEditingBoard(null);
-                      setEditBoardTitle("");
-                    }
-                  }}
-                  onBlur={() => handleEditBoard(board._id)}
-                  autoFocus
-                  className="px-3 py-1 bg-transparent text-white border-none outline-none"
-                  style={{ 
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    boxShadow: 'none',
-                    minWidth: '100px'
-                  }}
-                />
-              ) : (
-                <span
-                  onDoubleClick={() => {
-                    setEditingBoard(board._id);
-                    setEditBoardTitle(board.title);
-                  }}
-                  onClick={() => setCurrentBoardIndex(index)}
-                  className={`px-3 py-1 rounded-md cursor-pointer transition-colors ${
-                    index === currentBoardIndex
-                      ? "bg-gray-700 text-white"
-                      : "bg-gray-500 text-gray-200 hover:bg-gray-600"
-                  }`}
-                >
-                  {board.title}
-                </span>
-              )}
+    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full flex flex-col">
+      {/* Header (tabs) */}
+      <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md">
+        <div
+          ref={boardsContainerRef}
+          className="flex overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300 dark:scrollbar-thumb-gray-700 dark:scrollbar-track-gray-900"
+        >
+          {boards.map((board, index) => {
+            const isActive = index === currentBoardIndex;
+            return (
+              <div
+                key={board._id}
+                className={`group flex items-stretch flex-shrink-0 px-2 transition-colors min-h-full border-r-2 border-black border-solid ${
+                  isActive ? "bg-black bg-opacity-50" : "hover:bg-gray-600"
+                }`}
+              >
+                {editingBoard === board._id ? (
+                  <div className="relative flex items-center">
+                    {/* hidden measurer for width */}
+                    <span
+                      ref={measureRef}
+                      className="absolute -z-10 top-0 left-0 px-2 py-1 text-3xl font-normal whitespace-pre opacity-0 pointer-events-none"
+                    />
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={editBoardTitle}
+                      onChange={(e) => setEditBoardTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleEditBoard(board._id);
+                        else if (e.key === "Escape") {
+                          setEditingBoard(null);
+                          setEditBoardTitle("");
+                        }
+                      }}
+                      onBlur={() => handleEditBoard(board._id)}
+                      autoFocus
+                      className="bg-transparent text-white border-none outline-none h-full px-2 py-1"
+                      // fallback width so it never collapses to 0
+                      style={{ minWidth: 24 }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setCurrentBoardIndex(index)}
+                    onDoubleClick={() => {
+                      setEditingBoard(board._id);
+                      setEditBoardTitle(board.title);
+                    }}
+                    className="h-full flex items-center px-2 text-white"
+                    title="Double-click to rename"
+                  >
+                    <span className="truncate">{board.title}</span>
+                  </button>
+                )}
 
-              {editingBoard !== board._id && boards.length > 1 && (
-                <button
-                  onClick={() => setDeleteConfirm(board._id)}
-                  className="text-red-500 hover:text-red-700 p-1"
-                  title="Delete board"
-                >
-                  🗑
-                </button>
-              )}
-            </div>
-          ))}
+                {/* Trash (only on hover) */}
+                {editingBoard !== board._id && boards.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteConfirm(board._id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200 flex items-center"
+                    title="Delete board"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <button
-          className="bg-gray-400 dark:bg-gray-800 rounded-md p-2 text-gray-800 dark:text-gray-200 hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+          className="bg-black bg-opacity-50 text-white hover:bg-opacity-25 transition-colors flex-shrink-0 px-4 flex items-center border-l-2 border-black border-solid"
           onClick={handleAddBoard}
+          title="Add board"
         >
-          + Add Board
+          +
         </button>
       </div>
 
       {/* Content */}
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <LoadingSpinner />
-        </div>
-      ) : currentBoard ? (
-        <div className="flex gap-4 p-4 overflow-x-auto h-full">
-          {Array.isArray(currentBoard.columns) && currentBoard.columns.length > 0 ? (
-            currentBoard.columns.map((col) => (
-              <Column
-                key={col._id}
-                projectId={projectId}
-                boardId={currentBoard._id}
-                column={col}
-                onColumnsUpdate={updateColumns}
-                onError={setError}
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              <p>No columns yet. Add your first column!</p>
-            </div>
-          )}
-          <button
-            onClick={handleAddColumn}
-            className="min-w-[200px] max-h-[50px] bg-gray-400 dark:bg-gray-800 rounded-lg p-3 flex items-center justify-center text-gray-800 dark:text-gray-400 shadow-md hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-          >
-            + Add new column
-          </button>
-        </div>
-      ) : (
-        <div className="text-center py-8 text-text-light dark:text-text-dark/70">
-          <p>No boards yet</p>
-        </div>
-      )}
+      <div className="flex-grow overflow-auto">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner />
+          </div>
+        ) : currentBoard ? (
+          <div className="flex gap-4 p-4 overflow-x-auto h-full">
+            {Array.isArray(currentBoard.columns) &&
+            currentBoard.columns.length > 0 ? (
+              currentBoard.columns.map((col) => (
+                <Column
+                  key={col._id}
+                  projectId={projectId}
+                  boardId={currentBoard._id}
+                  column={col}
+                  onColumnsUpdate={updateColumns}
+                  onError={setError}
+                />
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <p>No columns yet. Add your first column!</p>
+              </div>
+            )}
+            <button
+              onClick={handleAddColumn}
+              className="min-w-[200px] max-h-[50px] bg-gray-400 dark:bg-gray-800 rounded-lg p-3 flex items-center justify-center text-gray-800 dark:text-gray-400 shadow-md hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+            >
+              + Add new column
+            </button>
+          </div>
+        ) : (
+          <div className="text-center py-8 text-text-light dark:text-text-dark/70">
+            <p>No boards yet</p>
+          </div>
+        )}
+      </div>
 
       {/* Delete Confirmation Modal */}
-      <Modal 
-        isOpen={!!deleteConfirm} 
+      <Modal
+        isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}
         title="Delete Board"
       >
