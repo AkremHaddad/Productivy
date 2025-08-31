@@ -205,9 +205,9 @@ const Board = ({ projectId }) => {
   }
 
   return (
-    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full flex flex-col">
+    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full flex flex-col ">
       {/* Header (tabs) */}
-      <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md">
+      <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md border-b-2 border-black border-solid">
         <div
           ref={boardsContainerRef}
           className="flex overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300 dark:scrollbar-thumb-gray-700 dark:scrollbar-track-gray-900"
@@ -322,13 +322,13 @@ const Board = ({ projectId }) => {
                 />
               ))
             ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p>No columns yet. Add your first column!</p>
+              <div className="text-center text-gray-500 dark:text-gray-400">
+                
               </div>
             )}
             <button
               onClick={handleAddColumn}
-              className="min-w-[200px] max-h-[50px] bg-gray-400 dark:bg-gray-800 rounded-lg p-3 flex items-center justify-center text-gray-800 dark:text-gray-400 shadow-md hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+              className="min-w-[200px] max-h-[50px] bg-gray-400 dark:bg-black rounded-lg p-3 flex items-center justify-center text-gray-800 dark:text-gray-400 shadow-md hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
             >
               + Add new column
             </button>
