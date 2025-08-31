@@ -15,13 +15,13 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
   const [editingColumnTitle, setEditingColumnTitle] = useState(false);
   const [columnTitle, setColumnTitle] = useState(column.title);
 
-  // Add new card with default title and auto-edit
+  // Add new card with default title and description
   const handleAddCard = async () => {
     setIsLoading(true);
     try {
       const res = await API.post(
         `/api/projects/${projectId}/boards/${boardId}/columns/${column._id}/cards`,
-        { title: "New Card" }
+        { title: "New Card", description: "Enter details here..." }
       );
       const updatedCards = res.data;
       setCards(updatedCards);
@@ -29,7 +29,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       // Automatically open new card in edit mode
       const newCard = updatedCards[updatedCards.length - 1];
       setEditingCard(newCard._id);
-      setEditCardData({ title: newCard.title, description: newCard.description || "" });
+      setEditCardData({ title: newCard.title, description: newCard.description || "Enter details here..." });
     } catch (err) {
       console.error("Error adding card:", err);
       onError("Failed to add card. Please try again.");
@@ -111,8 +111,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-black rounded-lg p-4 min-w-[280px] max-w-[280px] flex flex-col gap-2 shadow-md group transition-all hover:shadow-lg">
-      
+    <div className="bg-white dark:bg-black rounded-lg p-4 min-w-[280px] max-w-[300px] flex flex-col gap-2 shadow-md group transition-all hover:shadow-lg">
       {/* Column Header */}
       <div className="flex items-center justify-between">
         {editingColumnTitle ? (
@@ -151,24 +150,26 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
         </button>
       </div>
 
-      {/* Cards */}
-      <div className="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-700">
-        {cards.map((card) => (
-          <Card
-            key={card._id}
-            card={card}
-            editingCard={editingCard}
-            editCardData={editCardData}
-            setEditingCard={setEditingCard}
-            setEditCardData={setEditCardData}
-            handleEditCard={handleEditCard}
-            handleDeleteCard={handleDeleteCard}
-          />
-        ))}
-      </div>
+      {/* Cards (only render if cards exist) */}
+      {cards.length > 0 && (
+        <div className="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-700">
+          {cards.map((card) => (
+            <Card
+              key={card._id}
+              card={card}
+              editingCard={editingCard}
+              editCardData={editCardData}
+              setEditingCard={setEditingCard}
+              setEditCardData={setEditCardData}
+              handleEditCard={handleEditCard}
+              handleDeleteCard={handleDeleteCard}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Add New Card Button */}
-      <div className="">
+      <div>
         <button
           onClick={handleAddCard}
           disabled={isLoading}
@@ -179,7 +180,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       </div>
 
       {/* Delete Confirmation Modal */}
-      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Delete Card">
+      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Delete Card" className="z-50">
         <p className="text-center mb-6">
           Are you sure you want to delete this card? This cannot be undone.
         </p>

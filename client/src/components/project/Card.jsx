@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Modal from "../common/Modal";
+import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 const Card = ({
   card,
@@ -15,98 +16,128 @@ const Card = ({
 
   return (
     <>
+      {/* Card preview */}
       <div
-        className="bg-gray-200 dark:bg-navbar-dark p-2 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        className="bg-gray-200 dark:bg-navbar-dark p-3 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         onClick={() => setIsOpen(true)}
       >
         <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">{card.title}</h4>
       </div>
 
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title={card.title}>
-        {editingCard === card._id ? (
-          <div className="flex flex-col gap-2">
-            <input
-              type="text"
-              value={editCardData.title}
-              onChange={(e) => setEditCardData(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full px-2 py-1 border-b-2 border-blue-400 focus:outline-none focus:border-blue-500 bg-transparent text-gray-900 dark:text-gray-100 font-medium"
-              placeholder="Card title"
-              autoFocus
-            />
-            <textarea
-              value={editCardData.description}
-              onChange={(e) => setEditCardData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Description (optional)"
-              rows="3"
-              className="w-full px-2 py-1 border-b-2 border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500 bg-transparent text-gray-600 dark:text-gray-400 resize-none text-sm"
-            />
-            <div className="flex justify-end gap-2 mt-2">
-              <button
-                onClick={() => {
-                  setEditingCard(null);
-                  setEditCardData({ title: "", description: "" });
-                }}
-                className="px-3 py-1 text-sm bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleEditCard(card._id)}
-                className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-all"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <p className="text-gray-800 dark:text-gray-200 mb-4">
-              {card.description || <span className="italic text-gray-500 dark:text-gray-400">No description provided.</span>}
-            </p>
-            <div className="flex justify-end gap-2">
+      {/* Main modal */}
+      
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="">
+        <div className="flex flex-col gap-4 relative">
+
+          {/* Header: Title + Actions */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-secondary-dark dark:text-accent">Card Details</h2>
+            <div className="flex gap-2">
               <button
                 onClick={() => {
                   setEditingCard(card._id);
                   setEditCardData({ title: card.title, description: card.description || "" });
                 }}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all"
+                className="p-2 rounded-full hover:bg-white/10 transition"
+                title="Edit"
               >
-                Edit
+                <PencilSquareIcon className="w-5 h-5 text-text-light dark:text-text-dark" />
               </button>
               <button
                 onClick={() => setDeleteConfirm(true)}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all"
+                className="p-2 rounded-full hover:bg-white/10 transition"
+                title="Delete"
               >
-                Delete
+                <TrashIcon className="w-5 h-5 text-text-light dark:text-text-dark" />
               </button>
             </div>
           </div>
-        )}
 
-        {/* Delete Confirmation */}
-        {deleteConfirm && (
-          <div className="mt-4">
-            <p className="text-center mb-2 text-red-600">Are you sure you want to delete this card? This cannot be undone.</p>
-            <div className="flex justify-end gap-2">
+          {/* Title */}
+          <div className="flex flex-col gap-1">
+            <label className="text-text-light dark:text-text-dark font-medium">Title</label>
+            {editingCard === card._id ? (
+              <textarea
+                value={editCardData.title}
+                onChange={(e) => setEditCardData(prev => ({ ...prev, title: e.target.value }))}
+                rows={2}
+                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-accent resize-y"
+                autoFocus
+              />
+            ) : (
+              <p className="px-4 py-2 rounded-lg bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark">
+                {card.title}
+              </p>
+            )}
+          </div>
+
+          {/* Description */}
+          <div className="flex flex-col gap-1">
+            <label className="text-text-light dark:text-text-dark font-medium">Description</label>
+            {editingCard === card._id ? (
+              <textarea
+                value={editCardData.description}
+                onChange={(e) => setEditCardData(prev => ({ ...prev, description: e.target.value }))}
+                rows={5}
+                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-accent resize-y"
+              />
+            ) : (
+              <p className="px-4 py-2 rounded-lg bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark min-h-[120px] whitespace-pre-line">
+                {card.description || "No description added."}
+              </p>
+            )}
+          </div>
+
+          {/* Save/Cancel buttons */}
+          {editingCard === card._id && (
+            <div className="flex justify-end gap-3 mt-2">
               <button
-                onClick={() => setDeleteConfirm(false)}
-                className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition-all"
+                onClick={() => setEditingCard(null)}
+                className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark hover:bg-opacity-80 border border-transparent hover:border-accent transition-all"
               >
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  handleDeleteCard(card._id);
-                  setDeleteConfirm(false);
-                  setIsOpen(false);
-                }}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all"
+                onClick={() => handleEditCard(card._id)}
+                className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-primary-dark dark:text-black font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
               >
-                Delete
+                Save Changes
               </button>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Animated floating Delete confirmation */}
+          {deleteConfirm && (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-background-light dark:bg-background-dark border-2 border-red-600 dark:border-red-500 p-6 rounded-xl shadow-2xl w-full max-w-sm animate-fadeScale">
+                <h3 className="text-lg font-bold mb-2 text-red-600 dark:text-red-500">Delete Card</h3>
+                <p className="mb-6 opacity-80">
+                  Are you sure you want to delete this card? This action cannot be undone.
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setDeleteConfirm(false)}
+                    className="px-4 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark hover:bg-opacity-80 border border-transparent hover:border-accent transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleDeleteCard(card._id);
+                      setDeleteConfirm(false);
+                      setIsOpen(false);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-red-600 dark:bg-red-500 text-white font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+
+        </div>
       </Modal>
     </>
   );
