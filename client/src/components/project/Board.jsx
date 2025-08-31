@@ -3,6 +3,7 @@ import API from "../../api/API";
 import Column from "./Column";
 import LoadingSpinner from "../common/LoadingSpinner";
 import Modal from "../common/Modal";
+import { addColumn } from "../../api/project";
 
 const Board = ({ projectId }) => {
   const [boards, setBoards] = useState([]);
@@ -20,7 +21,10 @@ const Board = ({ projectId }) => {
   const inputRef = useRef(null);
   const measureRef = useRef(null);
 
-  const currentBoard = boards[currentBoardIndex];
+  const currentBoard =
+    boards.length > 0
+      ? boards[Math.min(currentBoardIndex, boards.length - 1)]
+      : null;
 
   // Fetch project boards
   const fetchBoards = useCallback(async () => {
@@ -84,11 +88,8 @@ const Board = ({ projectId }) => {
   // Autosize the inline input to its content
   useEffect(() => {
     if (!editingBoard || !inputRef.current || !measureRef.current) return;
-    // copy the text into the hidden measurer
     measureRef.current.textContent = editBoardTitle || " ";
-    // add a tiny buffer so the caret isn't cramped
-    const w = measureRef.current.offsetWidth + 8;
-    inputRef.current.style.width = `${w}px`;
+    inputRef.current.style.width = `${measureRef.current.offsetWidth + 8}px`;
   }, [editingBoard, editBoardTitle]);
 
   // Add board
@@ -111,7 +112,6 @@ const Board = ({ projectId }) => {
 
   // Edit board title
   const handleEditBoard = async (boardId) => {
-    // if cleared or unchanged, just exit
     if (!editBoardTitle.trim()) {
       setEditingBoard(null);
       setEditBoardTitle("");
@@ -123,7 +123,9 @@ const Board = ({ projectId }) => {
         `/api/projects/${projectId}/boards/${boardId}`,
         { title: editBoardTitle.trim() }
       );
-      setBoards((prev) => prev.map((b) => (b._id === boardId ? res.data : b)));
+      setBoards((prev) =>
+        prev.map((b) => (b._id === boardId ? res.data : b))
+      );
       setEditingBoard(null);
       setEditBoardTitle("");
     } catch (err) {
@@ -154,15 +156,13 @@ const Board = ({ projectId }) => {
   // Add column
   const handleAddColumn = async () => {
     if (!currentBoard?._id) return;
-
     try {
-      const res = await API.post(
-        `/api/projects/${projectId}/boards/${currentBoard._id}/columns`,
-        { title: "New Column" }
-      );
+      const newCol = await addColumn(projectId, currentBoard._id); // now newCol._id exists
       setBoards((prev) =>
         prev.map((b, i) =>
-          i === currentBoardIndex ? { ...b, columns: res.data } : b
+          i === currentBoardIndex
+            ? { ...b, columns: [...(b.columns || []), newCol] }
+            : b
         )
       );
     } catch (err) {
@@ -188,7 +188,7 @@ const Board = ({ projectId }) => {
 
   if (error) {
     return (
-      <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full ">
+      <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="text-red-500 mb-2">{error}</p>
@@ -205,7 +205,7 @@ const Board = ({ projectId }) => {
   }
 
   return (
-    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full flex flex-col ">
+    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full flex flex-col">
       {/* Header (tabs) */}
       <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md border-b-2 border-black border-solid">
         <div
@@ -223,7 +223,6 @@ const Board = ({ projectId }) => {
               >
                 {editingBoard === board._id ? (
                   <div className="relative flex items-center">
-                    {/* hidden measurer for width */}
                     <span
                       ref={measureRef}
                       className="absolute -z-10 top-0 left-0 px-2 py-1 text-3xl font-normal whitespace-pre opacity-0 pointer-events-none"
@@ -243,7 +242,6 @@ const Board = ({ projectId }) => {
                       onBlur={() => handleEditBoard(board._id)}
                       autoFocus
                       className="bg-transparent text-white border-none outline-none h-full px-2 py-1"
-                      // fallback width so it never collapses to 0
                       style={{ minWidth: 24 }}
                       onClick={(e) => e.stopPropagation()}
                     />
@@ -262,7 +260,6 @@ const Board = ({ projectId }) => {
                   </button>
                 )}
 
-                {/* Trash (only on hover) */}
                 {editingBoard !== board._id && boards.length > 1 && (
                   <button
                     onClick={(e) => {
@@ -323,7 +320,6 @@ const Board = ({ projectId }) => {
               ))
             ) : (
               <div className="text-center text-gray-500 dark:text-gray-400">
-                
               </div>
             )}
             <button

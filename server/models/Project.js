@@ -23,12 +23,14 @@ const CardSchema = new mongoose.Schema({
 const ColumnSchema = new mongoose.Schema({
   title: { type: String, required: true },
   color: {
-    fill: { type: String, default: "#D1D5DB" },
-    border: { type: String, default: "#6B7280" }
+    type: String,
+    enum: ["grey", "red", "blue", "green", "pink", "yellow", "orange", "purple"],
+    default: "grey"
   },
   cards: [CardSchema],
   createdAt: { type: Date, default: Date.now },
 });
+
 
 const BoardSchema = new mongoose.Schema({
   title: { type: String, required: true },

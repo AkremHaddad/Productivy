@@ -61,11 +61,11 @@ const Card = ({
                 value={editCardData.title}
                 onChange={(e) => setEditCardData(prev => ({ ...prev, title: e.target.value }))}
                 rows={2}
-                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-accent resize-y"
+                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none dark:focus:ring-2 dark:focus:ring-accent resize-y"
                 autoFocus
               />
             ) : (
-              <p className="px-4 py-2 rounded-lg bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark">
+              <p className="px-4 py-2 rounded-lg bg-white border-navbar-light border-2 dark:bg-navbar-dark text-text-light dark:text-text-dark">
                 {card.title}
               </p>
             )}
@@ -79,10 +79,10 @@ const Card = ({
                 value={editCardData.description}
                 onChange={(e) => setEditCardData(prev => ({ ...prev, description: e.target.value }))}
                 rows={5}
-                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-accent resize-y"
+                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-accent resize-y"
               />
             ) : (
-              <p className="px-4 py-2 rounded-lg bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark min-h-[120px] whitespace-pre-line">
+              <p className="px-4 py-2 rounded-lg bg-white border-navbar-light border-2 dark:bg-navbar-dark text-text-light dark:text-text-dark min-h-[120px] whitespace-pre-line">
                 {card.description || "No description added."}
               </p>
             )}

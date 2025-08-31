@@ -287,30 +287,40 @@ export const deleteBoard = async (req, res) => {
   }
 };
 
-// ==================== Columns ====================
+// ==================== Columns Controller ====================
+const ALLOWED_COLORS = ["grey","red","blue","green","pink","yellow","orange","purple"];
+
 export const addColumn = async (req, res) => {
   try {
     const { projectId, boardId } = req.params;
     const { title, color } = req.body;
 
     const project = await findProjectByUser(projectId, req.user.id);
+    if (!project) return res.status(404).json({ error: "Project not found" });
+
     const board = project.boards.id(boardId);
     if (!board) return res.status(404).json({ error: "Board not found" });
 
-    const newColumn = { 
-      title: title?.trim() || "New Column", 
+    const columnTitle = title?.trim() || "New Column";
+    const columnColor = ALLOWED_COLORS.includes(color) ? color : "grey";
+
+    const newColumn = {
+      title: columnTitle,
+      color: columnColor,
       cards: [],
-      color: color || { fill: "#D1D5DB", border: "#6B7280" }
     };
+
     board.columns.push(newColumn);
     await project.save();
 
-    res.status(201).json(board.columns);
+    // get the last column from the board (Mongoose adds _id automatically)
+    const addedColumn = board.columns[board.columns.length - 1];
+
+    res.status(201).json(addedColumn);
+
   } catch (err) {
-    if (err.message === "Project not found") {
-      return res.status(404).json({ error: err.message });
-    }
-    res.status(500).json({ error: err.message });
+    console.error("Error in addColumn:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -320,22 +330,30 @@ export const updateColumn = async (req, res) => {
     const { title, color } = req.body;
 
     const project = await findProjectByUser(projectId, req.user.id);
+    if (!project) return res.status(404).json({ error: "Project not found" });
+
     const board = project.boards.id(boardId);
     if (!board) return res.status(404).json({ error: "Board not found" });
 
     const column = board.columns.id(columnId);
     if (!column) return res.status(404).json({ error: "Column not found" });
 
-    if (title?.trim()) column.title = title.trim();
-    if (color) column.color = color;
-    await project.save();
+    if (title !== undefined) {
+      const trimmed = title.trim();
+      if (!trimmed) return res.status(400).json({ error: "Title cannot be empty" });
+      column.title = trimmed;
+    }
 
+    if (color !== undefined) {
+      if (!ALLOWED_COLORS.includes(color)) return res.status(400).json({ error: "Invalid color" });
+      column.color = color;
+    }
+
+    await project.save();
     res.json(column);
   } catch (err) {
-    if (err.message === "Project not found") {
-      return res.status(404).json({ error: err.message });
-    }
-    res.status(500).json({ error: err.message });
+    console.error("Error in updateColumn:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -355,12 +373,11 @@ export const deleteColumn = async (req, res) => {
 
     res.json(board.columns);
   } catch (err) {
-    if (err.message === "Project not found") {
-      return res.status(404).json({ error: err.message });
-    }
-    res.status(500).json({ error: err.message });
+    console.error("Error in deleteColumn:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // ==================== Cards ====================
 export const addCard = async (req, res) => {
@@ -445,3 +462,4 @@ export const deleteCard = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+

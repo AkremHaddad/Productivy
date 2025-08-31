@@ -76,26 +76,18 @@ export const deleteBoard = async (projectId, boardId) => {
 };
 
 // ==================== Columns ====================
-export const addColumn = async (projectId, boardId, title, color) => {
-  const res = await API.post(`/api/projects/${projectId}/boards/${boardId}/columns`, {
-    title,
-    color,
-  });
+export const addColumn = async (projectId, boardId, title = "New Column", color = "grey") => {
+  const res = await API.post(`/api/projects/${projectId}/boards/${boardId}/columns`, { title, color });
   return res.data;
 };
 
 export const updateColumn = async (projectId, boardId, columnId, data) => {
-  const res = await API.patch(
-    `/api/projects/${projectId}/boards/${boardId}/columns/${columnId}`,
-    data
-  );
+  const res = await API.patch(`/api/projects/${projectId}/boards/${boardId}/columns/${columnId}`, data);
   return res.data;
 };
 
 export const deleteColumn = async (projectId, boardId, columnId) => {
-  const res = await API.delete(
-    `/api/projects/${projectId}/boards/${boardId}/columns/${columnId}`
-  );
+  const res = await API.delete(`/api/projects/${projectId}/boards/${boardId}/columns/${columnId}`);
   return res.data;
 };
 
