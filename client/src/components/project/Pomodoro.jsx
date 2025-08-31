@@ -188,16 +188,16 @@ const Pomodoro = () => {
               >
                 Cancel
               </button>
-<button
-  type="submit"
-  className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-primary-dark dark:text-black
-            font-bold shadow-md hover:shadow-lg
-            transition-all duration-200
-            hover:bg-secondary-light dark:hover:bg-secondary-dark/80
-            transform hover:scale-[1.02]"
->
-  Save Changes
-</button>
+              <button
+                type="submit"
+                className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-primary-dark dark:text-black
+                          font-bold shadow-md hover:shadow-lg
+                          transition-all duration-200
+                          hover:bg-secondary-light dark:hover:bg-secondary-dark/80
+                          transform hover:scale-[1.02]"
+              >
+                Save Changes
+              </button>
             </div>
           </form>
         </div>

@@ -5,6 +5,9 @@ const Kanban = ({ projectId, selectedSprint }) => {
   const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   // Fetch tasks whenever selectedSprint changes
   useEffect(() => {
@@ -55,6 +58,50 @@ const Kanban = ({ projectId, selectedSprint }) => {
     }
   };
 
+  // Handle double-click to edit task
+  const handleDoubleClick = (task) => {
+    setEditingTask(task._id);
+    setEditTitle(task.title);
+  };
+
+  // Handle edit task
+  const handleEditTask = async (taskId) => {
+    if (!editTitle.trim()) return;
+
+    try {
+      const res = await API.patch(
+        `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}`,
+        { title: editTitle }
+      );
+      setTasks((prev) =>
+        prev.map((t) => (t._id === taskId ? res.data : t))
+      );
+      setEditingTask(null);
+      setEditTitle("");
+    } catch (err) {
+      console.error("Error editing task:", err);
+    }
+  };
+
+  // Handle delete task
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await API.delete(
+        `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}`
+      );
+      setTasks((prev) => prev.filter((t) => t._id !== taskId));
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error("Error deleting task:", err);
+    }
+  };
+
+  // Cancel editing
+  const cancelEdit = () => {
+    setEditingTask(null);
+    setEditTitle("");
+  };
+
   // Handle Enter key press for adding tasks
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -62,10 +109,19 @@ const Kanban = ({ projectId, selectedSprint }) => {
     }
   };
 
+  // Handle Enter key press for editing tasks
+  const handleEditKeyPress = (e, taskId) => {
+    if (e.key === 'Enter') {
+      handleEditTask(taskId);
+    } else if (e.key === 'Escape') {
+      cancelEdit();
+    }
+  };
+
   return (
     <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[350px] rounded-md shadow-lg overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-black bg-opacity-30 h-[40px] text-white text-center text-xl font-jaro flex items-center justify-center rounded-t-md relative">
+      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-xl font-jaro flex items-center justify-center rounded-t-md relative border-b-2 border-black">
         <span className="drop-shadow-md">Sprint Tasks</span>                
       </div>
 
@@ -93,7 +149,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
                       : "bg-white/75 dark:bg-black/25 text-text-dark hover:shadow-md"
                   }`}
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 flex-1">
                   <button
                     onClick={() => toggleTask(task._id)}
                     className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200
@@ -109,11 +165,40 @@ const Kanban = ({ projectId, selectedSprint }) => {
                       </svg>
                     )}
                   </button>
-                  <span className={`flex-1 ${task.completed ? "line-through" : ""}`}>
-                    {task.title}
-                  </span>
+
+                  {editingTask === task._id ? (
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      onKeyPress={(e) => handleEditKeyPress(e, task._id)}
+                      onBlur={() => handleEditTask(task._id)}
+                      className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
+                      style={{ fontSize: 'inherit', lineHeight: 'inherit' }}
+                      autoFocus
+                    />
+                  ) : (
+                    <span 
+                      className={`flex-1 cursor-pointer ${task.completed ? "line-through" : ""}`}
+                      onDoubleClick={() => handleDoubleClick(task)}
+                      title="Double-click to edit"
+                    >
+                      {task.title}
+                    </span>
+                  )}
                 </div>
-                
+
+                {editingTask !== task._id && (
+                  <button
+                    onClick={() => setDeleteConfirm(task._id)}
+                    className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200"
+                    title="Delete task"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -122,30 +207,67 @@ const Kanban = ({ projectId, selectedSprint }) => {
 
       {/* Add Task Form */}
       <div className="flex gap-2 items-center p-2 bg-black/20 border-t-2 border-t-black dark:border-t-black">
-  <input
-    type="text"
-    value={newTaskTitle}
-    onChange={(e) => setNewTaskTitle(e.target.value)}
-    onKeyPress={handleKeyPress}
-    placeholder="Enter a new task..."
-    className="flex-1 min-w-0 px-2 py-1 rounded-xl border-2 border-navbar-light/30 dark:border-navbar-dark/30
-               bg-ui-light dark:bg-black/50 text-text-light dark:text-text-dark 
-               focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
-    disabled={!selectedSprint}
-  />
-  <button
-    onClick={handleAddTask}
-    disabled={!selectedSprint || !newTaskTitle.trim()}
-    className="shrink-0 w-8 h-8 bg-secondary-light text-white rounded-xl
-               hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed 
-               transition-all shadow-md hover:shadow-lg flex items-center justify-center"
-  >
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-    </svg>
-  </button>
-</div>
+        <input
+          type="text"
+          value={newTaskTitle}
+          onChange={(e) => setNewTaskTitle(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Enter a new task..."
+          className="flex-1 min-w-0 px-2 py-1 rounded-xl border-2 border-navbar-light/30 dark:border-navbar-dark/30
+                    bg-ui-light dark:bg-black/50 text-text-light dark:text-text-dark 
+                    focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
+          disabled={!selectedSprint}
+        />
+        <button
+          onClick={handleAddTask}
+          disabled={!selectedSprint || !newTaskTitle.trim()}
+          className="shrink-0 w-8 h-8 bg-secondary-light text-white rounded-xl
+                    hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed 
+                    transition-all shadow-md hover:shadow-lg flex items-center justify-center"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </button>
+      </div>
 
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-background-light dark:bg-background-dark 
+                          border-2 border-secondary-dark dark:border-accent
+                          p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
+            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
+              Delete Task
+            </h2>
+            
+            <p className="text-text-light dark:text-text-dark text-center">
+              Are you sure you want to delete this task? This action cannot be undone.
+            </p>
+            
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
+                          text-text-dark hover:bg-opacity-80 transition-all
+                          font-medium border border-transparent hover:border-accent"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteTask(deleteConfirm)}
+                className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
+                          font-bold shadow-md hover:shadow-lg
+                          transition-all duration-200
+                          hover:bg-red-600 dark:hover:bg-red-700
+                          transform hover:scale-[1.02]"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

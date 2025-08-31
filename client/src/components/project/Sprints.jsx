@@ -4,6 +4,9 @@ import API from "../../api/API";
 const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
   const [sprints, setSprints] = useState([]);
   const [sprintTitle, setSprintTitle] = useState("");
+  const [editingSprint, setEditingSprint] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   useEffect(() => {
     if (!projectId) return;
@@ -45,6 +48,60 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
     }
   };
 
+  // Handle double-click to edit sprint
+  const handleDoubleClick = (sprint, e) => {
+    e.stopPropagation(); // Prevent sprint selection
+    setEditingSprint(sprint._id);
+    setEditTitle(sprint.title);
+  };
+
+  // Handle edit sprint
+  const handleEditSprint = async (sprintId) => {
+    if (!editTitle.trim()) return;
+
+    try {
+      const res = await API.patch(
+        `/api/projects/${projectId}/sprints/${sprintId}`,
+        { title: editTitle }
+      );
+      setSprints(res.data);
+      setEditingSprint(null);
+      setEditTitle("");
+    } catch (err) {
+      console.error("Error editing sprint:", err);
+    }
+  };
+
+  // Handle delete sprint
+  const handleDeleteSprint = async (sprintId) => {
+    try {
+      const res = await API.delete(
+        `/api/projects/${projectId}/sprints/${sprintId}`
+      );
+      setSprints(res.data);
+      
+      // If deleted sprint was selected, select first available sprint
+      if (selectedSprintId === sprintId) {
+        const remainingSprints = res.data;
+        if (remainingSprints.length > 0) {
+          onSprintSelect(remainingSprints[0]);
+        } else {
+          onSprintSelect(null);
+        }
+      }
+      
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error("Error deleting sprint:", err);
+    }
+  };
+
+  // Cancel editing
+  const cancelEdit = () => {
+    setEditingSprint(null);
+    setEditTitle("");
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -52,10 +109,28 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
     }
   };
 
+  // Handle Enter key press for editing sprints
+  const handleEditKeyPress = (e, sprintId) => {
+    if (e.key === 'Enter') {
+      e.stopPropagation();
+      handleEditSprint(sprintId);
+    } else if (e.key === 'Escape') {
+      e.stopPropagation();
+      cancelEdit();
+    }
+  };
+
+  // Handle sprint selection (only when not editing)
+  const handleSprintClick = (sprint) => {
+    if (editingSprint !== sprint._id) {
+      onSprintSelect(sprint);
+    }
+  };
+
   return (
     <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[350px] rounded-md shadow-lg overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-black bg-opacity-25 h-[40px] text-white text-center text-lg font-jaro flex items-center justify-center rounded-t-md border-b-2 border-black ">
+      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg font-jaro flex items-center justify-center rounded-t-md border-b-2 border-black ">
         Sprints
       </div>
 
@@ -71,15 +146,52 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
           sprints.map((s) => (
             <div
               key={s._id}
-              onClick={() => onSprintSelect(s)}
-              className={`cursor-pointer px-3 py-2 transition-all duration-200
+              onClick={() => handleSprintClick(s)}
+              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex items-center justify-between
                 ${
                   selectedSprintId === s._id
                     ? "bg-black/25 dark:bg-black/75 text-black dark:text-white"
                     : "hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-text-dark"
                 }`}
             >
-              {s.title}
+              <div className="flex-1 min-w-0">
+                {editingSprint === s._id ? (
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    onKeyPress={(e) => handleEditKeyPress(e, s._id)}
+                    onBlur={() => handleEditSprint(s._id)}
+                    className="flex-1 w-full px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
+                    style={{ fontSize: 'inherit', lineHeight: 'inherit' }}
+                    autoFocus
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <span 
+                    className="block truncate"
+                    onDoubleClick={(e) => handleDoubleClick(s, e)}
+                    title="Double-click to edit"
+                  >
+                    {s.title}
+                  </span>
+                )}
+              </div>
+
+              {editingSprint !== s._id && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeleteConfirm(s._id);
+                  }}
+                  className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200 ml-2"
+                  title="Delete sprint"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              )}
             </div>
           ))
         )}
@@ -119,6 +231,44 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
           </svg>
         </button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-background-light dark:bg-background-dark 
+                          border-2 border-secondary-dark dark:border-accent
+                          p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
+            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
+              Delete Sprint
+            </h2>
+            
+            <p className="text-text-light dark:text-text-dark text-center">
+              Are you sure you want to delete this sprint? This will also delete all tasks within it. This action cannot be undone.
+            </p>
+            
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
+                          text-text-dark hover:bg-opacity-80 transition-all
+                          font-medium border border-transparent hover:border-accent"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteSprint(deleteConfirm)}
+                className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
+                          font-bold shadow-md hover:shadow-lg
+                          transition-all duration-200
+                          hover:bg-red-600 dark:hover:bg-red-700
+                          transform hover:scale-[1.02]"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -62,7 +62,7 @@ const Project = () => {
             <ToolsFooter />
           </div>
         </div>
-        <Board />
+        <Board projectId={project._id} boards={project.boards} />
       </div>
     </div>
   );
