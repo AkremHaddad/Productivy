@@ -81,7 +81,7 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
                     ${isSelected ? "bg-accent/20 ring-2 ring-accent" : "hover:bg-black/10 dark:hover:bg-white/10"}`}
                 >
                   <div
-                    className="w-5 h-5 rounded-full border-2"
+                    className="w-5 h-5 rounded-full border-[2.5px]"
                     style={{ backgroundColor: fillColor, borderColor }}
                   />
                 </button>

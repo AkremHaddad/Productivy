@@ -6,37 +6,54 @@ import EditColumnModal from "../common/EditColumnModal";
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 export const COLOR_MAP = {
-  grey: { light: { fill: "#D1D5DB", border: "#6B7280" }, dark: { fill: "#1f1f1f", border: "#9ca3af" } },
-  red: { light: { fill: "#FCA5A5", border: "#DC2626" }, dark: { fill: "#2b0f0f", border: "#f87171" } },
-  blue: { light: { fill: "#93C5FD", border: "#2563EB" }, dark: { fill: "#0d1117", border: "#4491f6" } },
-  green: { light: { fill: "#86EFAC", border: "#16A34A" }, dark: { fill: "#0f1f0d", border: "#4ade80" } },
-  pink: { light: { fill: "#F9A8D4", border: "#DB2777" }, dark: { fill: "#2b0f1f", border: "#f472b6" } },
-  yellow: { light: { fill: "#FDE68A", border: "#CA8A04" }, dark: { fill: "#1f1c0d", border: "#facc15" } },
-  orange: { light: { fill: "#FDBA74", border: "#EA580C" }, dark: { fill: "#2b160d", border: "#fb923c" } },
-  purple: { light: { fill: "#C4B5FD", border: "#7C3AED" }, dark: { fill: "#0f0d1f", border: "#c084fc" } },
+  grey: {
+    light: { fill: "#E5E7EB", border: "#6B7280" },
+    dark:  { fill: "#374151", border: "#9CA3AF" },
+  },
+  red: {
+    light: { fill: "#FCA5A5", border: "#B91C1C" },
+    dark:  { fill: "#7F1D1D", border: "#F87171" },
+  },
+  pink: {
+    light: { fill: "#FBCFE8", border: "#BE185D" },
+    dark:  { fill: "#701A3D", border: "#F472B6" },
+  },
+  orange: {
+    light: { fill: "#FED7AA", border: "#C2410C" },
+    dark:  { fill: "#7C2D12", border: "#FB923C" },
+  },
+  yellow: {
+    light: { fill: "#FEF08A", border: "#A16207" },
+    dark:  { fill: "#713F12", border: "#FACC15" },
+  },
+  blue: {
+    light: { fill: "#93C5FD", border: "#2563EB" },
+    dark:  { fill: "#1E3A8A", border: "#60A5FA" },
+  },
+  green: {
+    light: { fill: "#86EFAC", border: "#15803D" },
+    dark:  { fill: "#14532D", border: "#4ADE80" },
+  },
+  purple: {
+    light: { fill: "#DDD6FE", border: "#6D28D9" },
+    dark:  { fill: "#4C1D95", border: "#A78BFA" },
+  },
 };
 
 const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
   const [cards, setCards] = useState(column.cards || []);
-  const [columnTitle, setColumnTitle] = useState(column.title);
-  const [columnColorKey, setColumnColorKey] = useState(column.color || "grey");
-  const [editingColumnTitle, setEditingColumnTitle] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
   const [editCardData, setEditCardData] = useState({ title: "", description: "" });
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showEditColumn, setShowEditColumn] = useState(false);
 
   const isDarkMode = useTheme();
-  const colorObj = COLOR_MAP[columnColorKey] || COLOR_MAP.grey;
+  const colorObj = COLOR_MAP[column.color || "grey"];
   const fillColor = isDarkMode ? colorObj.dark.fill : colorObj.light.fill;
   const borderColor = isDarkMode ? colorObj.dark.border : colorObj.light.border;
 
-  // Sync local state whenever parent column prop updates
   useEffect(() => {
     setCards(column.cards || []);
-    setColumnTitle(column.title);
-    setColumnColorKey(column.color || "grey");
   }, [column]);
 
   const handleAddCard = async () => {
@@ -103,73 +120,38 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
     }
   };
 
-  const handleEditColumnTitle = async () => {
-    if (!columnTitle.trim()) {
-      setColumnTitle(column.title);
-      setEditingColumnTitle(false);
-      return;
-    }
-    try {
-      await API.patch(
-        `/api/projects/${projectId}/boards/${boardId}/columns/${column._id}`,
-        { title: columnTitle.trim() }
-      );
-      onColumnsUpdate(prev => prev.map(col => (col._id === column._id ? { ...col, title: columnTitle.trim() } : col)));
-      setEditingColumnTitle(false);
-    } catch (err) {
-      console.error("Error updating column:", err);
-      onError("Failed to update column title. Please try again.");
-      setColumnTitle(column.title);
-      setEditingColumnTitle(false);
-    }
-  };
-
   return (
-    <div className="bg-white dark:bg-black rounded-lg p-4 min-w-[280px] max-w-[300px] flex flex-col gap-2 shadow-md group transition-all hover:shadow-lg">
+    <div
+      className="bg-white dark:bg-black rounded-lg p-4 min-w-[280px] max-w-[300px] flex flex-col gap-2 shadow-md group transition-all hover:shadow-lg"
+    >
       {/* Column Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-1">
-          <div className="w-4 h-4 rounded-full border-2" style={{ backgroundColor: fillColor, borderColor }} />
-          {editingColumnTitle ? (
-            <input
-              type="text"
-              value={columnTitle}
-              onChange={(e) => setColumnTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleEditColumnTitle();
-                else if (e.key === "Escape") {
-                  setColumnTitle(column.title);
-                  setEditingColumnTitle(false);
-                }
-              }}
-              onBlur={handleEditColumnTitle}
-              autoFocus
-              className="text-lg font-bold bg-transparent border-b-2 border-blue-400 focus:outline-none focus:border-blue-500 text-gray-900 dark:text-gray-100 px-1 py-0"
-            />
-          ) : (
-            <h3
-              className="text-md text-black dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 flex-1 truncate"
-              onDoubleClick={() => {
-                setEditingColumnTitle(true);
-                setColumnTitle(column.title);
-              }}
-            >
-              {column.title}
-            </h3>
-          )}
+          <div className="w-4 h-4 rounded-full border-[2.5px]" style={{ backgroundColor: fillColor, borderColor }} />
+          <h3 className="text-md text-black dark:text-white flex-1 truncate">
+            {column.title}
+          </h3>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setShowEditColumn(true)} className="text-gray-500 hover:text-blue-600 p-1 transition-opacity" title="Edit column">
+          <button
+            onClick={() => setShowEditColumn(true)}
+            className="text-gray-500 hover:text-blue-600 p-1 transition-opacity"
+            title="Edit column"
+          >
             <PencilSquareIcon className="w-4 h-4" />
           </button>
-          <button onClick={handleDeleteColumn} className="text-red-500 hover:text-red-700 p-1 ml-1 transition-opacity" title="Delete column">
+          <button
+            onClick={handleDeleteColumn}
+            className="text-red-500 hover:text-red-700 p-1 ml-1 transition-opacity"
+            title="Delete column"
+          >
             <TrashIcon className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* Cards */}
-      <div className="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-700">
+      <div className="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-700 pr-2">
         {cards.map((card) => (
           <Card
             key={card._id}
@@ -184,11 +166,12 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
         ))}
       </div>
 
+
       {/* Add New Card */}
       <button
         onClick={handleAddCard}
         disabled={isLoading}
-        className="w-full bg-primary-light dark:bg-primary-dark rounded-md p-2 text-white hover:opacity-90"
+        className="w-7/12  bg-primary-light dark:bg-primary-dark rounded-md p-2 text-white hover:opacity-90 "
       >
         {isLoading ? "Adding..." : "+ Add Card"}
       </button>
