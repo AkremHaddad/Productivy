@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTheme } from "../../api/useTheme";
 import API from "../../api/API";
 import Card from "./Card";
 import EditColumnModal from "../common/EditColumnModal";
@@ -26,7 +27,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showEditColumn, setShowEditColumn] = useState(false);
 
-  const isDarkMode = document.documentElement.classList.contains("dark");
+  const isDarkMode = useTheme();
   const colorObj = COLOR_MAP[columnColorKey] || COLOR_MAP.grey;
   const fillColor = isDarkMode ? colorObj.dark.fill : colorObj.light.fill;
   const borderColor = isDarkMode ? colorObj.dark.border : colorObj.light.border;
