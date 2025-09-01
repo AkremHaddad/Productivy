@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { updateColumn } from "../../api/project";
 import { useTheme } from "../../api/useTheme";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdated }) => {
   const [title, setTitle] = useState(column.title);
   const [colorKey, setColorKey] = useState(column.color || "grey");
-  const { theme } = useTheme(); // "light" | "dark" | "system"
+
+  const isDarkMode = useTheme(); // <-- boolean, same as Column.jsx
+
+  // Reset state when column changes
+  useEffect(() => {
+    setTitle(column.title);
+    setColorKey(column.color || "grey");
+  }, [column]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -17,61 +25,89 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
     onClose();
   };
 
-  const isDarkMode = theme === "dark";
-
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-black rounded-2xl p-6 w-full max-w-md shadow-lg">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-background-light dark:bg-background-dark
+                   border-2 border-secondary-dark dark:border-accent
+                   p-6 rounded-xl shadow-2xl flex flex-col gap-5 w-full max-w-md relative"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-3 right-3 p-2 rounded-full hover:bg-white/10 transition"
+          title="Close"
+        >
+          <XMarkIcon className="w-5 h-5 text-text-light dark:text-text-dark" />
+        </button>
+
+        <h2 className="text-2xl font-jaro text-center text-secondary-dark dark:text-accent">
           Edit Column
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <div className="flex flex-col gap-2">
+          <label className="text-text-light dark:text-text-dark font-medium">
+            Column Title
+          </label>
           <input
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-light text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800"
-            placeholder="Column title"
+            className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark
+                       bg-ui-light dark:bg-navbar-dark
+                       text-text-light dark:text-text-dark
+                       focus:outline-none focus:ring-2 focus:ring-accent"
+            placeholder="Enter column title"
           />
+        </div>
 
-          <div>
-            <p className="mb-2 font-medium text-gray-900 dark:text-gray-100">Choose Color:</p>
-            <div className="grid grid-cols-4 gap-3">
-              {Object.entries(colors).map(([key, col]) => (
+        <div className="flex flex-col gap-2">
+          <label className="text-text-light dark:text-text-dark font-medium">
+            Choose Color
+          </label>
+          <div className="grid grid-cols-4 gap-3">
+            {Object.entries(colors).map(([key, col]) => {
+              const fillColor = isDarkMode ? col.dark.fill : col.light.fill;
+              const borderColor = isDarkMode ? col.dark.border : col.light.border;
+              const isSelected = key === colorKey;
+
+              return (
                 <button
                   type="button"
                   key={key}
                   onClick={() => setColorKey(key)}
-                  className={`w-8 h-8 rounded-full border-2 ${
-                    colorKey === key
-                      ? "border-black dark:border-white"
-                      : "border-transparent"
-                  }`}
-                  style={{
-                    backgroundColor: isDarkMode ? col.dark.fill : col.light.fill,
-                  }}
-                />
-              ))}
-            </div>
+                  className={`flex items-center justify-center rounded-lg p-2 transition-shadow shadow-md
+                    ${isSelected ? "bg-accent/20 ring-2 ring-accent" : "hover:bg-black/10 dark:hover:bg-white/10"}`}
+                >
+                  <div
+                    className="w-5 h-5 rounded-full border-2"
+                    style={{ backgroundColor: fillColor, borderColor }}
+                  />
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-            >
-              Save
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex justify-end gap-3 mt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark
+                       text-text-dark hover:bg-opacity-80 border border-transparent hover:border-accent"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-primary-dark dark:text-black
+                       font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
