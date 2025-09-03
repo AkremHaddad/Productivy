@@ -113,8 +113,8 @@ const Status = () => {
               key={act}
               className={`py-2 rounded-lg font-medium border-2 transition-all duration-200 ${
                 currentActivity === act
-                  ? "border-secondary-dark bg-secondary-light dark:border-accent dark:bg-accent text-black"
-                  : "dark:border-gray-400 bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark hover:border-secondary-dark hover:bg-secondary-light dark:hover:border-accent dark:hover:bg-gray-700"
+                  ? "dark:border-accent border-secondary-dark bg-secondary-light dark:border-accent dark:bg-accent text-black"
+                  : "dark:border-gray-400 bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark dark:hover:border-accent hover:secondary-light hover:bg-secondary-light border-primary-dark hover:border-black dark:hover:bg-accent dark:hover:bg-gray-700"
               }`}
               onClick={() => saveActivity(act)}
             >

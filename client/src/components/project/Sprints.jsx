@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api/API";
+import Modal from "../common/Modal"; // Adjust path to your Modal.jsx
 
 const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
   const [sprints, setSprints] = useState([]);
@@ -17,7 +18,6 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         const fetchedSprints = res.data.sprints || [];
         setSprints(fetchedSprints);
 
-        // Auto-select first sprint if none selected
         if (!selectedSprintId && fetchedSprints.length > 0) {
           onSprintSelect(fetchedSprints[0]);
         }
@@ -40,7 +40,6 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
       setSprints(res.data);
       setSprintTitle("");
 
-      // auto-select newly added sprint
       const newSprint = res.data[res.data.length - 1];
       onSprintSelect(newSprint);
     } catch (err) {
@@ -48,14 +47,12 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
     }
   };
 
-  // Handle double-click to edit sprint
   const handleDoubleClick = (sprint, e) => {
-    e.stopPropagation(); // Prevent sprint selection
+    e.stopPropagation();
     setEditingSprint(sprint._id);
     setEditTitle(sprint.title);
   };
 
-  // Handle edit sprint
   const handleEditSprint = async (sprintId) => {
     if (!editTitle.trim()) return;
 
@@ -72,31 +69,24 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
     }
   };
 
-  // Handle delete sprint
   const handleDeleteSprint = async (sprintId) => {
     try {
       const res = await API.delete(
         `/api/projects/${projectId}/sprints/${sprintId}`
       );
       setSprints(res.data);
-      
-      // If deleted sprint was selected, select first available sprint
+
       if (selectedSprintId === sprintId) {
         const remainingSprints = res.data;
-        if (remainingSprints.length > 0) {
-          onSprintSelect(remainingSprints[0]);
-        } else {
-          onSprintSelect(null);
-        }
+        onSprintSelect(remainingSprints[0] || null);
       }
-      
+
       setDeleteConfirm(null);
     } catch (err) {
       console.error("Error deleting sprint:", err);
     }
   };
 
-  // Cancel editing
   const cancelEdit = () => {
     setEditingSprint(null);
     setEditTitle("");
@@ -109,22 +99,18 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
     }
   };
 
-  // Handle Enter key press for editing sprints
   const handleEditKeyPress = (e, sprintId) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.stopPropagation();
       handleEditSprint(sprintId);
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       e.stopPropagation();
       cancelEdit();
     }
   };
 
-  // Handle sprint selection (only when not editing)
   const handleSprintClick = (sprint) => {
-    if (editingSprint !== sprint._id) {
-      onSprintSelect(sprint);
-    }
+    if (editingSprint !== sprint._id) onSprintSelect(sprint);
   };
 
   return (
@@ -163,12 +149,12 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
                     onKeyPress={(e) => handleEditKeyPress(e, s._id)}
                     onBlur={() => handleEditSprint(s._id)}
                     className="flex-1 w-full px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
-                    style={{ fontSize: 'inherit', lineHeight: 'inherit' }}
+                    style={{ fontSize: "inherit", lineHeight: "inherit" }}
                     autoFocus
                     onClick={(e) => e.stopPropagation()}
                   />
                 ) : (
-                  <span 
+                  <span
                     className="block truncate"
                     onDoubleClick={(e) => handleDoubleClick(s, e)}
                     title="Double-click to edit"
@@ -187,8 +173,18 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
                   className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200 ml-2"
                   title="Delete sprint"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    ></path>
                   </svg>
                 </button>
               )}
@@ -232,43 +228,37 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         </button>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-background-light dark:bg-background-dark 
-                          border-2 border-secondary-dark dark:border-accent
-                          p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
-            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
-              Delete Sprint
-            </h2>
-            
-            <p className="text-text-light dark:text-text-dark text-center">
-              Are you sure you want to delete this sprint? This will also delete all tasks within it. This action cannot be undone.
-            </p>
-            
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
-                          text-text-dark hover:bg-opacity-80 transition-all
-                          font-medium border border-transparent hover:border-accent"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDeleteSprint(deleteConfirm)}
-                className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
-                          font-bold shadow-md hover:shadow-lg
-                          transition-all duration-200
-                          hover:bg-red-600 dark:hover:bg-red-700
-                          transform hover:scale-[1.02]"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+      {/* Delete Confirmation Modal using Modal.jsx */}
+      <Modal
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        title="Delete Sprint"
+      >
+        <p className="text-text-light dark:text-text-dark text-center">
+          Are you sure you want to delete this sprint? This will also delete all
+          tasks within it. This action cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={() => setDeleteConfirm(null)}
+            className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
+                       text-text-dark hover:bg-opacity-80 transition-all
+                       font-medium border border-transparent hover:border-accent"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => handleDeleteSprint(deleteConfirm)}
+            className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
+                       font-bold shadow-md hover:shadow-lg
+                       transition-all duration-200
+                       hover:bg-red-600 dark:hover:bg-red-700
+                       transform hover:scale-[1.02]"
+          >
+            Delete
+          </button>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };

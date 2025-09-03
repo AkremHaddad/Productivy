@@ -30,9 +30,10 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
       <form
         onSubmit={handleSubmit}
         className="bg-background-light dark:bg-background-dark
-                   border-2 border-secondary-dark dark:border-accent
-                   p-6 rounded-xl shadow-2xl flex flex-col gap-5 w-full max-w-md relative"
+                  border-2 border-secondary-dark dark:border-accent
+                  p-6 rounded-xl shadow-2xl flex flex-col gap-5 w-full max-w-md relative"
       >
+        {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
@@ -42,10 +43,12 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
           <XMarkIcon className="w-5 h-5 text-text-light dark:text-text-dark" />
         </button>
 
-        <h2 className="text-2xl font-jaro text-center text-secondary-dark dark:text-accent">
+        {/* Title */}
+        <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
           Edit Column
         </h2>
 
+        {/* Column Title Input */}
         <div className="flex flex-col gap-2">
           <label className="text-text-light dark:text-text-dark font-medium">
             Column Title
@@ -53,15 +56,16 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
           <input
             type="text"
             value={title}
-            onChange={e => setTitle(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark
-                       bg-ui-light dark:bg-navbar-dark
-                       text-text-light dark:text-text-dark
-                       focus:outline-none focus:ring-2 focus:ring-accent"
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg border-2 border-black dark:border-navbar-dark
+                      bg-white dark:bg-navbar-dark
+                      text-text-light dark:text-text-dark
+                      focus:outline-none focus:ring-1 focus:ring-black"
             placeholder="Enter column title"
           />
         </div>
 
+        {/* Color Picker */}
         <div className="flex flex-col gap-2">
           <label className="text-text-light dark:text-text-dark font-medium">
             Choose Color
@@ -90,25 +94,29 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-2">
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-3 mt-4">
           <button
             type="button"
             onClick={onClose}
             className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark
-                       text-text-dark hover:bg-opacity-80 border border-transparent hover:border-accent"
+                      text-text-dark hover:bg-opacity-80 border border-transparent dark:hover:border-accent
+                      font-medium transition-all"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-primary-dark dark:text-black
-                       font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+            className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-white dark:text-black
+                      font-bold shadow-md hover:shadow-lg transition-all duration-200
+                      hover:scale-[1.02]"
           >
             Save Changes
           </button>
         </div>
       </form>
     </div>
+
   );
 };
 

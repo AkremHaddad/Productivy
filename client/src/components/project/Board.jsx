@@ -323,12 +323,31 @@ const Board = ({ projectId }) => {
 
       {/* Delete Confirmation */}
       <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Delete Board">
-        <p className="text-center mb-6">Are you sure you want to delete this board? This cannot be undone.</p>
-        <div className="flex justify-end gap-3">
-          <button onClick={() => setDeleteConfirm(null)} className="px-5 py-2 rounded-lg bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors">Cancel</button>
-          <button onClick={() => handleDeleteBoard(deleteConfirm)} className="px-5 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors">Delete</button>
+        <p className="text-text-light dark:text-text-dark text-center">
+          Are you sure you want to delete this board? This cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={() => setDeleteConfirm(null)}
+            className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
+                      text-text-dark hover:bg-opacity-80 transition-all
+                      font-medium border border-transparent hover:border-accent"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => handleDeleteBoard(deleteConfirm)}
+            className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
+                      font-bold shadow-md hover:shadow-lg
+                      transition-all duration-200
+                      hover:bg-red-600 dark:hover:bg-red-700
+                      transform hover:scale-[1.02]"
+          >
+            Delete
+          </button>
         </div>
       </Modal>
+
     </div>
   );
 };

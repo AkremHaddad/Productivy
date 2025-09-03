@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api/API";
+import Modal from "../common/Modal"; // Adjust the path to your Modal.jsx
 
 const Kanban = ({ projectId, selectedSprint }) => {
   const [tasks, setTasks] = useState([]);
@@ -13,7 +14,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
   useEffect(() => {
     const fetchTasks = async () => {
       if (!projectId || !selectedSprint) return;
-      
+
       setIsLoading(true);
       try {
         const res = await API.get(
@@ -58,13 +59,11 @@ const Kanban = ({ projectId, selectedSprint }) => {
     }
   };
 
-  // Handle double-click to edit task
   const handleDoubleClick = (task) => {
     setEditingTask(task._id);
     setEditTitle(task.title);
   };
 
-  // Handle edit task
   const handleEditTask = async (taskId) => {
     if (!editTitle.trim()) return;
 
@@ -83,7 +82,6 @@ const Kanban = ({ projectId, selectedSprint }) => {
     }
   };
 
-  // Handle delete task
   const handleDeleteTask = async (taskId) => {
     try {
       await API.delete(
@@ -96,24 +94,21 @@ const Kanban = ({ projectId, selectedSprint }) => {
     }
   };
 
-  // Cancel editing
   const cancelEdit = () => {
     setEditingTask(null);
     setEditTitle("");
   };
 
-  // Handle Enter key press for adding tasks
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleAddTask();
     }
   };
 
-  // Handle Enter key press for editing tasks
   const handleEditKeyPress = (e, taskId) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleEditTask(taskId);
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       cancelEdit();
     }
   };
@@ -122,7 +117,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
     <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[350px] rounded-md shadow-lg overflow-hidden flex flex-col">
       {/* Header */}
       <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-xl font-jaro flex items-center justify-center rounded-t-md relative border-b-2 border-black">
-        <span className="drop-shadow-md">Sprint Tasks</span>                
+        <span className="drop-shadow-md">Sprint Tasks</span>
       </div>
 
       {/* Task List */}
@@ -160,8 +155,18 @@ const Kanban = ({ projectId, selectedSprint }) => {
                       }`}
                   >
                     {task.completed && (
-                      <svg className="w-3 h-3 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+                      <svg
+                        className="w-3 h-3 text-accent"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="3"
+                          d="M5 13l4 4L19 7"
+                        ></path>
                       </svg>
                     )}
                   </button>
@@ -174,12 +179,14 @@ const Kanban = ({ projectId, selectedSprint }) => {
                       onKeyPress={(e) => handleEditKeyPress(e, task._id)}
                       onBlur={() => handleEditTask(task._id)}
                       className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
-                      style={{ fontSize: 'inherit', lineHeight: 'inherit' }}
+                      style={{ fontSize: "inherit", lineHeight: "inherit" }}
                       autoFocus
                     />
                   ) : (
-                    <span 
-                      className={`flex-1 cursor-pointer ${task.completed ? "line-through" : ""}`}
+                    <span
+                      className={`flex-1 cursor-pointer ${
+                        task.completed ? "line-through" : ""
+                      }`}
                       onDoubleClick={() => handleDoubleClick(task)}
                       title="Double-click to edit"
                     >
@@ -194,8 +201,18 @@ const Kanban = ({ projectId, selectedSprint }) => {
                     className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200"
                     title="Delete task"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
                     </svg>
                   </button>
                 )}
@@ -225,49 +242,52 @@ const Kanban = ({ projectId, selectedSprint }) => {
                     hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed 
                     transition-all shadow-md hover:shadow-lg flex items-center justify-center"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
           </svg>
         </button>
       </div>
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-background-light dark:bg-background-dark 
-                          border-2 border-secondary-dark dark:border-accent
-                          p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
-            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
-              Delete Task
-            </h2>
-            
-            <p className="text-text-light dark:text-text-dark text-center">
-              Are you sure you want to delete this task? This action cannot be undone.
-            </p>
-            
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
-                          text-text-dark hover:bg-opacity-80 transition-all
-                          font-medium border border-transparent hover:border-accent"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDeleteTask(deleteConfirm)}
-                className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
-                          font-bold shadow-md hover:shadow-lg
-                          transition-all duration-200
-                          hover:bg-red-600 dark:hover:bg-red-700
-                          transform hover:scale-[1.02]"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+      <Modal
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        title="Delete Task"
+      >
+        <p className="text-text-light dark:text-text-dark text-center">
+          Are you sure you want to delete this task? This action cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={() => setDeleteConfirm(null)}
+            className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
+                      text-text-dark hover:bg-opacity-80 transition-all
+                      font-medium border border-transparent hover:border-accent"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => handleDeleteTask(deleteConfirm)}
+            className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
+                      font-bold shadow-md hover:shadow-lg
+                      transition-all duration-200
+                      hover:bg-red-600 dark:hover:bg-red-700
+                      transform hover:scale-[1.02]"
+          >
+            Delete
+          </button>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };
