@@ -114,3 +114,8 @@ export const deleteCard = async (projectId, boardId, columnId, cardId) => {
   );
   return res.data;
 };
+
+export const deleteProject = async (projectId) => {
+  const res = await API.delete(`/api/projects/${projectId}`);
+  return res.data;
+};

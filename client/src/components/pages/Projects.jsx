@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
-import { getProjects, createProject } from "../../api/project";
+import Modal from "../common/Modal";
+import { getProjects, createProject, deleteProject } from "../../api/project";
 import { useNavigate } from "react-router";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
   const [newProjectName, setNewProjectName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
+        setIsLoading(true);
         const data = await getProjects();
         setProjects(data);
       } catch (err) {
         console.error("Failed to load projects", err);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchProjects();
@@ -27,7 +34,7 @@ const Projects = () => {
     try {
       const project = await createProject(newProjectName);
       setProjects([project, ...projects]);
-      setShowModal(false);
+      setShowCreateModal(false);
       setNewProjectName("");
       navigate(`/project/${project._id}`);
     } catch (err) {
@@ -35,69 +42,162 @@ const Projects = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!projectToDelete) return;
+    try {
+      await deleteProject(projectToDelete._id);
+      setProjects(projects.filter((p) => p._id !== projectToDelete._id));
+      setShowDeleteModal(false);
+      setProjectToDelete(null);
+    } catch (err) {
+      console.error("Failed to delete project", err);
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden">
+    <div className="flex flex-col min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark transition-colors duration-300">
       <Navbar />
-      <main className="flex-1 bg-background-light dark:bg-background-dark p-6">
-        <h1 className="mt-4 text-3xl font-bold text-secondary-light dark:text-accent text-center">
-          My projects
-        </h1>
-
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {/* Add Project button */}
-          <div
-            onClick={() => setShowModal(true)}
-            className="cursor-pointer border-2 border-dashed border-gray-400 rounded-xl flex items-center justify-center h-40 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+      <main className="flex-1 p-6 max-w-6xl mx-auto w-full">
+        <div className="flex justify-between items-center mb-8 mt-4">
+          <h1 className="text-4xl font-bold text-secondary-light dark:text-accent font-jaro">
+            My Projects
+          </h1>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="px-6 py-3 bg-secondary-light dark:bg-accent text-white dark:text-black rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md flex items-center gap-2"
           >
-            + Add Project
-          </div>
-
-          {/* User Projects */}
-          {projects.map((project) => (
-            <div
-              key={project._id}
-              className="p-4 bg-white dark:bg-gray-900 shadow rounded-xl cursor-pointer hover:shadow-lg transition"
-              onClick={() => navigate(`/project/${project._id}`)}
-            >
-              <h2 className="text-xl font-semibold">{project.name}</h2>
-              <p className="text-sm text-gray-500">
-                Created: {new Date(project.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            New Project
+          </button>
         </div>
 
-        {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-96">
-              <h2 className="text-lg font-bold mb-4">Create Project</h2>
-              <input
-                type="text"
-                placeholder="Project name"
-                value={newProjectName}
-                onChange={(e) => setNewProjectName(e.target.value)}
-                className="w-full p-2 border rounded-lg dark:bg-gray-800"
-              />
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-300 rounded-lg dark:bg-gray-700"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreate}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-                >
-                  Create
-                </button>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="p-4 bg-white dark:bg-gray-900 rounded-xl shadow animate-pulse h-40">
+                <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4"></div>
               </div>
+            ))}
+          </div>
+        ) : projects.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {projects.map((project) => (
+              <div
+                key={project._id}
+                className="p-6 bg-white dark:bg-gray-900 shadow-md rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300 border border-ui-light dark:border-gray-800 group relative"
+                onClick={() => navigate(`/project/${project._id}`)}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-text-light dark:text-text-dark group-hover:text-secondary-light dark:group-hover:text-accent transition-colors line-clamp-1">
+                    {project.name}
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    {/* Delete Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setProjectToDelete(project);
+                        setShowDeleteModal(true);
+                      }}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                    {/* Navigation Arrow */}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 group-hover:text-secondary-light dark:group-hover:text-accent transition-colors" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                  Created: {new Date(project.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="mx-auto w-24 h-24 rounded-full bg-ui-light dark:bg-gray-800 flex items-center justify-center mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
             </div>
+            <h3 className="text-xl font-medium text-text-light dark:text-text-dark mb-2">No projects yet</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">Get started by creating your first project</p>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="px-5 py-2.5 bg-secondary-light dark:bg-accent text-white rounded-lg font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-2"
+            >
+              Create Project
+            </button>
           </div>
         )}
+
+        {/* Create Project Modal */}
+        <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} title="Create New Project">
+          <input
+            type="text"
+            placeholder="Enter project name"
+            value={newProjectName}
+            onChange={(e) => setNewProjectName(e.target.value)}
+            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 text-text-light dark:text-text-dark focus:ring-2 focus:ring-secondary-light dark:focus:ring-accent outline-none mb-4"
+            autoFocus
+            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+          />
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setShowCreateModal(false)}
+              className="px-4 py-2.5 bg-gray-200 dark:bg-gray-700 text-text-light dark:text-text-dark rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreate}
+              disabled={!newProjectName.trim()}
+              className="px-4 py-2.5 bg-secondary-light dark:bg-accent text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+            >
+              Create Project
+            </button>
+          </div>
+        </Modal>
+
+        {/* Delete Confirmation Modal */}
+        <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} title="Delete Project">
+          <p className="text-black dark:text-white">Are you sure you want to delete the project "{projectToDelete?.name}"? This action cannot be undone.</p>
+          <div className="flex justify-end gap-3 mt-4">
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
+                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium border border-transparent 
+                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+                >
+                Cancel
+            </button>
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2.5 bg-red-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+            >
+              Delete
+            </button>
+          </div>
+        </Modal>
       </main>
       <Footer className="mt-auto" />
+
+      <style jsx>{`
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
     </div>
   );
 };

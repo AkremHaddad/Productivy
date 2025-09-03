@@ -20,7 +20,8 @@ import {
   deleteColumn,
   addCard,
   updateCard,
-  deleteCard
+  deleteCard,
+  deleteProject
 } from "../controllers/projectController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -30,6 +31,7 @@ const router = express.Router();
 router.get("/", protect, getProjects);
 router.get("/:id", protect, getProject);
 router.post("/", protect, addProject);
+router.delete("/:id", protect, deleteProject);
 
 // Sprints
 router.post("/:projectId/sprints", protect, addSprint);
