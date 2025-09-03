@@ -107,35 +107,54 @@ const Pomodoro = () => {
         {isWork ? "work" : "break"}
       </div>
 
-      <div className="font-jaro text-md text-accent text-center">
+      <div className="font-jaro text-2xl text-accent text-center drop-shadow-md tracking-wider">
         {formatTime(timeLeft)}
       </div>
 
-      <div className="flex gap-2 justify-center">
-        <button onClick={toggleStart}>
+      <div className="flex gap-1 justify-center">
+        <button 
+          onClick={toggleStart}
+          className="p-1.5 rounded-full hover:bg-white/30  dark:hover:bg-accent/30 transition-all duration-200"
+        >
           <img
             src={isRunning ? "../pause.svg" : "../start.svg"}
             alt="start/pause"
+            className="w-6 h-6 filter invert dark:invert-0"
           />
         </button>
-        <button onClick={restart}>
-          <img src="../restart.svg" alt="restart" />
+        <button 
+          onClick={restart}
+          className="p-1.5 rounded-full hover:bg-white/30  dark:hover:bg-accent/30 transition-all duration-200"
+        >
+          <img 
+            src="../restart.svg" 
+            alt="restart" 
+            className="w-6 h-6 filter invert dark:invert-0"
+          />
         </button>
-        <button onClick={() => setShowSettings(true)}>
-          <img src="../timer.svg" alt="timer" />
+        <button 
+          onClick={() => setShowSettings(true)}
+          className="p-1.5 rounded-full  hover:bg-white/30  dark:hover:bg-accent/30 transition-all duration-200"
+        >
+          <img 
+            src="../timer.svg" 
+            alt="timer" 
+            className="w-6 h-6 filter invert dark:invert-0"
+          />
         </button>
       </div>
 
       {/* Settings Popup */}
       {showSettings && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm ">
           <form
             onSubmit={saveSettings}
             className="bg-background-light dark:bg-background-dark 
-                      border-2 border-secondary-dark dark:border-accent
-                      p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md"
+                      border-2 border-secondary-light/30 dark:border-accent/40
+                      p-6 rounded-2xl shadow-2xl flex flex-col gap-4 w-full max-w-md
+                      backdrop-blur-md bg-opacity-95 dark:bg-opacity-95"
           >
-            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
+            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-light dark:text-accent">
               Timer Settings
             </h2>
             
@@ -150,12 +169,12 @@ const Pomodoro = () => {
                   defaultValue={workTime / 60}
                   min="1"
                   max="120"
-                  className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark 
-                            bg-ui-light dark:bg-navbar-dark 
+                  className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light/30 dark:border-accent/30 
+                            bg-white/80 dark:bg-navbar-dark/80 
                             text-text-light dark:text-text-dark
-                            focus:outline-none focus:ring-2 focus:ring-accent
+                            focus:outline-none focus:ring-2 focus:ring-secondary-light/50 dark:focus:ring-accent/50
+                            transition-all duration-200
                             appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
-                            
                 />
               </div>
               
@@ -169,10 +188,11 @@ const Pomodoro = () => {
                   defaultValue={breakTime / 60}
                   min="1"
                   max="30"
-                  className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark 
-                            bg-ui-light dark:bg-navbar-dark 
+                  className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light/30 dark:border-accent/30 
+                            bg-white/80 dark:bg-navbar-dark/80 
                             text-text-light dark:text-text-dark
-                            focus:outline-none focus:ring-2 focus:ring-accent
+                            focus:outline-none focus:ring-2 focus:ring-secondary-light/50 dark:focus:ring-accent/50
+                            transition-all duration-200
                             appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
@@ -182,19 +202,19 @@ const Pomodoro = () => {
               <button
                 type="button"
                 onClick={() => setShowSettings(false)}
-                className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
-                          text-text-dark hover:bg-opacity-80 transition-all
-                          font-medium border border-transparent hover:border-accent"
+                className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
+                          text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                          transition-all duration-200 font-medium border border-transparent 
+                          hover:border-secondary-light/30 dark:hover:border-accent/30"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-primary-dark dark:text-black
+                className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-white dark:text-black
                           font-bold shadow-md hover:shadow-lg
-                          transition-all duration-200
-                          hover:bg-secondary-light dark:hover:bg-secondary-dark/80
-                          transform hover:scale-[1.02]"
+                          transition-all duration-200 hover:scale-[1.02]
+                          hover:bg-secondary-light/90 dark:hover:bg-accent/90"
               >
                 Save Changes
               </button>
