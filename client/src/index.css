@@ -13,7 +13,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.5); /* primary-light */
+  background-color: rgba(0, 0, 0, 0.5); /* primary-zz */
   border-radius: 8px;
   transition: background 0.2s;
 }
@@ -32,3 +32,10 @@
   background-color: rgba(224, 224, 224, 0.6);
 }
 
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

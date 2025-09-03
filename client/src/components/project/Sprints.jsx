@@ -121,7 +121,7 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
       </div>
 
       {/* Sprint List */}
-      <div className="flex-1 overflow-y-auto divide-y divide-black dark:divide-white/20">
+      <div className="flex-1 overflow-y-auto">
         {sprints.length === 0 ? (
           <div className="text-center py-8 text-text-light dark:text-text-dark/70">
             <div className="text-4xl mb-2">🏃</div>
@@ -133,11 +133,11 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
             <div
               key={s._id}
               onClick={() => handleSprintClick(s)}
-              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex items-center justify-between
+              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex items-center justify-between border-b-[1px] border-black dark:border-black
                 ${
                   selectedSprintId === s._id
-                    ? "bg-black/25 dark:bg-black/75 text-black dark:text-white"
-                    : "hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-text-dark"
+                    ? "bg-black/25 dark:bg-white/15 text-black dark:text-white"
+                    : "hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-text-dark "
                 }`}
             >
               <div className="flex-1 min-w-0">

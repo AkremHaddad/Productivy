@@ -210,7 +210,7 @@ const Board = ({ projectId }) => {
       <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md border-b-2 border-black border-solid">
         <div
           ref={boardsContainerRef}
-          className="flex overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300 dark:scrollbar-thumb-gray-700 dark:scrollbar-track-gray-900"
+          className="flex overflow-x-auto scrollbar-none flex-grow scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300 dark:scrollbar-thumb-gray-700 dark:scrollbar-track-gray-900"
         >
           {boards.map((board, index) => {
             const isActive = index === currentBoardIndex;
@@ -218,7 +218,7 @@ const Board = ({ projectId }) => {
               <div
                 key={board._id}
                 className={`group flex items-stretch flex-shrink-0 px-2 transition-colors min-h-full border-r-2 border-black border-solid ${
-                  isActive ? "bg-black bg-opacity-50" : "hover:bg-gray-600"
+                  isActive ? "bg-black/50 dark:bg-black/50" : "hover:bg-black/20 dark:hover:bg-white/10"
                 }`}
               >
                 {editingBoard === board._id ? (

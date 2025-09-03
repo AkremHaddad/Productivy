@@ -82,7 +82,7 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
                   key={key}
                   onClick={() => setColorKey(key)}
                   className={`flex items-center justify-center rounded-lg p-2 transition-shadow shadow-md 
-                    ${isSelected ? "bg-black/30 dark:bg-accent/20 ring-2 ring-black/50 dark:ring-accent" : "bg-white dark:bg-black/30 dark:hover:bg-black/10 dark:hover:bg-white/10"}`}
+                    ${isSelected ? "bg-black/30 dark:bg-accent/20 ring-2 ring-black/50 dark:ring-accent" : "bg-white dark:bg-black/30 hover:bg-black/30 dark:hover:bg-black/10 dark:hover:bg-white/10"}`}
                 >
                   <div
                     className="w-5 h-5 rounded-full border-[2.5px]"
