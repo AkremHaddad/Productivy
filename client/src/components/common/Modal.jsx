@@ -6,13 +6,13 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   return (
     <div
       className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm"
-      onClick={onClose}
+      onClick={onClose} // close when clicking overlay
     >
       <div
         className="bg-background-light dark:bg-background-dark
                    border-2 border-secondary-dark dark:border-accent
                    p-6 rounded-xl shadow-2xl flex flex-col gap-5 w-full max-w-md relative mx-4"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
       >
         {/* Title */}
         {title && (

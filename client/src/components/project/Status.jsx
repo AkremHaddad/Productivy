@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Modal from "../common/Modal"; // adjust path
 
 const activities = [
   "working",
@@ -31,17 +32,12 @@ const Status = () => {
 
   // Handle activity change
   const saveActivity = async (activity) => {
-    // If user presses the same activity, just close popup
     if (activity === currentActivity) {
       setShowPopup(false);
       return;
     }
-
-    // Close popup immediately
     setShowPopup(false);
-
     try {
-      // Send update to backend
       await axios.post("/api/activity", { activity }, { withCredentials: true });
       setCurrentActivity(activity);
     } catch (err) {
@@ -57,9 +53,14 @@ const Status = () => {
         className="flex-1 bg-secondary-light dark:bg-secondary-dark h-[150px] rounded-md flex flex-col justify-between p-3 cursor-pointer"
         onClick={() => setShowPopup(true)}
       >
-        <div className="font-normal text-xl text-white text-center font-jaro">status</div>
-        <div className="font-normal text-md text-accent text-center font-jaro">{currentActivity}</div>
+        <div className="font-normal text-xl text-black dark:text-white text-center font-jaro">
+          status
+        </div>
+        <div className="font-normal text-md text-accent text-center font-jaro">
+          {currentActivity}
+        </div>
         <div className="flex justify-center">
+          {/* Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -100,43 +101,36 @@ const Status = () => {
         </div>
       </div>
 
-      {/* Popup */}
-     {showPopup && (
-  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
-    <div className="bg-gray-300 dark:bg-background-dark p-6 rounded-xl shadow-2xl w-full max-w-md flex flex-col gap-4 border-2 border-secondary-dark dark:border-accent">
-      
-      <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
-        Set Your Activity
-      </h2>
-
-      <div className="grid grid-cols-2 gap-3">
-        {activities.map((act) => (
-          <button
-            key={act}
-            className={`py-2 rounded-lg font-medium border-2 transition-all duration-200 ${
-              currentActivity === act
-                ? "dark:border-accent border-secondary-dark bg-secondary-light dark:border-accent dark:bg-accent text-black"
-                : "dark:border-gray-400 bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark dark:hover:border-accent hover:secondary-light hover:bg-secondary-light border-primary-dark hover:border-primary-light dark:hover:bg-gray-700 dark:hover:bg-gray-700"
-            }`}
-            onClick={() => saveActivity(act)}
-          >
-            {act.charAt(0).toUpperCase() + act.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      <button
-        className="mt-4 px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark 
-                   hover:bg-opacity-80 transition-all border border-transparent dark:hover:border-accent font-jaro font-medium"
-        onClick={() => setShowPopup(false)}
+      {/* Modal */}
+      <Modal
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        title="Set Your Activity"
       >
-        Cancel
-      </button>
-      
-    </div>
-  </div>
-)}
+        <div className="grid grid-cols-2 gap-3">
+          {activities.map((act) => (
+            <button
+              key={act}
+              className={`py-2 rounded-lg font-medium border-2 transition-all duration-200 ${
+                currentActivity === act
+                  ? "border-secondary-dark bg-secondary-light dark:border-accent dark:bg-accent text-black"
+                  : "dark:border-gray-400 bg-ui-light dark:bg-navbar-dark text-text-light dark:text-text-dark hover:border-secondary-dark hover:bg-secondary-light dark:hover:border-accent dark:hover:bg-gray-700"
+              }`}
+              onClick={() => saveActivity(act)}
+            >
+              {act.charAt(0).toUpperCase() + act.slice(1)}
+            </button>
+          ))}
+        </div>
 
+        <button
+          className="mt-4 px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark 
+                     hover:bg-opacity-80 transition-all border border-transparent dark:hover:border-accent font-jaro font-medium"
+          onClick={() => setShowPopup(false)}
+        >
+          Cancel
+        </button>
+      </Modal>
     </>
   );
 };

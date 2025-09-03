@@ -59,7 +59,7 @@ const Time = () => {
       id="Time"
       className="flex-1 justify-around bg-secondary-light dark:bg-secondary-dark h-[150px] rounded-md flex flex-col justify-between"
     >
-      <div className="font-jaro text-md text-white text-center">
+      <div className="font-jaro text-md text-black dark:text-white text-center">
         time worked today
       </div>
       <div className="font-jaro text-md text-accent text-center">
