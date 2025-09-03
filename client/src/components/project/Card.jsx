@@ -31,24 +31,24 @@ const Card = ({
 
           {/* Header: Title + Actions */}
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-secondary-dark dark:text-accent">Card Details</h2>
+            <h2 className="text-xl font-jaro text-secondary-dark dark:text-accent">Card Details</h2>
             <div className="flex gap-2">
               <button
                 onClick={() => {
                   setEditingCard(card._id);
                   setEditCardData({ title: card.title, description: card.description || "" });
                 }}
-                className="p-2 rounded-full hover:bg-white/10 transition"
+                className="p-2 rounded-full text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition"
                 title="Edit"
               >
                 <PencilSquareIcon className="w-5 h-5 text-text-light dark:text-text-dark" />
               </button>
               <button
                 onClick={() => setDeleteConfirm(true)}
-                className="p-2 rounded-full hover:bg-white/10 transition"
+                className="p-2 rounded-full text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition hover:text-red-500 dark:hover:text-red-400"
                 title="Delete"
               >
-                <TrashIcon className="w-5 h-5 text-text-light dark:text-text-dark" />
+                <TrashIcon className="w-5 h-5 text-inherit" />
               </button>
             </div>
           </div>
@@ -93,13 +93,18 @@ const Card = ({
             <div className="flex justify-end gap-3 mt-2">
               <button
                 onClick={() => setEditingCard(null)}
-                className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark hover:bg-opacity-80 border border-transparent hover:border-accent transition-all"
-              >
+                className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
+                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium border border-transparent 
+                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+                >
                 Cancel
               </button>
               <button
                 onClick={() => handleEditCard(card._id)}
-                className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-primary-dark dark:text-black font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+                className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-white dark:text-black
+                      font-bold shadow-md hover:shadow-lg transition-all duration-200
+                      hover:scale-[1.02]"
               >
                 Save Changes
               </button>
@@ -117,8 +122,11 @@ const Card = ({
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={() => setDeleteConfirm(false)}
-                    className="px-4 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark hover:bg-opacity-80 border border-transparent hover:border-accent transition-all"
-                  >
+                    className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
+                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium border border-transparent 
+                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+                    >
                     Cancel
                   </button>
                   <button

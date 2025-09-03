@@ -329,9 +329,10 @@ const Board = ({ projectId }) => {
         <div className="flex justify-end gap-3 mt-4">
           <button
             onClick={() => setDeleteConfirm(null)}
-            className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
-                      text-text-dark hover:bg-opacity-80 transition-all
-                      font-medium border border-transparent hover:border-accent"
+            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
+                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium border border-transparent 
+                        hover:border-secondary-light/30 dark:hover:border-accent/30"
           >
             Cancel
           </button>

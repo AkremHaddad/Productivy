@@ -57,10 +57,10 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border-2 border-black dark:border-navbar-dark
+            className="w-full px-4 py-2 rounded-lg border-2 border-black dark:border-navbar-dark 
                       bg-white dark:bg-navbar-dark
                       text-text-light dark:text-text-dark
-                      focus:outline-none focus:ring-1 focus:ring-black"
+                      focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-accent"
             placeholder="Enter column title"
           />
         </div>
@@ -81,8 +81,8 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
                   type="button"
                   key={key}
                   onClick={() => setColorKey(key)}
-                  className={`flex items-center justify-center rounded-lg p-2 transition-shadow shadow-md
-                    ${isSelected ? "bg-accent/20 ring-2 ring-accent" : "hover:bg-black/10 dark:hover:bg-white/10"}`}
+                  className={`flex items-center justify-center rounded-lg p-2 transition-shadow shadow-md 
+                    ${isSelected ? "bg-black/30 dark:bg-accent/20 ring-2 ring-black/50 dark:ring-accent" : "bg-white dark:bg-black/30 dark:hover:bg-black/10 dark:hover:bg-white/10"}`}
                 >
                   <div
                     className="w-5 h-5 rounded-full border-[2.5px]"
@@ -99,9 +99,10 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark
-                      text-text-dark hover:bg-opacity-80 border border-transparent dark:hover:border-accent
-                      font-medium transition-all"
+            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
+                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium border border-transparent 
+                        hover:border-secondary-light/30 dark:hover:border-accent/30"
           >
             Cancel
           </button>
