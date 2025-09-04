@@ -124,6 +124,46 @@ export const deleteSprint = async (req, res) => {
 };
 
 // ==================== Tasks ====================
+export const changeTaskOrder = async (req, res) => {
+  const { projectId, sprintId } = req.params;
+  const { taskIds } = req.body; // array of task IDs in new order
+
+  try {
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const sprint = project.sprints.id(sprintId);
+    if (!sprint) {
+      return res.status(404).json({ message: "Sprint not found" });
+    }
+
+    // Map existing tasks by ID for lookup
+    const taskMap = {};
+    sprint.tasks.forEach(task => {
+      taskMap[task._id.toString()] = task;
+    });
+
+    // Rebuild tasks array in new order
+    const reorderedTasks = taskIds
+      .map(id => taskMap[id])
+      .filter(Boolean); // remove invalid IDs
+
+    if (reorderedTasks.length !== sprint.tasks.length) {
+      return res.status(400).json({ message: "Invalid task IDs provided" });
+    }
+
+    sprint.tasks = reorderedTasks;
+    await project.save();
+
+    res.status(200).json({ message: "Task order updated", tasks: sprint.tasks });
+  } catch (error) {
+    console.error("Error changing task order:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 export const getSprintTasks = async (req, res) => {
   try {
     const { projectId, sprintId } = req.params;

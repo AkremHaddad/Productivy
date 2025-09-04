@@ -105,7 +105,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-1">
           <div className="w-4 h-4 rounded-full border-[2.5px]" style={{ backgroundColor: fillColor, borderColor }} />
-          <h3 className="text-md text-black dark:text-white flex-1 truncate">{column.title}</h3>
+          <h3 className="text-md font-medium text-black dark:text-white flex-1 truncate">{column.title}</h3>
         </div>
         <div className="flex items-center gap-1">
           <button

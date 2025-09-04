@@ -21,7 +21,7 @@ const Card = ({
         className=" bg-gray-200 dark:bg-navbar-dark p-2 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         onClick={() => setIsOpen(true)}
       >
-        <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">{card.title}</h4>
+        <h4 className="text-sm text-gray-900 dark:text-gray-100 truncate">{card.title}</h4>
       </div>
 
       {/* Main modal */}

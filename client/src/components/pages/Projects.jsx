@@ -4,6 +4,7 @@ import Footer from "../allPages/Footer";
 import Modal from "../common/Modal";
 import { getProjects, createProject, deleteProject } from "../../api/project";
 import { useNavigate } from "react-router";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -74,13 +75,8 @@ const Projects = () => {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="p-4 bg-white dark:bg-gray-900 rounded-xl shadow animate-pulse h-40">
-                <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4"></div>
-              </div>
-            ))}
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner/>
           </div>
         ) : projects.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -131,7 +127,7 @@ const Projects = () => {
             <p className="text-gray-500 dark:text-gray-400 mb-6">Get started by creating your first project</p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="px-5 py-2.5 bg-secondary-light dark:bg-accent text-white rounded-lg font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-2"
+              className="px-5 py-2.5 bg-secondary-light dark:bg-accent text-white dark:text-black rounded-lg font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-2"
             >
               Create Project
             </button>
@@ -152,14 +148,17 @@ const Projects = () => {
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setShowCreateModal(false)}
-              className="px-4 py-2.5 bg-gray-200 dark:bg-gray-700 text-text-light dark:text-text-dark rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
+                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium border border-transparent 
+                        hover:border-secondary-light/30 dark:hover:border-accent/30"
             >
               Cancel
             </button>
             <button
               onClick={handleCreate}
               disabled={!newProjectName.trim()}
-              className="px-4 py-2.5 bg-secondary-light dark:bg-accent text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              className="px-4 py-2.5 bg-secondary-light dark:bg-accent text-white dark:text-black rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
             >
               Create Project
             </button>

@@ -21,7 +21,8 @@ import {
   addCard,
   updateCard,
   deleteCard,
-  deleteProject
+  deleteProject,
+  changeTaskOrder
 } from "../controllers/projectController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -44,6 +45,7 @@ router.post("/:projectId/sprints/:sprintId/tasks", protect, addTask);
 router.patch("/:projectId/sprints/:sprintId/tasks/:taskId", protect, updateTask);
 router.patch("/:projectId/sprints/:sprintId/tasks/:taskId/toggle", protect, toggleTask);
 router.delete("/:projectId/sprints/:sprintId/tasks/:taskId", protect, deleteTask);
+router.post("/:projectId/sprints/:sprintId/tasks/change-order", protect, changeTaskOrder);
 
 // Boards
 router.post("/:projectId/boards", protect, addBoard);

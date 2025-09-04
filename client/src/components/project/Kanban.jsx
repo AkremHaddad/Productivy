@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api/API";
-import Modal from "../common/Modal"; // Adjust the path to your Modal.jsx
+import Modal from "../common/Modal";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+} from "@hello-pangea/dnd";
 
 const Kanban = ({ projectId, selectedSprint }) => {
   const [tasks, setTasks] = useState([]);
@@ -113,6 +118,38 @@ const Kanban = ({ projectId, selectedSprint }) => {
     }
   };
 
+  // --- Drag and Drop ---
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
+
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
+    if (result.destination.index === result.source.index) return;
+
+    const newTasks = reorder(
+      tasks,
+      result.source.index,
+      result.destination.index
+    );
+
+    setTasks(newTasks);
+
+    try {
+      // Call API to persist order
+      await API.changeTaskOrder(
+        projectId,
+        selectedSprint._id,
+        newTasks.map((t) => t._id)
+      );
+    } catch (err) {
+      console.error("Error saving task order:", err);
+    }
+  };
+
   return (
     <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[350px] rounded-md shadow-lg overflow-hidden flex flex-col">
       {/* Header */}
@@ -133,92 +170,122 @@ const Kanban = ({ projectId, selectedSprint }) => {
             <p className="text-sm mt-1">Add your first task below</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {tasks.map((task) => (
-              <div
-                key={task._id}
-                className={`flex items-center justify-between p-2 rounded-xl shadow-sm transition-all duration-200 group text-text-light dark:text-text-dark
-                  ${
-                    task.completed
-                      ? "bg-white/50 dark:bg-black/75 "
-                      : "bg-white/75 dark:bg-black/25 text-text-dark hover:shadow-md"
-                  }`}
-              >
-                <div className="flex items-center space-x-3 flex-1">
-                  <button
-                    onClick={() => toggleTask(task._id)}
-                    className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200
-                      ${
-                        task.completed
-                          ? "border-secondary-dark bg-secondary-dark/80 dark:border-accent dark:bg-accent/20"
-                          : "border-secondary-light/50 dark:border-navbar-dark group-hover:border-secondary-dark dark:group-hover:border-accent"
-                      }`}
-                  >
-                    {task.completed && (
-                      <svg
-                        className="w-3 h-3 text-accent"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="3"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                    )}
-                  </button>
-
-                  {editingTask === task._id ? (
-                    <input
-                      type="text"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      onKeyPress={(e) => handleEditKeyPress(e, task._id)}
-                      onBlur={() => handleEditTask(task._id)}
-                      className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
-                      style={{ fontSize: "inherit", lineHeight: "inherit" }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span
-                      className={`flex-1 cursor-pointer ${
-                        task.completed ? "line-through" : ""
-                      }`}
-                      onDoubleClick={() => handleDoubleClick(task)}
-                      title="Double-click to edit"
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="taskList">
+              {(provided) => (
+                <div
+                  className="space-y-2"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  {tasks.map((task, index) => (
+                    <Draggable
+                      key={task._id}
+                      draggableId={task._id}
+                      index={index}
                     >
-                      {task.title}
-                    </span>
-                  )}
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`flex items-center justify-between p-2 rounded-xl shadow-sm transition-all duration-200 ease-in-out group
+                            ${
+                              task.completed
+                                ? "bg-white/50 dark:bg-black/75 "
+                                : "bg-white/75 dark:bg-black/25 text-text-dark hover:shadow-md"
+                            }
+                            ${snapshot.isDragging ? "opacity-70 scale-[1.02] shadow-lg" : ""}
+                          `}
+                          style={{
+                            ...provided.draggableProps.style,
+                            transition: snapshot.isDragging
+                              ? "transform 0.2s ease"
+                              : "transform 0.25s ease, opacity 0.25s ease",
+                          }}
+                        >
+                          <div className="flex items-center space-x-3 flex-1">
+                            <button
+                              onClick={() => toggleTask(task._id)}
+                              className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200
+                                ${
+                                  task.completed
+                                    ? "border-secondary-dark bg-secondary-dark/80 dark:border-accent dark:bg-accent/20"
+                                    : "border-secondary-light/50 dark:border-navbar-dark group-hover:border-secondary-dark dark:group-hover:border-accent"
+                                }`}
+                            >
+                              {task.completed && (
+                                <svg
+                                  className="w-3 h-3 text-accent"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="3"
+                                    d="M5 13l4 4L19 7"
+                                  ></path>
+                                </svg>
+                              )}
+                            </button>
+
+                            {editingTask === task._id ? (
+                              <input
+                                type="text"
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                onKeyPress={(e) =>
+                                  handleEditKeyPress(e, task._id)
+                                }
+                                onBlur={() => handleEditTask(task._id)}
+                                className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
+                                autoFocus
+                              />
+                            ) : (
+                              <span
+                                className={`flex-1 cursor-pointer ${
+                                  task.completed ? "line-through" : ""
+                                }`}
+                                onDoubleClick={() => handleDoubleClick(task)}
+                                title="Double-click to edit"
+                              >
+                                {task.title}
+                              </span>
+                            )}
+                          </div>
+
+                          {editingTask !== task._id && (
+                            <button
+                              onClick={() => setDeleteConfirm(task._id)}
+                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200"
+                              title="Delete task"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                ></path>
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
                 </div>
-
-                {editingTask !== task._id && (
-                  <button
-                    onClick={() => setDeleteConfirm(task._id)}
-                    className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200"
-                    title="Delete task"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      ></path>
-                    </svg>
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         )}
       </div>
 

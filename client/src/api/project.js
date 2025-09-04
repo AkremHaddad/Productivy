@@ -119,3 +119,10 @@ export const deleteProject = async (projectId) => {
   const res = await API.delete(`/api/projects/${projectId}`);
   return res.data;
 };
+
+export const changeTaskOrder = async (projectId, sprintId, taskIds) => {
+  return API.post(
+    `/api/projects/${projectId}/sprints/${sprintId}/tasks/change-order`,
+    { taskIds }
+  );
+};
