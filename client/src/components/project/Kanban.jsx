@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api/API";
+import { changeTaskOrder } from "../../api/project";
 import Modal from "../common/Modal";
 import {
   DragDropContext,
@@ -140,11 +141,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
 
     try {
       // Call API to persist order
-      await API.changeTaskOrder(
-        projectId,
-        selectedSprint._id,
-        newTasks.map((t) => t._id)
-      );
+      await changeTaskOrder(projectId, selectedSprint._id, newTasks.map(t => t._id));
     } catch (err) {
       console.error("Error saving task order:", err);
     }
@@ -153,7 +150,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
   return (
     <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[350px] rounded-md shadow-lg overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-xl font-jaro flex items-center justify-center rounded-t-md relative border-b-2 border-black">
+      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg font-jaro flex items-center justify-center rounded-t-md relative border-b-2 border-black">
         <span className="drop-shadow-md">Sprint Tasks</span>
       </div>
 
