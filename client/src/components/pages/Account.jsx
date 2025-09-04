@@ -1,12 +1,9 @@
+// src/pages/Account.jsx
 import React, { useState, useEffect } from "react";
 import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
 import { FcGoogle } from "react-icons/fc";
-import axios from "axios";
-import { getUser, logout } from "../../api/auth";
-
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://localhost:5000";
+import { getUser, login, register, logout } from "../../api/auth";
 
 const Account = () => {
   const [activeTab, setActiveTab] = useState("login");
@@ -17,20 +14,19 @@ const Account = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper function to check user session
+  // Check user session
   const checkUserSession = async () => {
     setLoading(true);
     try {
       const userData = await getUser();
       setUser(userData);
-    } catch (err) {
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch session
   useEffect(() => {
     checkUserSession();
   }, []);
@@ -39,10 +35,17 @@ const Account = () => {
     e.preventDefault();
     setError("");
     try {
-      const endpoint = activeTab === "login" ? "/api/auth/login" : "/api/auth/register";
-      const body = activeTab === "login" ? { email, password } : { username, email, password };
-      const res = await axios.post(endpoint, body);
-      setUser(res.data.user);
+      const userData =
+        activeTab === "login"
+          ? await login(email, password)
+          : await register(username, email, password);
+
+      setUser(userData.user);
+
+      // Reset form after successful signup/login
+      setEmail("");
+      setPassword("");
+      setUsername("");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
     }
@@ -55,11 +58,7 @@ const Account = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      
-      // Explicitly check session status after logout
       await checkUserSession();
-      
-      // Reset all form state when logging out
       setActiveTab("login");
       setEmail("");
       setPassword("");
@@ -67,7 +66,6 @@ const Account = () => {
       setError("");
     } catch (err) {
       console.error(err);
-      // Even if logout fails, reset the user state
       setUser(null);
       setLoading(false);
     }
@@ -85,7 +83,7 @@ const Account = () => {
               Welcome, {user.username || user.email}!
             </h1>
             <button
-              className="px-4 py-2 bg-gray-700 text-white rounded-md"
+              className="px-4 py-2 bg-gray-700 text-white rounded-md hover:opacity-90 transition"
               onClick={handleLogout}
             >
               Logout
