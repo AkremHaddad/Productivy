@@ -192,8 +192,8 @@ const Kanban = ({ projectId, selectedSprint }) => {
                           className={`flex items-center justify-between p-2 rounded-xl shadow-sm transition-all duration-200 ease-in-out group
                             ${
                               task.completed
-                                ? "bg-white/50 dark:bg-black/75 "
-                                : "bg-white/75 dark:bg-black/25 text-text-dark hover:shadow-md"
+                                ? "bg-white/50 dark:bg-black/75 text-gray-500"
+                                : "bg-white/75 dark:bg-black/25 dark:text-text-dark hover:shadow-md"
                             }
                             ${snapshot.isDragging ? "opacity-70 scale-[1.02] shadow-lg" : ""}
                           `}
