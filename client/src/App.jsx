@@ -7,7 +7,7 @@ import Account from './components/pages/Account';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App" >
        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/account" element={<Account />} />

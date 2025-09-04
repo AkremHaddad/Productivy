@@ -11,8 +11,10 @@ function Home() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark">
-      <Navbar />
-      <main>
+      <div className="fixed inset-x-0 top-0 z-50">
+        <Navbar />
+      </div>
+      <main className="pt-14">
         {/* Hero Section */}
         <section className="bg-black bg-opacity-25 text-white min-h-[92vh] flex items-center">
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
@@ -25,10 +27,19 @@ function Home() {
                 Organize your projects, stay focused with Pomodoro timers, and track your sprints — all in one simple tool.
               </p>
               <div className="mt-6 flex gap-4">
-                <a href="/signup" className="bg-secondary-dark hover:bg-secondary-light dark:bg-accent dark:hover:opacity-90 text-black font-semibold py-3 px-6 rounded-lg transition-all">
+                <a href="/account" className="bg-secondary-dark hover:bg-secondary-light dark:bg-accent dark:hover:opacity-90 text-black font-semibold py-3 px-6 rounded-lg transition-all">
                   Get Started Free
                 </a>
-                <a href="#features" className="border-2 border-secondary-dark text-secondary-dark hover:bg-secondary-dark hover:text-black dark:border-accent dark:text-accent dark:hover:bg-accent dark:hover:text-black font-semibold py-3 px-6 rounded-lg transition-all">
+                <a
+                  href="#features"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("features")?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }}
+                  className="border-2 border-secondary-dark text-secondary-dark hover:bg-secondary-dark hover:text-black dark:border-accent dark:text-accent dark:hover:bg-accent dark:hover:text-black font-semibold py-3 px-6 rounded-lg transition-all"
+                >
                   See How It Works
                 </a>
               </div>
