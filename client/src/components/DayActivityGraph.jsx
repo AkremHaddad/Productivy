@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import { dummyWeekSummary, activityColors, activities, getWeekdayName } from "./pages/dummy";
+import React, { useState, useEffect } from "react";
+import { activityColors, activities, getWeekdayName } from "./pages/dummy";
+import { fetchDailySummary } from "../api/charts";
 
 const DayActivityGraph = () => {
-  const [selectedDay, setSelectedDay] = useState(0);
+  const [selectedDay, setSelectedDay] = useState(0); // 0 = today
+  const [weekDays, setWeekDays] = useState([]); // Array of Date objects for last 7 days
+  const [dayData, setDayData] = useState({ summary: [] }); // fetched summary
   const [hoveredActivity, setHoveredActivity] = useState(null);
   const [tooltipData, setTooltipData] = useState({
     visible: false,
@@ -18,7 +21,26 @@ const DayActivityGraph = () => {
   const height = 100;
   const margin = { top: 20, right: 20, bottom: 40, left: 60 };
 
-  const dayData = dummyWeekSummary[selectedDay];
+  // --- Initialize last 7 days
+  useEffect(() => {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push(new Date(d));
+    }
+    setWeekDays(days);
+  }, []);
+
+  // --- Fetch daily summary for selected day
+  useEffect(() => {
+    if (!weekDays.length) return;
+
+    const selectedDate = weekDays[selectedDay].toISOString().split("T")[0];
+    fetchDailySummary(selectedDate)
+      .then((data) => setDayData(data))
+      .catch((err) => console.error(err));
+  }, [selectedDay, weekDays]);
 
   const timeToPercent = (time) => {
     const [h, m] = time.split(":").map(Number);
@@ -71,7 +93,7 @@ const DayActivityGraph = () => {
 
       {/* Day selector */}
       <div className="flex gap-2 mb-4 flex-wrap">
-        {dummyWeekSummary.map((day, idx) => (
+        {weekDays.map((day, idx) => (
           <button
             key={idx}
             className={`px-3 py-1 rounded-md font-medium text-sm transition-colors ${
@@ -81,7 +103,7 @@ const DayActivityGraph = () => {
             }`}
             onClick={() => setSelectedDay(idx)}
           >
-            {idx === 0 ? "Yesterday" : getWeekdayName(day.date)}
+            {idx === weekDays.length - 1 ? "Today" : getWeekdayName(day)}
           </button>
         ))}
       </div>
@@ -141,8 +163,8 @@ const DayActivityGraph = () => {
           })}
 
           {/* Activity rectangles */}
-          {dayData.summary.map((activity) =>
-            activity.intervals.map((interval, idx) => {
+          {dayData.summary?.map((activity) =>
+            activity.intervals?.map((interval, idx) => {
               const left = margin.left + (timeToPercent(interval.start) / 100) * (width - margin.left - margin.right);
               const right = margin.left + (timeToPercent(interval.end) / 100) * (width - margin.left - margin.right);
               const rectWidth = right - left;
