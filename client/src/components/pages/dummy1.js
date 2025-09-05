@@ -132,4 +132,34 @@ export const generateFullDayWeeklyDummy = () => {
   };
 };
 
+export const dummyLast4Weeks = [
+  generateFullDayWeeklyDummy(), // week 1
+  generateFullDayWeeklyDummy(), // week 2
+  generateFullDayWeeklyDummy(), // week 3
+  generateFullDayWeeklyDummy(), // week 4
+];
+
+// src/pages/dummy.js
+export const generateLast4Weeks = () => {
+  const weeks = [];
+  const today = new Date();
+  // Last Monday
+  const lastMonday = new Date(today);
+  lastMonday.setDate(today.getDate() - ((today.getDay() + 6) % 7) - 7); // last completed week's Monday
+
+  for (let w = 0; w < 4; w++) {
+    const start = new Date(lastMonday);
+    start.setDate(lastMonday.getDate() - 7 * w);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    weeks.unshift({
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+      summary: generateFullDayWeeklyDummy().summary, // reuse dummy data
+    });
+  }
+  return weeks;
+};
+
+
 export const dummyWeeklySummary = generateFullDayWeeklyDummy();
