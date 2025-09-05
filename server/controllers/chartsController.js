@@ -9,36 +9,41 @@ const formatTime = (minutes) => {
   return `${h}:${m}`;
 };
 
-// Compress per-minute data into intervals
-const compressToIntervals = (perMinuteData, lastActivityFromPrevDay = "others") => {
-  const summary = [];
-  let currentActivity = lastActivityFromPrevDay;
+// Build intervals from activities
+const buildIntervals = (activities, lastActivityFromPrevDay = "others", dayStart) => {
+  const summaryMap = {};
+  let lastActivity = lastActivityFromPrevDay;
   let intervalStart = "00:00";
 
-  for (let i = 0; i < perMinuteData.length; i++) {
-    const entry = perMinuteData[i];
-    const nextActivity = entry.distribution
-      ? Object.keys(entry.distribution)[0]
-      : currentActivity;
+  dayStart = new Date(dayStart);
 
-    if (nextActivity !== currentActivity) {
-      // close previous interval
-      summary.push({
-        activity: currentActivity,
-        intervals: [{ start: intervalStart, end: entry.time }],
-      });
-      currentActivity = nextActivity;
-      intervalStart = entry.time;
+  for (let i = 0; i <= activities.length; i++) {
+    const act = activities[i];
+
+    // Determine interval end
+    let intervalEnd;
+    if (i < activities.length) {
+      const actDate = new Date(act.date);
+      const diffMinutes = Math.floor((actDate - dayStart) / 60000);
+      intervalEnd = formatTime(diffMinutes >= 0 ? diffMinutes : 0);
+    } else {
+      intervalEnd = "23:59";
+    }
+
+    if (!summaryMap[lastActivity]) summaryMap[lastActivity] = [];
+    summaryMap[lastActivity].push({ start: intervalStart, end: intervalEnd });
+
+    if (i < activities.length) {
+      lastActivity = act.activity;
+      intervalStart = intervalEnd;
     }
   }
 
-  // close final interval
-  summary.push({
-    activity: currentActivity,
-    intervals: [{ start: intervalStart, end: "23:59" }],
-  });
-
-  return summary;
+  // Convert map to array
+  return Object.keys(summaryMap).map((act) => ({
+    activity: act,
+    intervals: summaryMap[act],
+  }));
 };
 
 // --- Controller ---
@@ -46,6 +51,7 @@ export const getDailySummary = async (req, res) => {
   try {
     const userId = req.user._id;
     const { date } = req.query; // "YYYY-MM-DD"
+
     const dayStart = new Date(date);
     dayStart.setHours(0, 0, 0, 0);
     const dayEnd = new Date(dayStart);
@@ -72,46 +78,25 @@ export const getDailySummary = async (req, res) => {
 
     const lastActivityFromPrevDay = prevActivityDoc ? prevActivityDoc.activity : "others";
 
-    // Build per-minute data
-    const perMinuteData = [];
-    let actIdx = 0;
-    let lastActivity = lastActivityFromPrevDay;
-
-    for (let i = 0; i < 1440; i++) {
-      const currentTime = new Date(dayStart.getTime() + i * 60000);
-
-      // Update lastActivity if a new activity occurred
-      while (actIdx < activities.length && activities[actIdx].date <= currentTime) {
-        lastActivity = activities[actIdx].activity;
-        actIdx++;
-      }
-
-      perMinuteData.push({
-        time: formatTime(i),
-        distribution: { [lastActivity]: 1 },
-      });
-    }
-
-    // Compress into intervals
-    const compressedSummary = compressToIntervals(perMinuteData, lastActivityFromPrevDay);
-
-    // If no summary existed, create it
+    // If summary doesn't exist, create and store raw activities
     if (!summaryDoc) {
       summaryDoc = await Summary.create({
         user: userId,
         type: "day",
         startDate: dayStart,
         endDate: dayEnd,
-        summary: perMinuteData, // store raw per-minute data for caching
+        summary: activities, // store raw activities for caching
       });
     }
 
-    // Respond with compressed version for frontend
+    // Build intervals for frontend
+    const intervalsSummary = buildIntervals(activities, lastActivityFromPrevDay, dayStart);
+
     res.json({
       user: userId,
       type: "day",
       date,
-      summary: compressedSummary,
+      summary: intervalsSummary,
     });
   } catch (err) {
     console.error(err);

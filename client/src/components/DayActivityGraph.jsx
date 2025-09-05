@@ -196,7 +196,6 @@ const DayActivityGraph = () => {
           )}
         </svg>
       </div>
-
       {/* Tooltip */}
       {tooltipData.visible && (
         <div
