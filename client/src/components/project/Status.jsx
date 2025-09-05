@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../api/API";
 import Modal from "../common/Modal"; // adjust path
 
 const activities = [
@@ -21,7 +21,7 @@ const Status = () => {
   useEffect(() => {
     const fetchActivity = async () => {
       try {
-        const res = await axios.get("/api/activity/current", { withCredentials: true });
+        const res = await API.get("/api/activity/current", { withCredentials: true });
         if (res.data?.activity) setCurrentActivity(res.data.activity);
       } catch (err) {
         console.error(err);
@@ -38,7 +38,7 @@ const Status = () => {
     }
     setShowPopup(false);
     try {
-      await axios.post("/api/activity", { activity }, { withCredentials: true });
+      await API.post("/api/activity", { activity }, { withCredentials: true });
       setCurrentActivity(activity);
     } catch (err) {
       console.error(err);

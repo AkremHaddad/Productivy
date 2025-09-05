@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import API from "../../api/API";
 
 const Time = () => {
   const [minutesWorked, setMinutesWorked] = useState(0);
@@ -11,8 +11,8 @@ const Time = () => {
     const fetchData = async () => {
       try {
         const [timeRes, activityRes] = await Promise.all([
-          axios.get("/api/productive-time/today", { withCredentials: true }),
-          axios.get("/api/activity/current", { withCredentials: true }),
+          API.get("/api/productive-time/today", { withCredentials: true }),
+          API.get("/api/activity/current", { withCredentials: true }),
         ]);
 
         setMinutesWorked(timeRes.data.minutes || 0);
@@ -35,7 +35,7 @@ const Time = () => {
       // Send to backend
       try {
         console.log('test')
-        await axios.post("/api/productive-time/add", {}, { withCredentials: true });
+        await API.post("/api/productive-time/add", {}, { withCredentials: true });
       } catch (err) {
         console.error("Add minute error:", err);
       }

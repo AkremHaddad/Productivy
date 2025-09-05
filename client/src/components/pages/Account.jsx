@@ -4,6 +4,8 @@ import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
 import { FcGoogle } from "react-icons/fc";
 import { getUser, login, register, logout } from "../../api/auth";
+import DayActivityGraph from "../DayActivityGraph";
+import WeeklyActivityGraph from "../WeeklyActivityGraph";
 
 const Account = () => {
   const [activeTab, setActiveTab] = useState("login");
@@ -87,7 +89,19 @@ const Account = () => {
               onClick={handleLogout}
             >
               Logout
-            </button>
+            </button>             
+            <div className="mt-6 w-full">
+              <h2 className="text-xl font-semibold mb-2 text-text-light dark:text-text-dark">
+                Activity for Selected Day
+              </h2>
+              <DayActivityGraph />
+            </div>
+            <div className="mt-6 w-full">
+              <h2 className="text-xl font-semibold mb-2 text-text-light dark:text-text-dark">
+                Activity for Selected Day
+              </h2>
+              <WeeklyActivityGraph />
+            </div>
           </div>
         ) : (
           <div className="bg-ui-light dark:bg-black/40 rounded-lg shadow-lg w-full max-w-md p-6">
