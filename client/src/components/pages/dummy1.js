@@ -24,64 +24,103 @@ export const activityColors = {
 // Generate more realistic weekly data with variations by day
 export const generateFullDayWeeklyDummy = () => {
   const summary = [];
-  
-  // Define base patterns for weekdays vs weekends
+
   const weekdayPatterns = [
-    { start: "00:00", end: "06:30", distribution: { sleeping: 1 } },
-    { start: "06:30", end: "07:30", distribution: { working: 0.6, training: 0.4 } },
-    { start: "07:30", end: "08:30", distribution: { working: 0.8, learning: 0.2 } },
-    { start: "08:30", end: "12:00", distribution: { working: 0.9, others: 0.1 } },
-    { start: "12:00", end: "13:00", distribution: { hobbying: 0.7, socializing: 0.3 } },
-    { start: "13:00", end: "17:00", distribution: { working: 0.8, playing: 0.2 } },
-    { start: "17:00", end: "18:30", distribution: { training: 0.6, playing: 0.4 } },
-    { start: "18:30", end: "20:00", distribution: { socializing: 0.7, hobbying: 0.3 } },
-    { start: "20:00", end: "22:00", distribution: { learning: 0.6, playing: 0.4 } },
-    { start: "22:00", end: "23:59", distribution: { sleeping: 1 } },
-  ];
-  
-  const weekendPatterns = [
-    { start: "00:00", end: "08:30", distribution: { sleeping: 1 } },
-    { start: "08:30", end: "10:00", distribution: { training: 0.5, hobbying: 0.5 } },
-    { start: "10:00", end: "12:00", distribution: { learning: 0.4, hobbying: 0.6 } },
-    { start: "12:00", end: "14:00", distribution: { socializing: 0.8, playing: 0.2 } },
-    { start: "14:00", end: "16:00", distribution: { hobbying: 0.7, others: 0.3 } },
-    { start: "16:00", end: "18:00", distribution: { playing: 0.6, training: 0.4 } },
-    { start: "18:00", end: "20:00", distribution: { socializing: 0.9, others: 0.1 } },
-    { start: "20:00", end: "22:30", distribution: { playing: 0.5, learning: 0.5 } },
-    { start: "22:30", end: "23:59", distribution: { sleeping: 1 } },
+    { start: "00:00", distribution: { sleeping: 1 } },
+    { start: "06:30", distribution: { working: 0.6, training: 0.4 } },
+    { start: "07:30", distribution: { working: 0.8, learning: 0.2 } },
+    { start: "08:30", distribution: { working: 0.9, others: 0.1 } },
+    { start: "12:00", distribution: { hobbying: 0.7, socializing: 0.3 } },
+    { start: "13:00", distribution: { working: 0.8, playing: 0.2 } },
+    { start: "17:00", distribution: { training: 0.6, playing: 0.4 } },
+    { start: "18:30", distribution: { socializing: 0.7, hobbying: 0.3 } },
+    { start: "20:00", distribution: { learning: 0.6, playing: 0.4 } },
+    { start: "22:00", distribution: { sleeping: 1 } },
   ];
 
-  // Generate data for each minute of the day (1440 minutes)
-  for (let minute = 0; minute < 1440; minute++) {
-    const hh = String(Math.floor(minute / 60)).padStart(2, "0");
-    const mm = String(minute % 60).padStart(2, "0");
-    const time = `${hh}:${mm}`;
-    
-    // Determine which pattern to use based on time
-    const patterns = minute < 360 || minute >= 1320 ? weekdayPatterns : weekendPatterns; // Rough approximation
-    
-    // Find the matching pattern interval
-    let distribution = { others: 1 }; // Default
-    
-    for (const pattern of patterns) {
-      const [startH, startM] = pattern.start.split(":").map(Number);
-      const [endH, endM] = pattern.end.split(":").map(Number);
-      const startMin = startH * 60 + startM;
-      const endMin = endH * 60 + endM;
-      
-      if (minute >= startMin && minute < endMin) {
-        // Add some random variation to make it more realistic
-        const variedDistribution = {};
-        for (const [activity, value] of Object.entries(pattern.distribution)) {
-          // Add ±20% random variation
-          variedDistribution[activity] = Math.max(0, Math.min(1, value * (0.8 + Math.random() * 0.4)));
-        }
-        distribution = variedDistribution;
-        break;
-      }
+  const weekendPatterns = [
+    { start: "00:00", distribution: { sleeping: 1 } },
+    { start: "08:30", distribution: { training: 0.5, hobbying: 0.5 } },
+    { start: "10:00", distribution: { learning: 0.4, hobbying: 0.6 } },
+    { start: "12:00", distribution: { socializing: 0.8, playing: 0.2 } },
+    { start: "14:00", distribution: { hobbying: 0.7, others: 0.3 } },
+    { start: "16:00", distribution: { playing: 0.6, training: 0.4 } },
+    { start: "18:00", distribution: { socializing: 0.9, others: 0.1 } },
+    { start: "20:00", distribution: { playing: 0.5, learning: 0.5 } },
+    { start: "22:30", distribution: { sleeping: 1 } },
+  ];
+
+  const timeToMinutes = (t) => {
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  const interpolate = (dist1, dist2, t) => {
+    const result = {};
+    const allActs = new Set([...Object.keys(dist1), ...Object.keys(dist2)]);
+    for (const act of allActs) {
+      const v1 = dist1[act] || 0;
+      const v2 = dist2[act] || 0;
+      result[act] = v1 + (v2 - v1) * t;
     }
-    
-    summary.push({ time, distribution });
+    // Normalize
+    const total = Object.values(result).reduce((a, b) => a + b, 0);
+    for (const act of Object.keys(result)) result[act] /= total;
+    return result;
+  };
+
+  const generateDay = (patterns) => {
+    const daySummary = [];
+    const minutesInDay = 1440;
+
+    // Convert pattern start times to minutes
+    const patternTimes = patterns.map((p) => ({
+      start: timeToMinutes(p.start),
+      distribution: p.distribution,
+    }));
+
+    // Add a pseudo endpoint at 24:00 for interpolation
+    patternTimes.push({ start: minutesInDay, distribution: patternTimes[patternTimes.length - 1].distribution });
+
+    for (let i = 0; i < minutesInDay; i++) {
+      const hh = String(Math.floor(i / 60)).padStart(2, "0");
+      const mm = String(i % 60).padStart(2, "0");
+      const time = `${hh}:${mm}`;
+
+      // Find the surrounding patterns
+      let prev = patternTimes[0];
+      let next = patternTimes[patternTimes.length - 1];
+
+      for (let j = 0; j < patternTimes.length - 1; j++) {
+        if (i >= patternTimes[j].start && i < patternTimes[j + 1].start) {
+          prev = patternTimes[j];
+          next = patternTimes[j + 1];
+          break;
+        }
+      }
+
+      const t = (i - prev.start) / (next.start - prev.start); // interpolation factor 0..1
+      let distribution = interpolate(prev.distribution, next.distribution, t);
+
+      // Add small random variation ±5%
+      for (const act of Object.keys(distribution)) {
+        distribution[act] *= 0.95 + Math.random() * 0.1;
+      }
+      // Normalize again
+      const total = Object.values(distribution).reduce((a, b) => a + b, 0);
+      for (const act of Object.keys(distribution)) distribution[act] /= total;
+
+      daySummary.push({ time, distribution });
+    }
+
+    return daySummary;
+  };
+
+  // Build the week: 5 weekdays + 2 weekends
+  for (let d = 0; d < 7; d++) {
+    const patterns = d < 5 ? weekdayPatterns : weekendPatterns;
+    const dayData = generateDay(patterns);
+    summary.push(...dayData);
   }
 
   return {
