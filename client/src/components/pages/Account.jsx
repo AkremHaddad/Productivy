@@ -74,7 +74,7 @@ const Account = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-hidden">
       <Navbar />
       <div className="flex-1 min-w-full bg-background-light dark:bg-background-dark p-6 flex items-center justify-center">
         {loading ? (
@@ -98,7 +98,7 @@ const Account = () => {
             </div>
             <div className="mt-6 w-full">
               <h2 className="text-xl font-semibold mb-2 text-text-light dark:text-text-dark">
-                Activity for Selected Day
+                Activity for Selected Week
               </h2>
               <WeeklyActivityGraph />
             </div>
