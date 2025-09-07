@@ -57,17 +57,17 @@ const Time = () => {
   return (
     <div
       id="Time"
-      className="flex-1 justify-around bg-secondary-light dark:bg-secondary-dark h-[150px] rounded-md flex flex-col justify-between"
+      className="flex-1 flex flex-col justify-evenly items-center p-2 justify-around dark:bg-inherit h-[150px] rounded-r-md"
     >
       <div className="font-jaro text-md text-black dark:text-white text-center">
         time worked today
       </div>
-      <div className="font-jaro text-md text-accent text-center">
+      <div className="font-jaro text-md text-[#313131] dark:text-[#A6A6A6] text-center">
         {formatTime(minutesWorked)}
       </div>
-      <div className="flex justify-center max-h-[24px]">
+      {/* <div className="flex justify-center max-h-[24px] invert brightness-0">
         <img src="../worker.svg" alt="Worker" />
-      </div>
+      </div> */}
     </div>
   );
 };

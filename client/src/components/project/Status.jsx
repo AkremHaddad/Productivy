@@ -50,23 +50,22 @@ const Status = () => {
       {/* Small Status Box */}
       <div
         id="Status"
-        className="flex-1 bg-secondary-light dark:bg-secondary-dark h-[150px] rounded-md flex flex-col justify-between p-3 cursor-pointer"
+        className="flex-1 flex flex-col justify-evenly items-center p-2 bg-inherit h-[150px] border-x-2 border-gray-700 cursor-pointer"
         onClick={() => setShowPopup(true)}
       >
-        <div className="font-normal text-xl text-black dark:text-white text-center font-jaro">
+        <div className="font-normal text-md text-black dark:text-white text-center font-jaro">
           status
         </div>
-        <div className="font-normal text-md text-accent text-center font-jaro">
+        <div className="font-normal text-md text-[#313131] dark:text-[#A6A6A6] text-center font-jaro">
           {currentActivity}
         </div>
-        <div className="flex justify-center">
-          {/* Icon */}
+        {/* <div className="flex justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             width={24}
             height={24}
-            color={"#000000"}
+            color={"#ffffff"}
             fill={"none"}
           >
             <path
@@ -98,7 +97,7 @@ const Status = () => {
               strokeLinejoin="round"
             ></path>
           </svg>
-        </div>
+        </div> */}
       </div>
 
       {/* Modal */}

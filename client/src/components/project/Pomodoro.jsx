@@ -100,31 +100,33 @@ const Pomodoro = () => {
   return (
     <div
       id="pomodoro"
-      className="flex-1 bg-secondary-light dark:bg-secondary-dark h-[150px] rounded-md flex flex-col justify-between p-3"
+      className="flex-1 flex bg-inherit h-[150px] rounded-l-md seperate"
     >
-      {/* Top text now shows Work/Break */}
-      <div className="font-jaro text-xl text-black dark:text-white text-center">
-        {isWork ? "work!" : "Take a break"}
-      </div>
-
-      <div className="font-jaro text-md text-accent text-center drop-shadow-md tracking-wider">
-        {formatTime(timeLeft)}
-      </div>
-
-      <div className="flex gap-1 justify-center">
-        <button onClick={toggleStart} className="px-1.5 rounded-full transition-all duration-200">
+      {/* Left side with buttons from top to bottom */}
+      <div className="flex flex-col justify-evenly border-r-2 border-gray-700 divide-y divide-gray-700">
+        <button onClick={toggleStart} className="p-2 flex-grow transition-all duration-200">
           <img
             src={isRunning ? "../pause.svg" : "../start.svg"}
             alt="start/pause"
-            className="w-6 h-6"
+            className="w-4 h-4 dark:invert brightness-0"
           />
         </button>
-        <button onClick={restart} className="px-1.5 rounded-full transition-all duration-200">
-          <img src="../restart.svg" alt="restart" className="w-6 h-6" />
+        <button onClick={restart} className="p-2 flex-grow transition-all duration-200">
+          <img src="../restart.svg" alt="restart" className="w-4 h-4 dark:invert brightness-0" />
         </button>
-        <button onClick={() => setShowSettings(true)} className="px-1.5 rounded-full transition-all duration-200">
-          <img src="../timer.svg" alt="timer" className="w-6 h-6" />
+        <button onClick={() => setShowSettings(true)} className="p-2 flex-grow transition-all duration-200">
+          <img src="../timer.svg" alt="timer" className="w-4 h-4 dark:invert brightness-0" />
         </button>
+      </div>
+
+      {/* Right side with Pomodoro text at top and timer at bottom */}
+      <div className="flex-1 flex flex-col justify-evenly items-center p-2">    
+        <div className="font-jaro text-md text-black dark:text-white text-center drop-shadow-md tracking-wider">
+          {isWork ? "work!" : "break!"}
+        </div>
+        <div className="font-jaro text-md text-[#313131] dark:text-[#A6A6A6] text-center">
+          {formatTime(timeLeft)}
+        </div>
       </div>
 
       {/* Settings Modal */}

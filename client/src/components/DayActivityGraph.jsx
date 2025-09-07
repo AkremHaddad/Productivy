@@ -195,7 +195,7 @@ const DayActivityGraph = () => {
             })
           )}
         </svg>
-      </div>
+      </div>oklch(72% 0.219 149.579)
       {/* Tooltip */}
       {tooltipData.visible && (
         <div

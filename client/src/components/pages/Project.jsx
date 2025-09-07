@@ -40,14 +40,14 @@ const Project = () => {
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       <Navbar />
       <Tabs />
-      <div className="flex-1 flex bg-background-light dark:bg-black p-5 ">
-        <div className="flex flex-col gap-1.5 w-[500px]">
-          <div className="flex flex-row gap-1.5">
+      <div className="flex-1 flex bg-background-light dark:bg-black p-5 pb-0 gap-2.5">
+        <div className="flex flex-col gap-2.5 w-[500px]">
+          <div className="flex flex-row bg-[#4A6FA5] dark:bg-[#131313] rounded-md border border-gray-400 dark:border-gray-700">
             <Pomodoro />
             <Status />
             <Time />
           </div>
-          <div className="flex flex-row gap-1.5">
+          <div className="flex flex-row gap-2.5">
             <Sprints
               projectId={project._id}
               selectedSprintId={selectedSprint?._id}

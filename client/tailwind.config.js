@@ -17,13 +17,13 @@ export default {
         'ui-light': 'rgba(224, 229, 236, 1)', 
         'navbar-light': 'rgba(78, 84, 94, 1)', 
         'primary-dark': 'rgba(23, 43, 77, 1)',
-        'secondary-dark': 'rgba(12, 118, 83, 1)',
+        'secondary-dark': 'rgba(23, 43, 77, 1)',
         'accent': 'rgba(190, 255, 0, 1)',
         'background-dark': 'rgba(0, 37, 43, 1)',
         'text-dark': 'rgba(224, 224, 224, 1)',
         'navbar-dark': 'rgba(44, 48, 54, 1)',
-        'accent-dark': 'rgba(95, 28, 84, 1)',
-        'accent-light': 'rgba(188, 70, 169, 1)',
+        'accent-dark': '#11576D',
+        'accent-light': '#11576D',
       },
       fontFamily: {
         'jaro': ['Jaro', 'sans-serif'],
@@ -41,3 +41,4 @@ export default {
   },
   plugins: [],
 }
+

@@ -205,7 +205,7 @@ const Board = ({ projectId }) => {
   }
 
   return (
-    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full h-[616px] flex flex-col">
+    <div className="bg-gradient-to-r from-[#2E837F] to-[#40C1BB] dark:from-[#113533] dark:to-[#2D8984]  rounded-md flex-1 overflow-hidden w-full h-[616px] flex flex-col border border-gray-300 dark:border-gray-700">
       {/* Header (tabs) */}
       <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md border-b-2 border-black border-solid">
         <div
