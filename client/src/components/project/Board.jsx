@@ -205,7 +205,7 @@ const Board = ({ projectId }) => {
   }
 
   return (
-    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full flex flex-col">
+    <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full h-[616px] flex flex-col">
       {/* Header (tabs) */}
       <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md border-b-2 border-black border-solid">
         <div

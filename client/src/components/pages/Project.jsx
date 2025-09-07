@@ -40,7 +40,7 @@ const Project = () => {
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       <Navbar />
       <Tabs />
-      <div className="flex-1 flex bg-background-light dark:bg-black p-5">
+      <div className="flex-1 flex bg-background-light dark:bg-black p-5 ">
         <div className="flex flex-col gap-1.5 w-[500px]">
           <div className="flex flex-row gap-1.5">
             <Pomodoro />
@@ -58,9 +58,9 @@ const Project = () => {
               selectedSprint={selectedSprint}
             />
           </div>
-          <div className="flex flex-row gap-1.5">
+          {/* <div className="flex flex-row gap-1.5">
             <ToolsFooter />
-          </div>
+          </div> */}
         </div>
         <Board projectId={project._id} boards={project.boards} />
       </div>

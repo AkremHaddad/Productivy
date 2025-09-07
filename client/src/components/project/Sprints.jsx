@@ -121,7 +121,7 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
   };
 
   return (
-    <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[350px] rounded-md shadow-lg overflow-hidden flex flex-col">
+    <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[460px] rounded-md shadow-lg overflow-hidden flex flex-col">
       {/* Header */}
       <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg font-jaro flex items-center justify-center rounded-t-md border-b-2 border-black">
         Sprints
