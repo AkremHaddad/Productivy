@@ -50,13 +50,13 @@ const Status = () => {
       {/* Small Status Box */}
       <div
         id="Status"
-        className="flex-1 flex flex-col justify-evenly items-center p-2 bg-inherit h-[150px] border-x-2 border-gray-700 cursor-pointer"
+        className="flex-1 flex flex-col justify-evenly items-center p-2 bg-inherit h-[150px] border-x-2 border-gray-400 dark:border-gray-700 cursor-pointer"
         onClick={() => setShowPopup(true)}
       >
-        <div className="font-normal text-md text-black dark:text-white text-center font-jaro">
+        <div className="font-normal text-md text-white dark:text-white text-center font-jaro">
           status
         </div>
-        <div className="font-normal text-md text-[#313131] dark:text-[#A6A6A6] text-center font-jaro">
+        <div className="font-normal text-md text-[#C3C3C3] dark:text-[#A6A6A6] text-center font-jaro">
           {currentActivity}
         </div>
         {/* <div className="flex justify-center">
