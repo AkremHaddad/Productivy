@@ -15,6 +15,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Fetch tasks whenever selectedSprint changes
   useEffect(() => {
@@ -127,8 +128,23 @@ const Kanban = ({ projectId, selectedSprint }) => {
     return result;
   };
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = async (result) => {
+    setIsDragging(false);
+
     if (!result.destination) return;
+
+    // If dropped in delete zone
+    if (result.destination.droppableId === "deleteZone") {
+      const taskId = tasks[result.source.index]._id;
+      setDeleteConfirm(taskId);
+      return;
+    }
+
+    // Normal reordering
     if (result.destination.index === result.source.index) return;
 
     const newTasks = reorder(
@@ -140,8 +156,11 @@ const Kanban = ({ projectId, selectedSprint }) => {
     setTasks(newTasks);
 
     try {
-      // Call API to persist order
-      await changeTaskOrder(projectId, selectedSprint._id, newTasks.map(t => t._id));
+      await changeTaskOrder(
+        projectId,
+        selectedSprint._id,
+        newTasks.map((t) => t._id)
+      );
     } catch (err) {
       console.error("Error saving task order:", err);
     }
@@ -155,112 +174,54 @@ const Kanban = ({ projectId, selectedSprint }) => {
       </div>
 
       {/* Task List */}
-      <div className="flex-1 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-lg dark:scrollbar-thumb-rounded-lg-dark">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
-          </div>
-        ) : tasks.length === 0 ? (
-          <div className="text-center py-8 text-text-light dark:text-text-dark/70">
-            <div className="text-4xl mb-2">📋</div>
-            <p>No tasks yet</p>
-            <p className="text-sm mt-1">Add your first task below</p>
-          </div>
-        ) : (
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="taskList">
-              {(provided) => (
-                <div
-                  className="space-y-2"
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  {tasks.map((task, index) => (
-                    <Draggable
-                      key={task._id}
-                      draggableId={task._id}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`flex items-center justify-between p-2 rounded-xl shadow-sm transition-all duration-200 ease-in-out group
-                            ${
-                              task.completed
-                                ? "bg-white/50 dark:bg-black/75 text-gray-500"
-                                : "bg-white/75 dark:bg-black/25 dark:text-text-dark hover:shadow-md"
-                            }
-                            ${snapshot.isDragging ? "opacity-70 scale-[1.02] shadow-lg" : ""}
-                          `}
-                          style={{
-                            ...provided.draggableProps.style,
-                            transition: snapshot.isDragging
-                              ? "transform 0.2s ease"
-                              : "transform 0.25s ease, opacity 0.25s ease",
-                          }}
-                        >
-                          <div className="flex items-center space-x-3 flex-1">
-                            <button
-                              onClick={() => toggleTask(task._id)}
-                              className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200
-                                ${
-                                  task.completed
-                                    ? "border-secondary-dark bg-secondary-dark/80 dark:border-accent dark:bg-accent/20"
-                                    : "border-secondary-light/50 dark:border-navbar-dark group-hover:border-secondary-dark dark:group-hover:border-accent"
-                                }`}
-                            >
-                              {task.completed && (
-                                <svg
-                                  className="w-3 h-3 text-accent"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="3"
-                                    d="M5 13l4 4L19 7"
-                                  ></path>
-                                </svg>
-                              )}
-                            </button>
-
-                            {editingTask === task._id ? (
-                              <input
-                                type="text"
-                                value={editTitle}
-                                onChange={(e) => setEditTitle(e.target.value)}
-                                onKeyPress={(e) =>
-                                  handleEditKeyPress(e, task._id)
-                                }
-                                onBlur={() => handleEditTask(task._id)}
-                                className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
-                                autoFocus
-                              />
-                            ) : (
-                              <span
-                                className={`flex-1 cursor-pointer ${
-                                  task.completed ? "line-through" : ""
-                                }`}
-                                onDoubleClick={() => handleDoubleClick(task)}
-                                title="Double-click to edit"
-                              >
-                                {task.title}
-                              </span>
-                            )}
-                          </div>
-
-                          {editingTask !== task._id && (
-                            <button
-                              onClick={() => setDeleteConfirm(task._id)}
-                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200"
-                              title="Delete task"
-                            >
+      <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <Droppable droppableId="taskList">
+          {(provided) => (
+            <div
+              className="flex-1 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-lg dark:scrollbar-thumb-rounded-lg-dark space-y-2"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {isLoading ? (
+                <div className="flex justify-center items-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+                </div>
+              ) : tasks.length === 0 ? (
+                <div className="text-center py-8 text-text-light dark:text-text-dark/70">
+                  <div className="text-4xl mb-2">📋</div>
+                  <p>No tasks yet</p>
+                  <p className="text-sm mt-1">Add your first task below</p>
+                </div>
+              ) : (
+                tasks.map((task, index) => (
+                  <Draggable key={task._id} draggableId={task._id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className={`flex items-center justify-between text-sm p-2 rounded-xl shadow-sm transition-all duration-200 ease-in-out group
+                          ${
+                            task.completed
+                              ? "bg-white/50 dark:bg-black/75 text-gray-500"
+                              : "bg-white/75 dark:bg-black/25 dark:text-text-dark hover:shadow-md"
+                          }
+                          ${snapshot.isDragging ? "opacity-70 scale-[1.02] shadow-lg" : ""}
+                        `}
+                      >
+                        <div className="flex items-center space-x-3 flex-1">
+                          <button
+                            onClick={() => toggleTask(task._id)}
+                            className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200
+                              ${
+                                task.completed
+                                  ? "border-secondary-dark bg-secondary-dark/80 dark:border-accent dark:bg-accent/20"
+                                  : "border-secondary-light/50 dark:border-navbar-dark group-hover:border-secondary-dark dark:group-hover:border-accent"
+                              }`}
+                          >
+                            {task.completed && (
                               <svg
-                                className="w-4 h-4"
+                                className="w-3 h-3 text-accent"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -268,59 +229,124 @@ const Kanban = ({ projectId, selectedSprint }) => {
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                  strokeWidth="3"
+                                  d="M5 13l4 4L19 7"
                                 ></path>
                               </svg>
-                            </button>
+                            )}
+                          </button>
+
+                          {editingTask === task._id ? (
+                            <input
+                              type="text"
+                              value={editTitle}
+                              onChange={(e) => setEditTitle(e.target.value)}
+                              onKeyPress={(e) =>
+                                handleEditKeyPress(e, task._id)
+                              }
+                              onBlur={() => handleEditTask(task._id)}
+                              className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
+                              autoFocus
+                            />
+                          ) : (
+                            <span
+                              className={`flex-1 cursor-pointer ${
+                                task.completed ? "line-through" : ""
+                              }`}
+                              onDoubleClick={() => handleDoubleClick(task)}
+                              title="Double-click to edit"
+                            >
+                              {task.title}
+                            </span>
                           )}
                         </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
+                      </div>
+                    )}
+                  </Draggable>
+                ))
+              )}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+
+        {/* Delete Zone (using input row as drop target) */}
+        <Droppable droppableId="deleteZone">
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className={`min-h-[52.8px] max-h-[52.8px] p-2 border-t-2 border-t-black rounded-b-md transition-all duration-300 ease-in-out relative 
+                ${
+                  snapshot.isDraggingOver || isDragging
+                    ? "bg-gradient-to-r from-red-500/90 to-red-600/90 text-white shadow-lg border-red-400 "
+                    : "bg-black/20 dark:bg-black/40"
+                }`}
+            >
+              {snapshot.isDraggingOver || isDragging ? (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="flex items-center space-x-3">
+                    {/* Trash Icon */}
+                    <svg 
+                      className="w-6 h-6 text-white animate-bounce" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    <div className="text-white text-lg font-bold tracking-wide drop-shadow-lg whitespace-nowrap">
+                      Drop here to delete
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2 h-full">
+                  <input
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Enter a new task..."
+                    className="flex-1 min-w-0 px-3 py-2 rounded-xl border-2 border-navbar-light/30 dark:border-navbar-dark/30
+                              bg-ui-light dark:bg-black/50 text-text-light dark:text-text-dark 
+                              focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
+                    disabled={!selectedSprint}
+                  />
+                  <button
+                    onClick={handleAddTask}
+                    disabled={!selectedSprint || !newTaskTitle.trim()}
+                    className="shrink-0 w-10 h-10 bg-secondary-light text-white rounded-xl
+                              hover:bg-secondary-light/80 disabled:opacity-50 disabled:cursor-not-allowed 
+                              transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center
+                              hover:scale-105 active:scale-95"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      ></path>
+                    </svg>
+                  </button>
                 </div>
               )}
-            </Droppable>
-          </DragDropContext>
-        )}
-      </div>
-
-      {/* Add Task Form */}
-      <div className="flex gap-2 items-center p-2 bg-black/20 border-t-2 border-t-black dark:border-t-black">
-        <input
-          type="text"
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Enter a new task..."
-          className="flex-1 min-w-0 px-2 py-1 rounded-xl border-2 border-navbar-light/30 dark:border-navbar-dark/30
-                    bg-ui-light dark:bg-black/50 text-text-light dark:text-text-dark 
-                    focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
-          disabled={!selectedSprint}
-        />
-        <button
-          onClick={handleAddTask}
-          disabled={!selectedSprint || !newTaskTitle.trim()}
-          className="shrink-0 w-8 h-8 bg-secondary-light text-white rounded-xl
-                    hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed 
-                    transition-all shadow-md hover:shadow-lg flex items-center justify-center"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            ></path>
-          </svg>
-        </button>
-      </div>
+              <div style={{ display: 'none' }}>{provided.placeholder}</div>
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
 
       {/* Delete Confirmation Modal */}
       <Modal

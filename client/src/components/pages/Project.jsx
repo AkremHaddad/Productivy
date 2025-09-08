@@ -51,7 +51,7 @@ const Project = () => {
             <Sprints
               projectId={project._id}
               selectedSprintId={selectedSprint?._id}
-              onSprintSelect={(s) => setSelectedSprint(s)}
+              onSprintSelect={(s) => setSelectedSprint(s)}z
             />
             <Kanban
               projectId={project._id}
