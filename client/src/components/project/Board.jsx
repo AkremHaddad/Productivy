@@ -3,8 +3,10 @@ import API from "../../api/API";
 import Column from "./Column";
 import LoadingSpinner from "../common/LoadingSpinner";
 import Modal from "../common/Modal";
-import { addColumn } from "../../api/project";
+import { addColumn, reorderColumns } from "../../api/project";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { reorderCards } from "../../api/project";
+
 
 const Board = ({ projectId }) => {
   const [boards, setBoards] = useState([]);
@@ -164,32 +166,66 @@ const Board = ({ projectId }) => {
       const [moved] = newCols.splice(source.index, 1);
       newCols.splice(destination.index, 0, moved);
       updateColumns(newCols);
+
+      // Persist to backend
+      if (currentBoard._id) {
+        const newOrderIds = newCols.map(col => col._id);
+        reorderColumns(projectId, currentBoard._id, newOrderIds)
+          .catch(err => {
+            console.error("Failed to save column order:", err);
+            setError("Failed to save column order. Please try again.");
+          });
+      }
+
       return;
     }
 
     if (type === "CARD") {
-      const sourceColIndex = currentBoard.columns.findIndex(c => c._id === source.droppableId);
-      const destColIndex = currentBoard.columns.findIndex(c => c._id === destination.droppableId);
-      const sourceCol = currentBoard.columns[sourceColIndex];
-      const destCol = currentBoard.columns[destColIndex];
-      const newSourceCards = Array.from(sourceCol.cards);
-      const [movedCard] = newSourceCards.splice(source.index, 1);
+  const sourceColIndex = currentBoard.columns.findIndex(c => c._id === source.droppableId);
+  const destColIndex = currentBoard.columns.findIndex(c => c._id === destination.droppableId);
+  const sourceCol = currentBoard.columns[sourceColIndex];
+  const destCol = currentBoard.columns[destColIndex];
 
-      if (source.droppableId === destination.droppableId) {
-        newSourceCards.splice(destination.index, 0, movedCard);
-        const newCols = [...currentBoard.columns];
-        newCols[sourceColIndex].cards = newSourceCards;
-        updateColumns(newCols);
-      } else {
-        const newDestCards = Array.from(destCol.cards);
-        newDestCards.splice(destination.index, 0, movedCard);
-        const newCols = [...currentBoard.columns];
-        newCols[sourceColIndex].cards = newSourceCards;
-        newCols[destColIndex].cards = newDestCards;
-        updateColumns(newCols);
-      }
-      return;
-    }
+  const newSourceCards = Array.from(sourceCol.cards);
+  const [movedCard] = newSourceCards.splice(source.index, 1);
+
+  // If moved inside the same column
+  if (source.droppableId === destination.droppableId) {
+    newSourceCards.splice(destination.index, 0, movedCard);
+    const newCols = [...currentBoard.columns];
+    newCols[sourceColIndex].cards = newSourceCards;
+    updateColumns(newCols);
+
+    // Persist order to backend
+    const payload = newCols.map(col => ({ _id: col._id, cards: col.cards.map(c => c._id) }));
+    reorderCards(projectId, currentBoard._id, payload).catch((err) => {
+      console.error("Failed to save card order:", err);
+      setError("Failed to save card order. Please try again.");
+      // (Optional) re-fetch or rollback if you want stronger consistency
+      // fetchBoards(); 
+    });
+  } else {
+    // Moved to another column
+    const newDestCards = Array.from(destCol.cards);
+    newDestCards.splice(destination.index, 0, movedCard);
+
+    const newCols = [...currentBoard.columns];
+    newCols[sourceColIndex].cards = newSourceCards;
+    newCols[destColIndex].cards = newDestCards;
+    updateColumns(newCols);
+
+    // Persist order to backend
+    const payload = newCols.map(col => ({ _id: col._id, cards: col.cards.map(c => c._id) }));
+    reorderCards(projectId, currentBoard._id, payload).catch((err) => {
+      console.error("Failed to save card order:", err);
+      setError("Failed to save card order. Please try again.");
+      // (Optional) re-fetch or rollback
+      // fetchBoards();
+    });
+  }
+  return;
+}
+
   };
 
   if (error) {

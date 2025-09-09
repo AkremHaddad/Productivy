@@ -537,7 +537,6 @@ export const deleteCard = async (req, res) => {
   }
 };
 
-// Change card order within a column (or between columns)
 export const changeCardOrder = async (req, res) => {
   const { projectId, boardId } = req.params;
   const { newColumns } = req.body; 
@@ -550,10 +549,21 @@ export const changeCardOrder = async (req, res) => {
     const board = project.boards.id(boardId);
     if (!board) return res.status(404).json({ message: "Board not found" });
 
+    // Build a map of all cards by _id
+    const allCards = {};
+    board.columns.forEach(col => {
+      col.cards.forEach(card => {
+        allCards[card._id.toString()] = card;
+      });
+    });
+
+    // Rebuild columns with cards from the map
     newColumns.forEach(colOrder => {
       const column = board.columns.id(colOrder._id);
       if (column) {
-        column.cards = colOrder.cards.map(cardId => column.cards.id(cardId));
+        column.cards = colOrder.cards
+          .map(cardId => allCards[cardId])
+          .filter(Boolean); // remove any missing cards just in case
       }
     });
 

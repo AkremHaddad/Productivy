@@ -1,6 +1,29 @@
 import React, { useState } from "react";
-import Modal from "../common/Modal";
+import ReactDOM from "react-dom";
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+
+const ModalPortal = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div
+        className="bg-background-light dark:bg-background-dark rounded-lg p-6 relative max-w-lg w-full shadow-2xl"
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseUp={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-bold"
+        >
+          X
+        </button>
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
+};
 
 const Card = ({
   card,
@@ -18,18 +41,17 @@ const Card = ({
     <>
       {/* Card preview */}
       <div
-        className=" bg-gray-200 dark:bg-navbar-dark p-2 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        className="bg-gray-200 dark:bg-navbar-dark p-2 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         onClick={() => setIsOpen(true)}
       >
         <h4 className="text-sm text-gray-900 dark:text-gray-100 truncate">{card.title}</h4>
       </div>
 
-      {/* Main modal */}
-      
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="">
+      {/* Modal via Portal */}
+      <ModalPortal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="flex flex-col gap-4 relative">
 
-          {/* Header: Title + Actions */}
+          {/* Header */}
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-jaro text-secondary-dark dark:text-accent">Card Details</h2>
             <div className="flex gap-2">
@@ -97,7 +119,7 @@ const Card = ({
                         text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
                         transition-all duration-200 font-medium border border-transparent 
                         hover:border-secondary-light/30 dark:hover:border-accent/30"
-                >
+              >
                 Cancel
               </button>
               <button
@@ -111,7 +133,7 @@ const Card = ({
             </div>
           )}
 
-          {/* Animated floating Delete confirmation */}
+          {/* Delete Confirmation */}
           {deleteConfirm && (
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-background-light dark:bg-background-dark border-2 border-red-600 dark:border-red-500 p-6 rounded-xl shadow-2xl w-full max-w-sm animate-fadeScale">
@@ -126,7 +148,7 @@ const Card = ({
                         text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
                         transition-all duration-200 font-medium border border-transparent 
                         hover:border-secondary-light/30 dark:hover:border-accent/30"
-                    >
+                  >
                     Cancel
                   </button>
                   <button
@@ -144,9 +166,8 @@ const Card = ({
             </div>
           )}
 
-
         </div>
-      </Modal>
+      </ModalPortal>
     </>
   );
 };
