@@ -6,24 +6,21 @@ const ModalPortal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={onClose} // Click on overlay closes modal
+    >
       <div
-        className="bg-background-light dark:bg-background-dark rounded-lg p-6 relative max-w-lg w-full shadow-2xl"
-        onMouseDown={(e) => e.stopPropagation()}
-        onMouseUp={(e) => e.stopPropagation()}
+        className="bg-background-light dark:bg-black rounded-lg p-6 relative max-w-lg w-full shadow-2xl"
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
       >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-bold"
-        >
-          X
-        </button>
         {children}
       </div>
     </div>,
     document.body
   );
 };
+
 
 const Card = ({
   card,
@@ -53,7 +50,7 @@ const Card = ({
 
           {/* Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-jaro text-secondary-dark dark:text-accent">Card Details</h2>
+            <h2 className="text-xl font-jaro text-secondary-light dark:text-accent">Card Details</h2>
             <div className="flex gap-2">
               <button
                 onClick={() => {
@@ -83,7 +80,7 @@ const Card = ({
                 value={editCardData.title}
                 onChange={(e) => setEditCardData(prev => ({ ...prev, title: e.target.value }))}
                 rows={2}
-                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none dark:focus:ring-2 dark:focus:ring-accent resize-y"
+                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:border-black focus:ring-black dark:focus:ring-accentresize-y"
                 autoFocus
               />
             ) : (
@@ -101,7 +98,7 @@ const Card = ({
                 value={editCardData.description}
                 onChange={(e) => setEditCardData(prev => ({ ...prev, description: e.target.value }))}
                 rows={5}
-                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-accent resize-y"
+                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:border-black focus:ring-black dark:focus:ring-accent resize-y"
               />
             ) : (
               <p className="px-4 py-2 rounded-lg bg-white border-navbar-light border-2 dark:bg-navbar-dark text-text-light dark:text-text-dark min-h-[120px] whitespace-pre-line">

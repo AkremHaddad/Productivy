@@ -181,50 +181,50 @@ const Board = ({ projectId }) => {
     }
 
     if (type === "CARD") {
-  const sourceColIndex = currentBoard.columns.findIndex(c => c._id === source.droppableId);
-  const destColIndex = currentBoard.columns.findIndex(c => c._id === destination.droppableId);
-  const sourceCol = currentBoard.columns[sourceColIndex];
-  const destCol = currentBoard.columns[destColIndex];
+      const sourceColIndex = currentBoard.columns.findIndex(c => c._id === source.droppableId);
+      const destColIndex = currentBoard.columns.findIndex(c => c._id === destination.droppableId);
+      const sourceCol = currentBoard.columns[sourceColIndex];
+      const destCol = currentBoard.columns[destColIndex];
 
-  const newSourceCards = Array.from(sourceCol.cards);
-  const [movedCard] = newSourceCards.splice(source.index, 1);
+      const newSourceCards = Array.from(sourceCol.cards);
+      const [movedCard] = newSourceCards.splice(source.index, 1);
 
-  // If moved inside the same column
-  if (source.droppableId === destination.droppableId) {
-    newSourceCards.splice(destination.index, 0, movedCard);
-    const newCols = [...currentBoard.columns];
-    newCols[sourceColIndex].cards = newSourceCards;
-    updateColumns(newCols);
+      // If moved inside the same column
+      if (source.droppableId === destination.droppableId) {
+        newSourceCards.splice(destination.index, 0, movedCard);
+        const newCols = [...currentBoard.columns];
+        newCols[sourceColIndex].cards = newSourceCards;
+        updateColumns(newCols);
 
-    // Persist order to backend
-    const payload = newCols.map(col => ({ _id: col._id, cards: col.cards.map(c => c._id) }));
-    reorderCards(projectId, currentBoard._id, payload).catch((err) => {
-      console.error("Failed to save card order:", err);
-      setError("Failed to save card order. Please try again.");
-      // (Optional) re-fetch or rollback if you want stronger consistency
-      // fetchBoards(); 
-    });
-  } else {
-    // Moved to another column
-    const newDestCards = Array.from(destCol.cards);
-    newDestCards.splice(destination.index, 0, movedCard);
+        // Persist order to backend
+        const payload = newCols.map(col => ({ _id: col._id, cards: col.cards.map(c => c._id) }));
+        reorderCards(projectId, currentBoard._id, payload).catch((err) => {
+          console.error("Failed to save card order:", err);
+          setError("Failed to save card order. Please try again.");
+          // (Optional) re-fetch or rollback if you want stronger consistency
+          // fetchBoards(); 
+        });
+      } else {
+        // Moved to another column
+        const newDestCards = Array.from(destCol.cards);
+        newDestCards.splice(destination.index, 0, movedCard);
 
-    const newCols = [...currentBoard.columns];
-    newCols[sourceColIndex].cards = newSourceCards;
-    newCols[destColIndex].cards = newDestCards;
-    updateColumns(newCols);
+        const newCols = [...currentBoard.columns];
+        newCols[sourceColIndex].cards = newSourceCards;
+        newCols[destColIndex].cards = newDestCards;
+        updateColumns(newCols);
 
-    // Persist order to backend
-    const payload = newCols.map(col => ({ _id: col._id, cards: col.cards.map(c => c._id) }));
-    reorderCards(projectId, currentBoard._id, payload).catch((err) => {
-      console.error("Failed to save card order:", err);
-      setError("Failed to save card order. Please try again.");
-      // (Optional) re-fetch or rollback
-      // fetchBoards();
-    });
-  }
-  return;
-}
+        // Persist order to backend
+        const payload = newCols.map(col => ({ _id: col._id, cards: col.cards.map(c => c._id) }));
+        reorderCards(projectId, currentBoard._id, payload).catch((err) => {
+          console.error("Failed to save card order:", err);
+          setError("Failed to save card order. Please try again.");
+          // (Optional) re-fetch or rollback
+          // fetchBoards();
+        });
+      }
+      return;
+    }
 
   };
 
@@ -247,7 +247,7 @@ const Board = ({ projectId }) => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#2E837F] to-[#40C1BB] dark:from-[#113533] dark:to-[#2D8984] rounded-md flex-1 overflow-hidden w-full h-[616px] flex flex-col border border-gray-300 dark:border-gray-700">
+    <div className="bg-gradient-to-r from-[#2E837F] to-[#40C1BB] dark:from-[#113533] dark:to-[#2D8984] rounded-md flex-1 overflow-hidden w-full h-[622px] flex flex-col border border-gray-300 dark:border-gray-700">
       
       {/* Header Tabs */}
       <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md border-b-2 border-black border-solid">

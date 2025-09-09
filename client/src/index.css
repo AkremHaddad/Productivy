@@ -40,3 +40,6 @@
   scrollbar-width: none;     /* Firefox */
 }
 
+:focus {
+  outline: none; /* removes all default outlines */
+}
