@@ -7,6 +7,7 @@ import {
   Droppable,
   Draggable,
 } from "@hello-pangea/dnd";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const Kanban = ({ projectId, selectedSprint }) => {
   const [tasks, setTasks] = useState([]);
@@ -169,7 +170,8 @@ const Kanban = ({ projectId, selectedSprint }) => {
   return (
     <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[460px] rounded-md shadow-lg overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg font-jaro flex items-center justify-center rounded-t-md relative border-b-2 border-black">
+      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg font-jaro flex
+                       items-center justify-center rounded-t-md relative">
         <span className="drop-shadow-md">Sprint Tasks</span>
       </div>
 
@@ -184,7 +186,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
             >
               {isLoading ? (
                 <div className="flex justify-center items-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+                  <LoadingSpinner />
                 </div>
               ) : tasks.length === 0 ? (
                 <div className="text-center py-8 text-text-light dark:text-text-dark/70">
@@ -215,7 +217,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
                             className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200
                               ${
                                 task.completed
-                                  ? "border-secondary-dark bg-secondary-dark/80 dark:border-accent dark:bg-accent/20"
+                                  ? "border-secondary-light bg-secondary-light/50 dark:border-accent dark:bg-accent/20"
                                   : "border-secondary-light/50 dark:border-navbar-dark group-hover:border-secondary-dark dark:group-hover:border-accent"
                               }`}
                           >
@@ -276,27 +278,27 @@ const Kanban = ({ projectId, selectedSprint }) => {
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className={`min-h-[52.8px] max-h-[52.8px] p-2 border-t-2 border-t-black rounded-b-md transition-all duration-300 ease-in-out relative 
+              className={`min-h-[51.2px] max-h-[51.2px] transition-all duration-300 ease-in-out relative
                 ${
                   snapshot.isDraggingOver || isDragging
-                    ? "bg-gradient-to-r from-red-500/70 to-red-600/70 text-white shadow-lg border-red-400 "
-                    : "bg-black/20 dark:bg-black/40"
+                    ? "bg-gradient-to-r from-red-500/70 to-red-600/70 text-white shadow-lg border-red-400"
+                    : "bg-black/20 dark:bg-black/20"
                 }`}
             >
               {snapshot.isDraggingOver || isDragging ? (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="flex items-center space-x-3">
                     {/* Trash Icon */}
-                    <svg 
-                      className="w-6 h-6 text-white animate-bounce" 
-                      fill="none" 
-                      stroke="currentColor" 
+                    <svg
+                      className="w-6 h-6 text-white animate-bounce"
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth="2" 
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                       />
                     </svg>
@@ -306,25 +308,24 @@ const Kanban = ({ projectId, selectedSprint }) => {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center space-x-2 h-full">
+                <div className="flex gap-2 items-center p-2">
                   <input
                     type="text"
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Enter a new task..."
-                    className="flex-1 min-w-0 px-3 py-2 rounded-xl border-2 border-navbar-light/30 dark:border-navbar-dark/30
-                              bg-ui-light dark:bg-black/50 text-text-light dark:text-text-dark 
+                    className="flex-1 min-w-0 px-2 py-1 rounded-xl border-2 border-navbar-light/30 dark:border-navbar-dark/30
+                              bg-ui-light dark:bg-black/50 text-text-light dark:text-text-dark
                               focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
                     disabled={!selectedSprint}
                   />
                   <button
                     onClick={handleAddTask}
                     disabled={!selectedSprint || !newTaskTitle.trim()}
-                    className="shrink-0 w-10 h-10 bg-secondary-light text-white rounded-xl
-                              hover:bg-secondary-light/80 disabled:opacity-50 disabled:cursor-not-allowed 
-                              transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center
-                              hover:scale-105 active:scale-95"
+                    className="shrink-0 w-8 h-8 bg-secondary-light text-white rounded-xl
+                              hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed
+                              transition-all shadow-md hover:shadow-lg flex items-center justify-center"
                   >
                     <svg
                       className="w-5 h-5"
@@ -337,12 +338,12 @@ const Kanban = ({ projectId, selectedSprint }) => {
                         strokeLinejoin="round"
                         strokeWidth="2"
                         d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      ></path>
+                      />
                     </svg>
                   </button>
                 </div>
               )}
-              <div style={{ display: 'none' }}>{provided.placeholder}</div>
+              <div style={{ display: "none" }}>{provided.placeholder}</div>
             </div>
           )}
         </Droppable>

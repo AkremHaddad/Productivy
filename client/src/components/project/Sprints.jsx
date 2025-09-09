@@ -121,9 +121,11 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
   };
 
   return (
-    <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[460px] rounded-md shadow-lg overflow-hidden flex flex-col">
+    <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[460px] rounded-md shadow-lg 
+    overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg font-jaro flex items-center justify-center rounded-t-md border-b-2 border-black">
+      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg 
+      font-jaro flex items-center justify-center rounded-t-md ">
         Sprints
       </div>
       {/* Sprint List */}
@@ -139,10 +141,11 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
             <div
               key={s._id}
               onClick={() => handleSprintClick(s)}
-              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex items-center justify-between border-b-[1px] border-black dark:border-black ${
+              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex 
+                          items-center justify-between ${
                 selectedSprintId === s._id
-                  ? "bg-black/25 dark:bg-white/15 text-black dark:text-white"
-                  : "hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-text-dark"
+                  ? "bg-black/25 dark:bg-primary-light/25 text-black dark:text-black font-semibold border-l-4 border-[#113533] dark:border-[#2D8984]"
+                  : "hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-black font-semibold"
               }`}
             >
               <div className="flex-1 min-w-0">
@@ -174,7 +177,7 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
                     e.stopPropagation();
                     setDeleteConfirm(s._id);
                   }}
-                  className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200 ml-2"
+                  className="opacity-0 group-hover:opacity-100 text-white hover:text-red-500 p-1 transition-opacity duration-200 ml-2 rounded bg-black/50"
                   title="Delete sprint"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,14 +195,17 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         )}
       </div>
       {/* Add Sprint Form */}
-      <div className="flex gap-2 items-center p-2 bg-black/20 border-t-2 border-t-black dark:border-t-black">
+      <div className="flex gap-2 items-center p-2 bg-black/20 ">
         <input
           type="text"
           value={sprintTitle}
           onChange={(e) => setSprintTitle(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Enter a new sprint..."
-          className="flex-1 min-w-0 px-2 py-1 rounded-xl border-2 border-navbar-light/30 dark:border-navbar-dark/30 bg-ui-light dark:bg-black/50 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
+          className="flex-1 min-w-0 px-2 py-1 rounded-xl border-2
+           border-navbar-light/30 dark:border-navbar-dark/30 bg-ui-light
+            dark:bg-black/50 text-text-light dark:text-text-dark focus:outline-none
+             focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
         />
         <button
           onClick={handleAddSprint}
