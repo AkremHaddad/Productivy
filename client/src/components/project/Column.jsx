@@ -188,13 +188,13 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       {/* Delete Column Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-background-light dark:bg-black border-2 border-secondary-dark dark:border-accent p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
-            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">Delete Column</h2>
+          <div className="bg-background-light dark:bg-black border-2 border-accent-dark dark:border-accent p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
+            <h2 className="text-2xl font-jaro font-bold text-center text-accent-dark dark:text-accent">Delete Column</h2>
             <p className="text-text-light dark:text-text-dark text-center">
               Are you sure you want to delete this column? This will also delete all cards within it. This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3 mt-4">
-              <button onClick={() => setDeleteConfirm(false)} className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark transition-all duration-200 font-medium border border-transparent hover:border-secondary-light/30 dark:hover:border-accent/30">
+              <button onClick={() => setDeleteConfirm(false)} className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark transition-all duration-200 font-medium border border-transparent hover:border-accent-light/30 dark:hover:border-accent/30">
                 Cancel
               </button>
               <button onClick={handleDeleteColumn} className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:bg-red-600 dark:hover:bg-red-700 transform hover:scale-[1.02]">

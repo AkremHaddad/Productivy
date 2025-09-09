@@ -144,7 +144,7 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
               className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex font-medium m-2 rounded-lg
                           items-center justify-between border ${
                 selectedSprintId === s._id
-                  ? "bg-black/50 text-white border-black shadow-md"
+                  ? "bg-[#2D8984] dark:bg-[#2D8984]/40 text-white border-black shadow-md"
                   : "bg-gray-300 dark:bg-[#131313] text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-400 dark:border-gray-700"
               }`}
             >
@@ -210,7 +210,7 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         <button
           onClick={handleAddSprint}
           disabled={!sprintTitle.trim()}
-          className="shrink-0 w-8 h-8 bg-secondary-light text-white rounded-xl hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg flex items-center justify-center"
+          className="shrink-0 w-8 h-8 bg-accent-light  text-white rounded-xl hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg flex items-center justify-center"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>

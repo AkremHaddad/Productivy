@@ -8,8 +8,8 @@ const Tabs = ({ showTools, setShowTools }) => {
         className={`flex-1 flex items-center justify-center m-0.5 rounded-lg font-medium cursor-pointer
           ${
             showTools
-              ? "bg-blue-500 text-white dark:bg-blue-800 dark:text-white"
-              : "bg-gray-200 dark:bg-[#1c2b41] text-blue-800 dark:text-blue-400"
+              ? "bg-[#2D8984] dark:bg-[#2D8984]/40 text-white  dark:text-white"
+              : "bg-gray-200 dark:bg-gray-800 text-black dark:text-white"
           }`}
       >
         Tools

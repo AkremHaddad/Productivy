@@ -30,7 +30,7 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
       <form
         onSubmit={handleSubmit}
         className="bg-background-light dark:bg-background-dark
-                  border-2 border-secondary-dark dark:border-accent
+                  border-2 border-accent-dark dark:border-accent
                   p-6 rounded-xl shadow-2xl flex flex-col gap-5 w-full max-w-md relative"
       >
         {/* Close Button */}
@@ -44,7 +44,7 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
+        <h2 className="text-2xl font-jaro font-bold text-center text-accent-light dark:text-accent-dark">
           Edit Column
         </h2>
 
@@ -102,13 +102,13 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
             className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
                         text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
                         transition-all duration-200 font-medium border border-transparent 
-                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+                        hover:border-accent-light/30 dark:hover:border-accent/30"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-white dark:text-black
+            className="px-5 py-2 rounded-lg bg-accent-light dark:bg-accent text-white dark:text-black
                       font-bold shadow-md hover:shadow-lg transition-all duration-200
                       hover:scale-[1.02]"
           >

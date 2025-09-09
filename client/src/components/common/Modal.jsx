@@ -10,7 +10,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
     >
       <div
         className="bg-background-light dark:bg-black
-                   border-2 border-secondary-dark dark:border-accent
+                   border-2 border-accent-dark dark:border-accent
                    p-6 rounded-xl shadow-2xl flex flex-col gap-5 w-full max-w-md relative mx-4"
         onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
       >

@@ -50,7 +50,7 @@ function Home() {
               <img
                 src="./heromockup.png"
                 alt="App preview"
-                className="w-full max-w-xlg transition-transform duration-700 hover:rotate-y-0 hover:rotate-x-0"
+                className="w-full max-w-z rounded-xl transform rotate-y-6 rotate-x-2 transition-transform duration-700 hover:rotate-y-0 hover:rotate-x-0"
               />
             </div>
           </div>
@@ -59,7 +59,7 @@ function Home() {
         {/* Features Section */}
         <section id="features" className="py-20 px-4 bg-background-light dark:bg-background-dark">
           <div className="container mx-auto">
-            <h2 data-aos="fade-up" className="text-3xl font-bold text-center text-primary-dark dark:text-accent mb-12 px-4">
+            <h2 data-aos="fade-up" className="text-3xl font-bold text-center text-secondary-dark dark:text-accent mb-12 px-4">
               Powerful Features to Boost Your Productivity
             </h2>
 

@@ -146,7 +146,7 @@ const Pomodoro = () => {
                 className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light/30 dark:border-accent/30 
                           bg-white/80 dark:bg-navbar-dark/80 
                           text-text-light dark:text-text-dark
-                          focus:outline-none focus:ring-2 focus:ring-secondary-light/50 dark:focus:ring-accent/50
+                          focus:outline-none focus:ring-2 focus:ring-accent-light/50 dark:focus:ring-accent/50
                           transition-all duration-200
                           appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
               />
@@ -165,7 +165,7 @@ const Pomodoro = () => {
                 className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light/30 dark:border-accent/30 
                           bg-white/80 dark:bg-navbar-dark/80 
                           text-text-light dark:text-text-dark
-                          focus:outline-none focus:ring-2 focus:ring-secondary-light/50 dark:focus:ring-accent/50
+                          focus:outline-none focus:ring-2 focus:ring-accent-light/50 dark:focus:ring-accent/50
                           transition-all duration-200
                           appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
               />
@@ -179,16 +179,16 @@ const Pomodoro = () => {
               className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
                         text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
                         transition-all duration-200 font-medium border border-transparent 
-                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+                        hover:border-accent-light/30 dark:hover:border-accent/30"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-white dark:text-black
+              className="px-5 py-2 rounded-lg bg-accent-light dark:bg-accent text-white dark:text-black
                         font-bold shadow-md hover:shadow-lg
                         transition-all duration-200 hover:scale-[1.02]
-                        hover:bg-secondary-light/90 dark:hover:bg-accent/90"
+                        hover:bg-accent-light/90 dark:hover:bg-accent/90"
             >
               Save Changes
             </button>
