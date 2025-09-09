@@ -5,6 +5,7 @@ import EditColumnModal from "../common/EditColumnModal";
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { addCard, updateCard, deleteCard } from "../../api/project";
+import API from "../../api/API";
 
 export const COLOR_MAP = {
   grey: { light: { fill: "#E5E7EB", border: "#6B7280" }, dark: { fill: "#374151", border: "#9CA3AF" } },

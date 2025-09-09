@@ -8,7 +8,6 @@ import Time from "../project/Time";
 import Sprints from "../project/Sprints";
 import Kanban from "../project/Kanban";
 import Tabs from "../project/Tabs";
-import ToolsFooter from "../project/ToolsFooter";
 import Board from "../project/Board";
 import { getProject } from "../../api/project";
 
@@ -16,15 +15,14 @@ const Project = () => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [selectedSprint, setSelectedSprint] = useState(null);
+  const [showTools, setShowTools] = useState(false); // controls visibility
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const data = await getProject(id);
         setProject(data);
-        if (data.sprints?.length > 0) {
-          setSelectedSprint(data.sprints[0]); // default first sprint
-        }
+        if (data.sprints?.length > 0) setSelectedSprint(data.sprints[0]);
       } catch (err) {
         console.error("Failed to load project", err);
       }
@@ -32,16 +30,22 @@ const Project = () => {
     fetchProject();
   }, [id]);
 
-  if (!project) {
-    return <div className="text-center p-10">Loading...</div>;
-  }
+  if (!project) return <div className="text-center p-10">Loading...</div>;
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       <Navbar />
-      <Tabs />
+
+      {/* Pass toggle function to Tabs */}
+      <Tabs showTools={showTools} setShowTools={setShowTools} />
+
       <div className="flex-1 flex bg-background-light dark:bg-black p-5 pb-0 gap-2.5">
-        <div className="flex flex-col gap-2.5 w-[500px]">
+        <div
+          id="tools"
+          className={`flex flex-col gap-2.5 w-[500px] transition-all ${
+            showTools ? "block" : "hidden"
+          }`}
+        >
           <div className="flex flex-row bg-[#1F2937] dark:bg-[#131313] rounded-md border border-gray-400 dark:border-gray-700">
             <Pomodoro />
             <Status />
@@ -51,17 +55,12 @@ const Project = () => {
             <Sprints
               projectId={project._id}
               selectedSprintId={selectedSprint?._id}
-              onSprintSelect={(s) => setSelectedSprint(s)}z
+              onSprintSelect={(s) => setSelectedSprint(s)}
             />
-            <Kanban
-              projectId={project._id}
-              selectedSprint={selectedSprint}
-            />
+            <Kanban projectId={project._id} selectedSprint={selectedSprint} />
           </div>
-          {/* <div className="flex flex-row gap-1.5">
-            <ToolsFooter />
-          </div> */}
         </div>
+
         <Board projectId={project._id} boards={project.boards} />
       </div>
     </div>
