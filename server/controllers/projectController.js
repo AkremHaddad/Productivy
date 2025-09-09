@@ -431,6 +431,28 @@ export const deleteColumn = async (req, res) => {
 };
 
 
+export const changeColumnOrder = async (req, res) => {
+  const { projectId, boardId } = req.params;
+  const { newOrder } = req.body; // Array of column IDs in desired order
+
+  try {
+    const project = await Project.findById(projectId);
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    const board = project.boards.id(boardId);
+    if (!board) return res.status(404).json({ message: "Board not found" });
+
+    // Reorder columns
+    board.columns = newOrder.map(id => board.columns.id(id));
+    await project.save();
+
+    res.json(board.columns);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to reorder columns" });
+  }
+};
+
 // ==================== Cards ====================
 export const addCard = async (req, res) => {
   try {
@@ -515,3 +537,30 @@ export const deleteCard = async (req, res) => {
   }
 };
 
+// Change card order within a column (or between columns)
+export const changeCardOrder = async (req, res) => {
+  const { projectId, boardId } = req.params;
+  const { newColumns } = req.body; 
+  // newColumns = [{ _id: columnId, cards: [cardId1, cardId2, ...] }, ...]
+
+  try {
+    const project = await Project.findById(projectId);
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    const board = project.boards.id(boardId);
+    if (!board) return res.status(404).json({ message: "Board not found" });
+
+    newColumns.forEach(colOrder => {
+      const column = board.columns.id(colOrder._id);
+      if (column) {
+        column.cards = colOrder.cards.map(cardId => column.cards.id(cardId));
+      }
+    });
+
+    await project.save();
+    res.json(board.columns);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to reorder cards" });
+  }
+};

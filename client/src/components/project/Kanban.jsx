@@ -279,7 +279,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
               className={`min-h-[52.8px] max-h-[52.8px] p-2 border-t-2 border-t-black rounded-b-md transition-all duration-300 ease-in-out relative 
                 ${
                   snapshot.isDraggingOver || isDragging
-                    ? "bg-gradient-to-r from-red-500/90 to-red-600/90 text-white shadow-lg border-red-400 "
+                    ? "bg-gradient-to-r from-red-500/70 to-red-600/70 text-white shadow-lg border-red-400 "
                     : "bg-black/20 dark:bg-black/40"
                 }`}
             >

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTheme } from "../../api/useTheme";
-import API from "../../api/API";
 import Card from "./Card";
 import EditColumnModal from "../common/EditColumnModal";
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { Droppable, Draggable } from "@hello-pangea/dnd";
 
 export const COLOR_MAP = {
   grey: { light: { fill: "#E5E7EB", border: "#6B7280" }, dark: { fill: "#374151", border: "#9CA3AF" } },
@@ -17,10 +17,10 @@ export const COLOR_MAP = {
 };
 
 const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
-  const [cards, setCards] = useState(column.cards || []);
   const [editingCard, setEditingCard] = useState(null);
   const [editCardData, setEditCardData] = useState({ title: "", description: "" });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newCardTitle, setNewCardTitle] = useState("");
   const [showEditColumn, setShowEditColumn] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
@@ -29,42 +29,36 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
   const fillColor = isDarkMode ? colorObj.dark.fill : colorObj.light.fill;
   const borderColor = isDarkMode ? colorObj.dark.border : colorObj.light.border;
 
-  useEffect(() => {
-    setCards(column.cards || []);
-  }, [column]);
-
   const handleAddCard = async () => {
-    setIsLoading(true);
+    if (!newCardTitle.trim()) return;
     try {
-      const res = await API.post(
-        `/api/projects/${projectId}/boards/${boardId}/columns/${column._id}/cards`,
-        { title: "New Card", description: "Enter details here..." }
+      const newCard = await addCard(projectId, boardId, column._id, newCardTitle.trim());
+      onColumnsUpdate(prevCols =>
+        prevCols.map(col =>
+          col._id === column._id ? { ...col, cards: [...(col.cards || []), newCard] } : col
+        )
       );
-      const updatedCards = res.data;
-      setCards(updatedCards);
-      const newCard = updatedCards[updatedCards.length - 1];
+      setNewCardTitle("");
+      setIsAdding(false);
       setEditingCard(newCard._id);
-      setEditCardData({ title: newCard.title, description: newCard.description || "Enter details here..." });
+      setEditCardData({ title: newCard.title, description: newCard.description || "" });
     } catch (err) {
       console.error("Error adding card:", err);
       onError("Failed to add card. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleEditCard = async (cardId) => {
-    if (!editCardData.title.trim()) {
-      setEditingCard(null);
-      setEditCardData({ title: "", description: "" });
-      return;
-    }
+    if (!editCardData.title.trim()) return;
     try {
-      const res = await API.patch(
-        `/api/projects/${projectId}/boards/${boardId}/columns/${column._id}/cards/${cardId}`,
-        { title: editCardData.title.trim(), description: editCardData.description.trim() }
+      const updatedCard = await editCard(projectId, boardId, column._id, cardId, editCardData);
+      onColumnsUpdate(prevCols =>
+        prevCols.map(col =>
+          col._id === column._id
+            ? { ...col, cards: col.cards.map(c => (c._id === cardId ? updatedCard : c)) }
+            : col
+        )
       );
-      setCards(prev => prev.map(c => (c._id === cardId ? res.data : c)));
       setEditingCard(null);
       setEditCardData({ title: "", description: "" });
     } catch (err) {
@@ -75,10 +69,14 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
 
   const handleDeleteCard = async (cardId) => {
     try {
-      const res = await API.delete(
-        `/api/projects/${projectId}/boards/${boardId}/columns/${column._id}/cards/${cardId}`
+      await deleteCard(projectId, boardId, column._id, cardId);
+      onColumnsUpdate(prevCols =>
+        prevCols.map(col =>
+          col._id === column._id
+            ? { ...col, cards: col.cards.filter(c => c._id !== cardId) }
+            : col
+        )
       );
-      setCards(res.data);
     } catch (err) {
       console.error("Error deleting card:", err);
       onError("Failed to delete card. Please try again.");
@@ -87,10 +85,9 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
 
   const handleDeleteColumn = async () => {
     try {
-      const res = await API.delete(
-        `/api/projects/${projectId}/boards/${boardId}/columns/${column._id}`
-      );
-      onColumnsUpdate(res.data);
+      // Assuming you have deleteColumn API
+      await API.delete(`/api/projects/${projectId}/boards/${boardId}/columns/${column._id}`);
+      onColumnsUpdate(prevCols => prevCols.filter(col => col._id !== column._id));
       setDeleteConfirm(false);
     } catch (err) {
       console.error("Error deleting column:", err);
@@ -100,7 +97,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
 
   return (
     <div className="bg-white dark:bg-black rounded-lg p-4 min-w-[280px] max-w-[300px] flex flex-col gap-2 shadow-md group transition-all hover:shadow-lg">
-      
+
       {/* Column Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-1">
@@ -108,47 +105,67 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
           <h3 className="text-md font-medium text-black dark:text-white flex-1 truncate">{column.title}</h3>
         </div>
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => setShowEditColumn(true)}
-            className="text-gray-500 hover:text-blue-600 p-1 transition-opacity"
-            title="Edit column"
-          >
+          <button onClick={() => setShowEditColumn(true)} className="text-gray-500 hover:text-blue-600 p-1 transition-opacity">
             <PencilSquareIcon className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => setDeleteConfirm(true)}
-            className="p-1 ml-1 rounded-full text-red-500 dark:text-red-400 hover:bg-black/10 dark:hover:bg-white/10 transition hover:text-red-500 dark:hover:text-red-400"
-            title="Delete"
-          >
+          <button onClick={() => setDeleteConfirm(true)} className="p-1 ml-1 rounded-full text-red-500 dark:text-red-400 hover:bg-black/10 dark:hover:bg-white/10 transition">
             <TrashIcon className="w-4 h-4 text-inherit" />
           </button>
         </div>
       </div>
 
-      {/* Cards */}
-      <div className="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-700 pr-2">
-        {cards.map((card) => (
-          <Card
-            key={card._id}
-            card={card}
-            editingCard={editingCard}
-            editCardData={editCardData}
-            setEditingCard={setEditingCard}
-            setEditCardData={setEditCardData}
-            handleEditCard={handleEditCard}
-            handleDeleteCard={handleDeleteCard}
-          />
-        ))}
-      </div>
+      {/* Droppable Cards */}
+      <Droppable droppableId={column._id} type="CARD">
+        {(provided, snapshot) => (
+          <div ref={provided.innerRef} {...provided.droppableProps} className={`flex flex-col gap-2 pr-2 ${snapshot.isDraggingOver ? " rounded-md transition-colors" : ""}`}>
+            {column.cards?.map((card, index) => (
+              <Draggable key={card._id} draggableId={card._id} index={index}>
+                {(dragProvided, dragSnapshot) => (
+                  <div ref={dragProvided.innerRef} {...dragProvided.draggableProps} {...dragProvided.dragHandleProps} className={`${dragSnapshot.isDragging ? "shadow-2xl scale-105 z-50" : ""} transition-all`}>
+                    <Card
+                      card={card}
+                      editingCard={editingCard}
+                      editCardData={editCardData}
+                      setEditingCard={setEditingCard}
+                      setEditCardData={setEditCardData}
+                      handleEditCard={handleEditCard}
+                      handleDeleteCard={handleDeleteCard}
+                    />
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
 
-      {/* Add New Card */}
-      <button
-        onClick={handleAddCard}
-        disabled={isLoading}
-        className="w-7/12 bg-primary-light dark:bg-primary-dark rounded-md p-2 text-white hover:opacity-90"
-      >
-        {isLoading ? "Adding..." : "+ Add Card"}
-      </button>
+      {/* Add Card Section */}
+      {isAdding ? (
+        <div className="mt-2 flex flex-col gap-2">
+          <input
+            type="text"
+            value={newCardTitle}
+            onChange={(e) => setNewCardTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleAddCard();
+              if (e.key === "Escape") {
+                setIsAdding(false);
+                setNewCardTitle("");
+              }
+            }}
+            className="w-full px-2 py-1 rounded border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent"
+            placeholder="Card title..."
+            autoFocus
+          />
+          <div className="flex gap-2">
+            <button onClick={handleAddCard} className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">Add</button>
+            <button onClick={() => { setIsAdding(false); setNewCardTitle(""); }} className="px-3 py-1 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600">Cancel</button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setIsAdding(true)} className="mt-2 px-3 py-2 bg-gray-400 dark:bg-gray-800 text-gray-800 dark:text-gray-300 rounded hover:bg-gray-500 dark:hover:bg-gray-700 transition">+ Add Card</button>
+      )}
 
       {/* Edit Column Modal */}
       {showEditColumn && (
@@ -158,38 +175,21 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
           column={column}
           colors={COLOR_MAP}
           onClose={() => setShowEditColumn(false)}
-          onUpdated={(updatedCol) =>
-            onColumnsUpdate(prev => prev.map(col => (col._id === updatedCol._id ? updatedCol : col)))
-          }
+          onUpdated={(updatedCol) => onColumnsUpdate(prevCols => prevCols.map(col => col._id === updatedCol._id ? updatedCol : col))}
         />
       )}
 
-      {/* Delete Column Confirmation Modal */}
+      {/* Delete Column Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
           <div className="bg-background-light dark:bg-background-dark border-2 border-secondary-dark dark:border-accent p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
-            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">
-              Delete Column
-            </h2>
+            <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">Delete Column</h2>
             <p className="text-text-light dark:text-text-dark text-center">
               Are you sure you want to delete this column? This will also delete all cards within it. This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => setDeleteConfirm(false)}
-                className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
-                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
-                        transition-all duration-200 font-medium border border-transparent 
-                        hover:border-secondary-light/30 dark:hover:border-accent/30"
-                >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteColumn}
-                className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:bg-red-600 dark:hover:bg-red-700 transform hover:scale-[1.02]"
-              >
-                Delete
-              </button>
+              <button onClick={() => setDeleteConfirm(false)} className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark transition-all duration-200 font-medium border border-transparent hover:border-secondary-light/30 dark:hover:border-accent/30">Cancel</button>
+              <button onClick={handleDeleteColumn} className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:bg-red-600 dark:hover:bg-red-700 transform hover:scale-[1.02]">Delete</button>
             </div>
           </div>
         </div>

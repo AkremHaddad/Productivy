@@ -4,20 +4,18 @@ import Column from "./Column";
 import LoadingSpinner from "../common/LoadingSpinner";
 import Modal from "../common/Modal";
 import { addColumn } from "../../api/project";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const Board = ({ projectId }) => {
   const [boards, setBoards] = useState([]);
   const [currentBoardIndex, setCurrentBoardIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
   const [editingBoard, setEditingBoard] = useState(null);
   const [editBoardTitle, setEditBoardTitle] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const boardsContainerRef = useRef(null);
-
-  // inline edit autosize refs
   const inputRef = useRef(null);
   const measureRef = useRef(null);
 
@@ -26,10 +24,8 @@ const Board = ({ projectId }) => {
       ? boards[Math.min(currentBoardIndex, boards.length - 1)]
       : null;
 
-  // Fetch project boards
   const fetchBoards = useCallback(async () => {
     if (!projectId) return;
-
     setIsLoading(true);
     setError("");
 
@@ -37,18 +33,13 @@ const Board = ({ projectId }) => {
       const res = await API.get(`/api/projects/${projectId}`);
       let fetchedBoards = res.data.boards || [];
 
-      // Ensure columns arrays exist
       fetchedBoards = fetchedBoards.map((b) => ({
         ...b,
         columns: Array.isArray(b.columns) ? b.columns : [],
       }));
 
-      // If no boards, create one automatically
       if (fetchedBoards.length === 0) {
-        const newBoardRes = await API.post(
-          `/api/projects/${projectId}/boards`,
-          { title: "Main Board" }
-        );
+        const newBoardRes = await API.post(`/api/projects/${projectId}/boards`, { title: "Main Board" });
         fetchedBoards = newBoardRes.data.map((b) => ({
           ...b,
           columns: Array.isArray(b.columns) ? b.columns : [],
@@ -69,35 +60,28 @@ const Board = ({ projectId }) => {
     fetchBoards();
   }, [fetchBoards]);
 
-  // Smooth horizontal scrolling with mouse wheel
   useEffect(() => {
     const container = boardsContainerRef.current;
     if (!container) return;
-
     const handleWheel = (e) => {
       if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
         e.preventDefault();
         container.scrollLeft += e.deltaY;
       }
     };
-
     container.addEventListener("wheel", handleWheel, { passive: false });
     return () => container.removeEventListener("wheel", handleWheel);
   }, []);
 
-  // Autosize the inline input to its content
   useEffect(() => {
     if (!editingBoard || !inputRef.current || !measureRef.current) return;
     measureRef.current.textContent = editBoardTitle || " ";
     inputRef.current.style.width = `${measureRef.current.offsetWidth + 8}px`;
   }, [editingBoard, editBoardTitle]);
 
-  // Add board
   const handleAddBoard = async () => {
     try {
-      const res = await API.post(`/api/projects/${projectId}/boards`, {
-        title: "New Board",
-      });
+      const res = await API.post(`/api/projects/${projectId}/boards`, { title: "New Board" });
       const updated = res.data.map((b) => ({
         ...b,
         columns: Array.isArray(b.columns) ? b.columns : [],
@@ -110,22 +94,15 @@ const Board = ({ projectId }) => {
     }
   };
 
-  // Edit board title
   const handleEditBoard = async (boardId) => {
     if (!editBoardTitle.trim()) {
       setEditingBoard(null);
       setEditBoardTitle("");
       return;
     }
-
     try {
-      const res = await API.patch(
-        `/api/projects/${projectId}/boards/${boardId}`,
-        { title: editBoardTitle.trim() }
-      );
-      setBoards((prev) =>
-        prev.map((b) => (b._id === boardId ? res.data : b))
-      );
+      const res = await API.patch(`/api/projects/${projectId}/boards/${boardId}`, { title: editBoardTitle.trim() });
+      setBoards((prev) => prev.map((b) => (b._id === boardId ? res.data : b)));
       setEditingBoard(null);
       setEditBoardTitle("");
     } catch (err) {
@@ -134,12 +111,9 @@ const Board = ({ projectId }) => {
     }
   };
 
-  // Delete board
   const handleDeleteBoard = async (boardId) => {
     try {
-      const res = await API.delete(
-        `/api/projects/${projectId}/boards/${boardId}`
-      );
+      const res = await API.delete(`/api/projects/${projectId}/boards/${boardId}`);
       const updated = res.data.map((b) => ({
         ...b,
         columns: Array.isArray(b.columns) ? b.columns : [],
@@ -153,16 +127,13 @@ const Board = ({ projectId }) => {
     }
   };
 
-  // Add column
   const handleAddColumn = async () => {
     if (!currentBoard?._id) return;
     try {
-      const newCol = await addColumn(projectId, currentBoard._id); // now newCol._id exists
+      const newCol = await addColumn(projectId, currentBoard._id);
       setBoards((prev) =>
         prev.map((b, i) =>
-          i === currentBoardIndex
-            ? { ...b, columns: [...(b.columns || []), newCol] }
-            : b
+          i === currentBoardIndex ? { ...b, columns: [...(b.columns || []), newCol] } : b
         )
       );
     } catch (err) {
@@ -171,20 +142,55 @@ const Board = ({ projectId }) => {
     }
   };
 
-  // Update columns after column operations
   const updateColumns = useCallback(
     (updater) => {
       setBoards((prev) =>
         prev.map((b, i) => {
           if (i !== currentBoardIndex) return b;
-          const nextCols =
-            typeof updater === "function" ? updater(b.columns || []) : updater;
+          const nextCols = typeof updater === "function" ? updater(b.columns || []) : updater;
           return { ...b, columns: nextCols };
         })
       );
     },
     [currentBoardIndex]
   );
+
+  const handleDragEnd = (result) => {
+    const { source, destination, type } = result;
+    if (!destination || !currentBoard) return;
+
+    if (type === "COLUMN") {
+      const newCols = Array.from(currentBoard.columns);
+      const [moved] = newCols.splice(source.index, 1);
+      newCols.splice(destination.index, 0, moved);
+      updateColumns(newCols);
+      return;
+    }
+
+    if (type === "CARD") {
+      const sourceColIndex = currentBoard.columns.findIndex(c => c._id === source.droppableId);
+      const destColIndex = currentBoard.columns.findIndex(c => c._id === destination.droppableId);
+      const sourceCol = currentBoard.columns[sourceColIndex];
+      const destCol = currentBoard.columns[destColIndex];
+      const newSourceCards = Array.from(sourceCol.cards);
+      const [movedCard] = newSourceCards.splice(source.index, 1);
+
+      if (source.droppableId === destination.droppableId) {
+        newSourceCards.splice(destination.index, 0, movedCard);
+        const newCols = [...currentBoard.columns];
+        newCols[sourceColIndex].cards = newSourceCards;
+        updateColumns(newCols);
+      } else {
+        const newDestCards = Array.from(destCol.cards);
+        newDestCards.splice(destination.index, 0, movedCard);
+        const newCols = [...currentBoard.columns];
+        newCols[sourceColIndex].cards = newSourceCards;
+        newCols[destColIndex].cards = newDestCards;
+        updateColumns(newCols);
+      }
+      return;
+    }
+  };
 
   if (error) {
     return (
@@ -205,12 +211,13 @@ const Board = ({ projectId }) => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#2E837F] to-[#40C1BB] dark:from-[#113533] dark:to-[#2D8984]  rounded-md flex-1 overflow-hidden w-full h-[616px] flex flex-col border border-gray-300 dark:border-gray-700">
-      {/* Header (tabs) */}
+    <div className="bg-gradient-to-r from-[#2E837F] to-[#40C1BB] dark:from-[#113533] dark:to-[#2D8984] rounded-md flex-1 overflow-hidden w-full h-[616px] flex flex-col border border-gray-300 dark:border-gray-700">
+      
+      {/* Header Tabs */}
       <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md border-b-2 border-black border-solid">
         <div
           ref={boardsContainerRef}
-          className="flex overflow-x-auto scrollbar-none flex-grow scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300 dark:scrollbar-thumb-gray-700 dark:scrollbar-track-gray-900"
+          className="flex overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-500 dark:scrollbar-thumb-gray-700"
         >
           {boards.map((board, index) => {
             const isActive = index === currentBoardIndex;
@@ -223,10 +230,7 @@ const Board = ({ projectId }) => {
               >
                 {editingBoard === board._id ? (
                   <div className="relative flex items-center">
-                    <span
-                      ref={measureRef}
-                      className="absolute -z-10 top-0 left-0 px-2 py-1 text-3xl font-normal whitespace-pre opacity-0 pointer-events-none"
-                    />
+                    <span ref={measureRef} className="absolute -z-10 top-0 left-0 px-2 py-1 text-3xl font-normal whitespace-pre opacity-0 pointer-events-none"/>
                     <input
                       ref={inputRef}
                       type="text"
@@ -269,18 +273,8 @@ const Board = ({ projectId }) => {
                     className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200 flex items-center"
                     title="Delete board"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
                   </button>
                 )}
@@ -298,30 +292,52 @@ const Board = ({ projectId }) => {
         </button>
       </div>
 
-      {/* Content */}
-      <div className="flex overflow-x-auto p-4 gap-4 items-start scrollbar-thin scrollbar-thumb-gray-500 dark:scrollbar-thumb-gray-700 h-full">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64 w-full">
-            <LoadingSpinner />
-          </div>
-        ) : currentBoard ? (
-          <>
-            {currentBoard.columns.map(col => (
-              <Column key={col._id} projectId={projectId} boardId={currentBoard._id} column={col} onColumnsUpdate={updateColumns} onError={setError} />
-            ))}
-            <button
-              onClick={handleAddColumn}
-              className="min-w-[200px] max-h-[50px] bg-gray-400 dark:bg-black rounded-lg p-3 flex items-center justify-center text-gray-800 dark:text-gray-400 shadow-md hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="board" direction="horizontal" type="COLUMN">
+          {(provided) => (
+            <div
+              className="flex overflow-x-auto overflow-y-auto p-4 gap-4 items-start scrollbar-none scrollbar-thumb-gray-500 dark:scrollbar-thumb-gray-700 h-full"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
             >
-              + Add new column
-            </button>
-          </>
-        ) : (
-          <div className="text-center text-gray-500 dark:text-gray-400">No boards yet</div>
-        )}
-      </div>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64 w-full">
+                  <LoadingSpinner />
+                </div>
+              ) : currentBoard ? (
+                <>
+                  {currentBoard.columns.map((col, idx) => (
+                    <Draggable draggableId={col._id} index={idx} key={col._id}>
+                      {(colProvided) => (
+                        <div ref={colProvided.innerRef} {...colProvided.draggableProps} {...colProvided.dragHandleProps}>
+                          <Column
+                            projectId={projectId}
+                            boardId={currentBoard._id}
+                            column={col}
+                            onColumnsUpdate={updateColumns}
+                            onError={setError}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
 
-      {/* Delete Confirmation */}
+                  <button
+                    onClick={handleAddColumn}
+                    className="min-w-[200px] max-h-[50px] bg-gray-400 dark:bg-black rounded-lg p-3 flex items-center justify-center text-gray-800 dark:text-gray-400 shadow-md hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                  >
+                    + Add new column
+                  </button>
+                  {provided.placeholder}
+                </>
+              ) : (
+                <div className="text-center text-gray-500 dark:text-gray-400">No boards yet</div>
+              )}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+
       <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Delete Board">
         <p className="text-text-light dark:text-text-dark text-center">
           Are you sure you want to delete this board? This cannot be undone.
@@ -329,26 +345,18 @@ const Board = ({ projectId }) => {
         <div className="flex justify-end gap-3 mt-4">
           <button
             onClick={() => setDeleteConfirm(null)}
-            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
-                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
-                        transition-all duration-200 font-medium border border-transparent 
-                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark transition-all duration-200 font-medium border border-transparent hover:border-secondary-light/30 dark:hover:border-accent/30"
           >
             Cancel
           </button>
           <button
             onClick={() => handleDeleteBoard(deleteConfirm)}
-            className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
-                      font-bold shadow-md hover:shadow-lg
-                      transition-all duration-200
-                      hover:bg-red-600 dark:hover:bg-red-700
-                      transform hover:scale-[1.02]"
+            className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:bg-red-600 dark:hover:bg-red-700 transform hover:scale-[1.02]"
           >
             Delete
           </button>
         </div>
       </Modal>
-
     </div>
   );
 };

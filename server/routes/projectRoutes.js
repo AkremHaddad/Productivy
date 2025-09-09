@@ -22,7 +22,9 @@ import {
   updateCard,
   deleteCard,
   deleteProject,
-  changeTaskOrder
+  changeTaskOrder,
+  changeColumnOrder,
+  changeCardOrder
 } from "../controllers/projectController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -56,10 +58,12 @@ router.delete("/:projectId/boards/:boardId", protect, deleteBoard);
 router.post("/:projectId/boards/:boardId/columns", protect, addColumn);
 router.patch("/:projectId/boards/:boardId/columns/:columnId", protect, updateColumn);
 router.delete("/:projectId/boards/:boardId/columns/:columnId", protect, deleteColumn);
+router.post("/:projectId/boards/:boardId/columns/change-order", protect, changeColumnOrder);
 
 // Cards
 router.post("/:projectId/boards/:boardId/columns/:columnId/cards", protect, addCard);
 router.patch("/:projectId/boards/:boardId/columns/:columnId/cards/:cardId", protect, updateCard);
 router.delete("/:projectId/boards/:boardId/columns/:columnId/cards/:cardId", protect, deleteCard);
+router.post("/:projectId/boards/:boardId/cards/change-order", protect, changeCardOrder);
 
 export default router;

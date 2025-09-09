@@ -126,3 +126,15 @@ export const changeTaskOrder = async (projectId, sprintId, taskIds) => {
     { taskIds }
   );
 };
+
+// Change column order
+export const reorderColumns = async (projectId, boardId, newOrder) => {
+  const res = await API.post(`/api/projects/${projectId}/boards/${boardId}/columns/change-order`, { newOrder });
+  return res.data;
+};
+
+// Change card order
+export const reorderCards = async (projectId, boardId, newColumns) => {
+  const res = await API.post(`/api/projects/${projectId}/boards/${boardId}/cards/change-order`, { newColumns });
+  return res.data;
+};
