@@ -141,11 +141,11 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
             <div
               key={s._id}
               onClick={() => handleSprintClick(s)}
-              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex 
-                          items-center justify-between ${
+              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex font-medium m-2 rounded-lg
+                          items-center justify-between border ${
                 selectedSprintId === s._id
-                  ? "bg-black/25 dark:bg-primary-light/25 text-black dark:text-black font-semibold border-l-4 border-[#113533] dark:border-[#2D8984]"
-                  : "hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-black font-semibold"
+                  ? "bg-black/50 text-white border-black shadow-md"
+                  : "bg-gray-300 dark:bg-[#131313] text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-400 dark:border-gray-700"
               }`}
             >
               <div className="flex-1 min-w-0">

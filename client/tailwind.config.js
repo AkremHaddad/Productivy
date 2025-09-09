@@ -18,7 +18,7 @@ export default {
         'navbar-light': 'rgba(78, 84, 94, 1)', 
         'primary-dark': 'rgba(23, 43, 77, 1)',
         'secondary-dark': 'rgba(23, 43, 77, 1)',
-        'accent': 'rgba(190, 255, 0, 1)',
+        'accent': '#40c1bb',
         'background-dark': 'rgba(0, 0, 0, 1)',
         // 'background-dark': 'rgba(0, 37, 43, 1)',
         'text-dark': 'rgba(224, 224, 224, 1)',
