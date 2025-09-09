@@ -134,8 +134,8 @@ const Card = ({
           {deleteConfirm && (
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-background-light dark:bg-background-dark border-2 border-red-600 dark:border-red-500 p-6 rounded-xl shadow-2xl w-full max-w-sm animate-fadeScale">
-                <h3 className="text-lg font-bold mb-2 text-red-600 dark:text-red-500">Delete Card</h3>
-                <p className="mb-6 opacity-80">
+                <h3 className="text-lg font-bold mb-2 text-red-600 dark:text-red-500 text-center">Delete Card</h3>
+                <p className="mb-6 opacity-80 dark:text-text-dark">
                   Are you sure you want to delete this card? This action cannot be undone.
                 </p>
                 <div className="flex justify-end gap-3">

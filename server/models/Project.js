@@ -15,8 +15,8 @@ const SprintSchema = new mongoose.Schema({
 });
 
 const CardSchema = new mongoose.Schema({
-  title: { type: String, required: true }, // Changed from 'text' to 'title' for consistency
-  description: { type: String }, // Added optional description field
+  title: { type: String}, 
+  description: { type: String }, 
   createdAt: { type: Date, default: Date.now },
 });
 

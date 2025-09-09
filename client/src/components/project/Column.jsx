@@ -37,7 +37,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
     setIsAddingLoading(true);
     try {
       const defaultTitle = "New Card";
-      const defaultDescription = "Enter details here...";
+      const defaultDescription = "";
       const newCards = await addCard(projectId, boardId, column._id, defaultTitle, defaultDescription);
 
       onColumnsUpdate(prevCols =>
@@ -188,7 +188,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       {/* Delete Column Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-background-light dark:bg-background-dark border-2 border-secondary-dark dark:border-accent p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
+          <div className="bg-background-light dark:bg-black border-2 border-secondary-dark dark:border-accent p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
             <h2 className="text-2xl font-jaro font-bold text-center text-secondary-dark dark:text-accent">Delete Column</h2>
             <p className="text-text-light dark:text-text-dark text-center">
               Are you sure you want to delete this column? This will also delete all cards within it. This action cannot be undone.

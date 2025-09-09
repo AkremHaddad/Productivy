@@ -50,7 +50,7 @@ function Home() {
               <img
                 src="./heromockup.png"
                 alt="App preview"
-                className="w-full max-w-md rounded-xl transform rotate-y-6 rotate-x-2 transition-transform duration-700 hover:rotate-y-0 hover:rotate-x-0"
+                className="w-full max-w-xlg transition-transform duration-700 hover:rotate-y-0 hover:rotate-x-0"
               />
             </div>
           </div>

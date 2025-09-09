@@ -15,7 +15,7 @@ const Project = () => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [selectedSprint, setSelectedSprint] = useState(null);
-  const [showTools, setShowTools] = useState(false); // controls visibility
+  const [showTools, setShowTools] = useState(true); 
 
   useEffect(() => {
     const fetchProject = async () => {

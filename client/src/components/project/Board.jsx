@@ -246,11 +246,72 @@ const Board = ({ projectId }) => {
     );
   }
 
+const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="bg-gradient-to-r from-[#2E837F] to-[#40C1BB] dark:from-[#113533] dark:to-[#2D8984] rounded-md flex-1 overflow-hidden w-full h-[622px] flex flex-col border border-gray-300 dark:border-gray-700">
+    <div className="relative flex-shrink-0" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="bg-black bg-opacity-50 text-white hover:bg-opacity-25 transition-colors px-3 flex items-center h-full"
+        title="Board actions"
+      >
+        <svg
+          className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-30 border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-200 ease-out transform opacity-100 scale-100 origin-top-right">
+          <button
+            onClick={() => { onAddBoard(); setIsOpen(false); }}
+            className="flex items-center w-full px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-150 ease-in-out"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Board
+          </button>
+          {currentBoard && boards.length > 1 && (
+            <button
+              onClick={() => { onDeleteBoard(currentBoard._id); setIsOpen(false); }}
+              className="flex items-center w-full px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 ease-in-out border-t border-gray-100 dark:border-gray-700"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Delete Current Board
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+
+  return (
+    <div className="bg-gradient-to-r from-[#2E837F] to-[#40C1BB] dark:from-[#113533] dark:to-[#2D8984] rounded-md flex-1 overflow-hidden w-full h-[622px] flex flex-col">
       
       {/* Header Tabs */}
-      <div className="bg-black bg-opacity-25 min-h-[60px] font-normal text-3xl text-white flex items-stretch rounded-t-md border-b-2 border-black border-solid">
+      <div className="bg-black bg-opacity-25 min-h-[50px] font-normal text-3xl text-white flex items-stretch rounded-t-md">
         <div
           ref={boardsContainerRef}
           className="flex overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-500 dark:scrollbar-thumb-gray-700"
@@ -260,13 +321,18 @@ const Board = ({ projectId }) => {
             return (
               <div
                 key={board._id}
-                className={`group flex items-stretch flex-shrink-0 px-2 transition-colors min-h-full border-r-2 border-black border-solid ${
-                  isActive ? "bg-black/50 dark:bg-black/50" : "hover:bg-black/20 dark:hover:bg-white/10"
+                className={`group flex items-stretch flex-shrink-0 px-2 transition-colors min-h-full ${
+                  isActive
+                    ? "bg-black/50 dark:bg-black/50"
+                    : "hover:bg-black/20 dark:hover:bg-white/10"
                 }`}
               >
                 {editingBoard === board._id ? (
                   <div className="relative flex items-center">
-                    <span ref={measureRef} className="absolute -z-10 top-0 left-0 px-2 py-1 text-3xl font-normal whitespace-pre opacity-0 pointer-events-none"/>
+                    <span
+                      ref={measureRef}
+                      className="absolute -z-10 top-0 left-0 px-2 py-1 font-semibold text-lg whitespace-pre opacity-0 pointer-events-none"
+                    />
                     <input
                       ref={inputRef}
                       type="text"
@@ -281,7 +347,7 @@ const Board = ({ projectId }) => {
                       }}
                       onBlur={() => handleEditBoard(board._id)}
                       autoFocus
-                      className="bg-transparent text-white border-none outline-none h-full px-2 py-1"
+                      className="bg-transparent text-white border-none outline-none px-2 py-1 font-semibold text-lg"
                       style={{ minWidth: 24 }}
                       onClick={(e) => e.stopPropagation()}
                     />
@@ -293,25 +359,10 @@ const Board = ({ projectId }) => {
                       setEditingBoard(board._id);
                       setEditBoardTitle(board.title);
                     }}
-                    className="h-full flex items-center px-2 text-white"
+                    className="h-full flex items-center px-2"
                     title="Double-click to rename"
                   >
-                    <span className="truncate">{board.title}</span>
-                  </button>
-                )}
-
-                {editingBoard !== board._id && boards.length > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeleteConfirm(board._id);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1 transition-opacity duration-200 flex items-center"
-                    title="Delete board"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
+                    <span className="truncate font-semibold text-lg">{board.title}</span>
                   </button>
                 )}
               </div>
@@ -319,14 +370,15 @@ const Board = ({ projectId }) => {
           })}
         </div>
 
-        <button
-          className="bg-black bg-opacity-50 text-white hover:bg-opacity-25 transition-colors flex-shrink-0 px-4 flex items-center border-l-2 border-black border-solid"
-          onClick={handleAddBoard}
-          title="Add board"
-        >
-          +
-        </button>
+        {/* Board Actions Dropdown */}
+        <BoardActionsDropdown
+          currentBoard={currentBoard}
+          onAddBoard={handleAddBoard}
+          onDeleteBoard={(boardId) => setDeleteConfirm(boardId)}
+          boards={boards}
+        />
       </div>
+
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="board" direction="horizontal" type="COLUMN">
