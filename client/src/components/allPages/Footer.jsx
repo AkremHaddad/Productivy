@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin, FaEnvelope, FaHeart } from "react-icons/fa";
 
 function Footer() {
   return (
-    <footer className='bg-navbar-light dark:bg-navbar-dark w-full py-4 px-6 flex flex-col sm:flex-row items-center justify-between mt-auto'>
+    <footer className='bg-navbar-light dark:bg-navbar-dark w-full py-4 px-6 select-none flex flex-col sm:flex-row items-center justify-between mt-auto'>
       <div className="flex items-center mb-3 sm:mb-0">
         <p className='text-gray-300 text-sm sm:text-base flex items-center'>
           Developed with <FaHeart className="text-red-500 mx-1" /> by Akrem Haddad

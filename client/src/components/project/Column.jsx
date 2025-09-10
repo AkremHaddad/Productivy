@@ -132,7 +132,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex flex-col gap-2 ${snapshot.isDraggingOver ? "rounded-md transition-colors" : ""}`}
+            className={`flex flex-col gap-2 min-h-[1px] ${snapshot.isDraggingOver ? "rounded-md transition-colors" : ""}`}
           >
             {column.cards?.map((card, index) => (
               <Draggable key={card._id} draggableId={card._id.toString()} index={index}>

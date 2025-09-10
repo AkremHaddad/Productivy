@@ -42,11 +42,11 @@ const Project = () => {
       <div className="flex-1 flex bg-background-light dark:bg-black p-5 pb-0 gap-2.5">
         <div
           id="tools"
-          className={`flex flex-col gap-2.5 w-[500px] transition-all ${
-            showTools ? "block" : "hidden"
-          }`}
+          className={`flex flex-col gap-2.5 overflow-hidden transition-all duration-500 ease-in-out
+            ${showTools ? "max-w-[500px] opacity-100 mr-2.5" : "max-w-0 opacity-0 mr-0"}
+          `}
         >
-          <div className="flex flex-row bg-[#1F2937] dark:bg-[#131313] rounded-md border border-gray-400 dark:border-gray-700">
+          <div className="select-none flex flex-row bg-[#1F2937] dark:bg-[#131313] rounded-md border border-gray-400 dark:border-gray-700">
             <Pomodoro />
             <Status />
             <Time />
@@ -60,7 +60,6 @@ const Project = () => {
             <Kanban projectId={project._id} selectedSprint={selectedSprint} />
           </div>
         </div>
-
         <Board projectId={project._id} boards={project.boards} />
       </div>
     </div>
