@@ -20,15 +20,31 @@ function Home() {
         <section className="bg-background-light dark:bg-black text-white min-h-[92vh] flex items-center">
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
             {/* Left text */}
-            <div data-aos="fade-right" className="max-w-xl px-4">
+            <div data-aos="fade-right" className="px-4">
               <h1 className="text-4xl md:text-5xl font-bold text-secondary-dark dark:text-accent leading-tight">
                 Stay Focused. Plan Smarter. Get More Done.
               </h1>
               <p className="mt-4 text-lg text-text-light dark:text-text-dark">
-                Organize your projects, stay focused with Pomodoro timers, and track your sprints — all in one simple tool.
+                Organize your projects, track your progress, and stay focused with built-in Pomodoro timers, smart task lists, and sprint management — all in one simple tool.
               </p>
-              <div className="mt-6 flex gap-4">
-                <a href="/account" className="bg-secondary-dark hover:bg-secondary-light dark:bg-accent dark:hover:opacity-90 text-black font-semibold py-3 px-6 rounded-lg transition-all">
+
+              {/* Additional descriptive content */}
+              <ul className="mt-6 text-text-light dark:text-text-dark list-disc list-inside space-y-2 text-base">
+                <li>Visualize your workflow with customizable Kanban boards.</li>
+                <li>Plan and execute sprints efficiently with your team.</li>
+                <li>Track your focused hours and daily progress effortlessly.</li>
+                <li>Analyze your productivity with activity visualizers and reports.</li>
+              </ul>
+
+              <p className="mt-4 text-text-light dark:text-text-dark">
+                Whether you’re managing personal tasks or collaborating with a team, Productivy gives you the clarity, focus, and tools to achieve more every day.
+              </p>
+
+              <div className="mt-6 flex gap-4 flex-wrap">
+                <a
+                  href="/account"
+                  className="bg-secondary-dark hover:bg-secondary-light dark:bg-accent dark:hover:opacity-90 text-black font-semibold py-3 px-6 rounded-lg transition-all"
+                >
                   Get Started Free
                 </a>
                 <a
@@ -47,6 +63,7 @@ function Home() {
             </div>
           </div>
         </section>
+
 
         {/* Product Showcase Section */}
         <ProductShowcase />

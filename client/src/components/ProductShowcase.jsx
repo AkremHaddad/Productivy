@@ -54,7 +54,7 @@ export default function ProductShowcase() {
   }, [activeTab, isHovered]);
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#090909] dark:to-[#111111]">
+    <section className="py-20 px-4 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-[#090909] dark:to-[#111111]">
       <div className="container mx-auto text-center max-w-6xl">
         <h2 className="text-4xl font-bold text-secondary-dark dark:text-accent mb-4">
           Boost Your Productivity
@@ -76,7 +76,7 @@ export default function ProductShowcase() {
               onClick={() => setActiveTab(key)}
               className={`flex items-center px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                 activeTab === key
-                  ? "bg-accent text-white shadow-lg transform -translate-y-1"
+                  ? "bg-secondary-light dark:bg-accent text-white shadow-lg transform -translate-y-1"
                   : "bg-white dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 shadow-md"
               }`}
             >

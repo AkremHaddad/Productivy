@@ -4,11 +4,11 @@ import ThemeToggle from './ThemeToggle';
 
 function Navbar() {
   return (
-    <nav className='bg-[#222222] w-screen dark:bg-[#121212] h-14 flex items-center select-none shadow-md shadow-black/50 dark:shadow-white/10'>
+    <nav className='bg-[#222] w-screen dark:bg-[#121212] h-14 flex items-center select-none shadow-md shadow-black/50 dark:shadow-white/10'>
       <a href="/">
         <img src="/logo.svg" alt="Productivy Logo" className="h-10 ml-2 rounded-sm" />
       </a>
-      <p className='ml-2 font-jaro text-accent text-2xl'>Productivy</p>
+      <p className='ml-2 font-jaro text-secondary-light dark:text-accent text-2xl'>Productivy</p>
       <ul className='flex ml-auto mr-8 space-x-4 items-center'>
         <li>
           <a href="/projects" className="flex items-center justify-center">
