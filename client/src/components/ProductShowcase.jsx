@@ -1,11 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "../api/useTheme"; // import your hook
+import { useTheme } from "../api/useTheme";
 
-export default function ProductShowcase() {
+export default function ProductShowcase({ isDarkProp = undefined }) {
   const [activeTab, setActiveTab] = useState("tools");
   const [isHovered, setIsHovered] = useState(false);
-  const isDark = useTheme(); // use the hook
+
+  // synchronous helper (same logic as Home)
+  const getInitialIsDark = () => {
+    try {
+      if (typeof window === "undefined" || typeof document === "undefined") return false;
+      if (document.documentElement.classList.contains("dark")) return true;
+      const stored = localStorage.getItem("theme");
+      if (stored === "dark" || stored === "true") return true;
+      if (stored === "light" || stored === "false") return false;
+      return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+    } catch {
+      return false;
+    }
+  };
+
+  // If parent passed isDarkProp use it, otherwise compute initial value
+  const initialIsDark = typeof isDarkProp === "boolean" ? isDarkProp : getInitialIsDark();
+
+  // local theme state: initialized synchronously for correct first paint
+  const [isDarkMode, setIsDarkMode] = useState(initialIsDark);
+
+  // liveTheme updates when the DOM/class changes (useTheme observes mutations)
+  const liveTheme = useTheme();
+  useEffect(() => {
+    // prefer parent prop if provided (keeps Home in control)
+    if (typeof isDarkProp === "boolean") {
+      setIsDarkMode(isDarkProp);
+    } else {
+      setIsDarkMode(liveTheme);
+    }
+  }, [liveTheme, isDarkProp]);
 
   const features = {
     tools: {
@@ -35,9 +65,16 @@ export default function ProductShowcase() {
   };
 
   const activeFeature = features[activeTab];
-  const imageSrc = isDark
-    ? `./${activeFeature.image}.png`
-    : `./${activeFeature.image}_light.png`;
+
+  // initialize imageSrc synchronously (so refresh shows the correct image)
+  const [imageSrc, setImageSrc] = useState(() =>
+    isDarkMode ? `./${activeFeature.image}.png` : `./${activeFeature.image}_light.png`
+  );
+
+  // update image src when theme or active tab changes
+  useEffect(() => {
+    setImageSrc(isDarkMode ? `./${activeFeature.image}.png` : `./${activeFeature.image}_light.png`);
+  }, [isDarkMode, activeTab, activeFeature.image]);
 
   // Auto-rotate tabs every 5s
   useEffect(() => {
@@ -49,7 +86,6 @@ export default function ProductShowcase() {
         setActiveTab(keys[nextIndex]);
       }
     }, 5000);
-
     return () => clearInterval(interval);
   }, [activeTab, isHovered]);
 
@@ -60,8 +96,7 @@ export default function ProductShowcase() {
           Boost Your Productivity
         </h2>
         <p className="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-          Discover how Productivy helps teams and individuals accomplish more
-          with less effort
+          Discover how Productivy helps teams and individuals accomplish more with less effort
         </p>
 
         {/* Tabs */}
@@ -88,7 +123,7 @@ export default function ProductShowcase() {
 
         {/* Content */}
         <div className="flex flex-col lg:flex-row items-center gap-12 bg-white dark:bg-black rounded-2xl p-8 shadow-xl">
-          {/* Animate description */}
+          {/* Description */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`desc-${activeTab}`}
@@ -100,25 +135,16 @@ export default function ProductShowcase() {
             >
               <div className="flex items-center mb-6">
                 <span className="text-3xl mr-3">{activeFeature.icon}</span>
-                <h3 className="text-2xl font-semibold text-secondary-dark dark:text-accent">
-                  {activeFeature.title}
-                </h3>
+                <h3 className="text-2xl font-semibold text-secondary-dark dark:text-accent">{activeFeature.title}</h3>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                {activeFeature.description}
-              </p>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{activeFeature.description}</p>
 
               <div className="mb-8">
-                <h4 className="font-medium text-secondary-dark dark:text-gray-300 mb-3">
-                  Key Benefits:
-                </h4>
+                <h4 className="font-medium text-secondary-dark dark:text-gray-300 mb-3">Key Benefits:</h4>
                 <ul className="space-y-2">
                   {activeFeature.benefits.map((benefit, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center text-gray-600 dark:text-gray-400"
-                    >
-                      <span className="w-2 h-2 bg-accent rounded-full mr-3"></span>
+                    <li key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+                      <span className="w-2 h-2 bg-accent rounded-full mr-3" />
                       {benefit}
                     </li>
                   ))}
@@ -127,7 +153,7 @@ export default function ProductShowcase() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Animate image */}
+          {/* Image */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`img-${activeTab}`}
@@ -146,9 +172,6 @@ export default function ProductShowcase() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
               </div>
 
-              {/* Decorative elements */}
-              <div className="absolute -z-10 -top-4 -right-4 w-32 h-32 bg-accent/10 rounded-full"></div>
-              <div className="absolute -z-10 -bottom-4 -left-4 w-24 h-24 bg-secondary/10 rounded-full"></div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -159,11 +182,7 @@ export default function ProductShowcase() {
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                activeTab === key
-                  ? "bg-accent scale-125"
-                  : "bg-gray-300 dark:bg-gray-600"
-              }`}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${activeTab === key ? "bg-accent scale-125" : "bg-gray-300 dark:bg-gray-600"}`}
               aria-label={`Show ${features[key].title}`}
             />
           ))}

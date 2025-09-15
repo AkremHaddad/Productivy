@@ -12,7 +12,7 @@ function Navbar() {
       <ul className='flex ml-auto mr-8 space-x-4 items-center'>
         <li>
           <a href="/projects" className="flex items-center justify-center">
-            <Squares2X2Icon className="h-6 w-6 text-text-dark hover:text-accent transition-colors" />
+            <Squares2X2Icon className="h-6 w-6 text-text-dark hover:text-secondary-light dark:hover:text-accent transition-colors" />
           </a>
         </li>
         <li>
@@ -20,7 +20,7 @@ function Navbar() {
         </li>
         <li>
           <a href="/account" className="flex items-center justify-center">
-            <UserCircleIcon className="h-6 w-6 text-text-dark hover:text-accent transition-colors" />
+            <UserCircleIcon className="h-6 w-6 text-text-dark hover:text-secondary-light dark:hover:text-accent transition-colors" />
           </a>
         </li>
       </ul>

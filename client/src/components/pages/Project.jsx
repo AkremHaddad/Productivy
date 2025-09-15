@@ -43,7 +43,7 @@ const Project = () => {
         <div
           id="tools"
           className={`flex flex-col gap-2.5 overflow-hidden transition-all duration-500 ease-in-out
-            ${showTools ? "max-w-[500px] opacity-100 mr-2.5" : "max-w-0 opacity-0 mr-0"}
+            ${showTools ? "max-w-[500px] opacity-100" : "max-w-0 opacity-0 mr-0"}
           `}
         >
           <div className="select-none flex flex-row bg-[#1F2937] dark:bg-[#131313] rounded-md border border-gray-400 dark:border-gray-700">

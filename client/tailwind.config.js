@@ -11,7 +11,7 @@ export default {
       colors: {
         'primary-light': 'rgba(74, 111, 165, 1)',
         'secondary-light': 'rgba(12, 118, 83, 1)',
-        'background-light': '#fff',
+        'background-light': '#f6f6f6',
         'text-light': 'rgba(51, 51, 51, 1)',
         'ui-light': 'rgba(224, 229, 236, 1)', 
         'navbar-light': 'rgba(78, 84, 94, 1)', 

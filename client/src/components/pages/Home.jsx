@@ -1,42 +1,81 @@
-import React, { useEffect } from 'react';
-import Navbar from '../allPages/Navbar';
-import Footer from '../allPages/Footer';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import ProductShowcase from '../ProductShowcase';
+import React, { useEffect, useState } from "react";
+import Navbar from "../allPages/Navbar";
+import Footer from "../allPages/Footer";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import ProductShowcase from "../ProductShowcase";
+import { useTheme } from "../../api/useTheme";
+
+/**
+ * Synchronous theme detection helper
+ * - checks <html>.dark, localStorage 'theme', then system pref
+ */
+const getInitialIsDark = () => {
+  try {
+    if (typeof window === "undefined" || typeof document === "undefined") return false;
+    if (document.documentElement.classList.contains("dark")) return true;
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark" || stored === "true") return true;
+    if (stored === "light" || stored === "false") return false;
+    return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+  } catch {
+    return false;
+  }
+};
 
 function Home() {
+  // synchronous initial theme value used for first render
+  const initialIsDark = getInitialIsDark();
+  const [isDark, setIsDark] = useState(initialIsDark);
+
+  // `useTheme()` will update liveTheme whenever the theme toggles
+  const liveTheme = useTheme();
+
+  // themeReady prevents hydration flicker; set true after mount
+  const [themeReady, setThemeReady] = useState(false);
   useEffect(() => {
-    AOS.init({ duration: 1000, once: true }); // Initialize AOS animations
+    setThemeReady(true);
   }, []);
 
+  // Update local isDark when liveTheme changes
+  useEffect(() => {
+    setIsDark(liveTheme);
+  }, [liveTheme]);
+
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: true });
+  }, []);
+
+  // avoid rendering until we've run client mount - prevents mismatch flicker
+  if (!themeReady) return null;
+
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark">
+    <div className={`min-h-screen overflow-x-hidden ${isDark ? "bg-background-dark" : "bg-background-light"}`}>
       <div className="fixed inset-x-0 top-0 z-50">
         <Navbar />
       </div>
+
       <main className="pt-14">
         {/* Hero Section */}
-        <section className="bg-background-light dark:bg-black text-white min-h-[92vh] flex items-center">
+        <section className={`${isDark ? "bg-black" : "bg-background-light"} text-white min-h-[92vh] flex items-center`}>
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
             {/* Left text */}
             <div data-aos="fade-right" className="px-4">
               <h1 className="text-4xl md:text-5xl font-bold text-secondary-dark dark:text-accent leading-tight">
                 Stay Focused. Plan Smarter. Get More Done.
               </h1>
-              <p className="mt-4 text-lg text-text-light dark:text-text-dark">
+              <p className={`${isDark ? "text-text-dark" : "text-text-light"} mt-4 text-lg`}>
                 Organize your projects, track your progress, and stay focused with built-in Pomodoro timers, smart task lists, and sprint management — all in one simple tool.
               </p>
 
-              {/* Additional descriptive content */}
-              <ul className="mt-6 text-text-light dark:text-text-dark list-disc list-inside space-y-2 text-base">
+              <ul className={`${isDark ? "text-text-dark" : "text-text-light"} mt-6 list-disc list-inside space-y-2 text-base`}>
                 <li>Visualize your workflow with customizable Kanban boards.</li>
                 <li>Plan and execute sprints efficiently with your team.</li>
                 <li>Track your focused hours and daily progress effortlessly.</li>
                 <li>Analyze your productivity with activity visualizers and reports.</li>
               </ul>
 
-              <p className="mt-4 text-text-light dark:text-text-dark">
+              <p className={`${isDark ? "text-text-dark" : "text-text-light"} mt-4`}>
                 Whether you’re managing personal tasks or collaborating with a team, Productivy gives you the clarity, focus, and tools to achieve more every day.
               </p>
 
@@ -51,9 +90,7 @@ function Home() {
                   href="#features"
                   onClick={(e) => {
                     e.preventDefault();
-                    document.getElementById("features")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
+                    document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
                   }}
                   className="border-2 border-secondary-dark text-secondary-dark hover:bg-secondary-dark hover:text-black dark:border-accent dark:text-accent dark:hover:bg-accent dark:hover:text-black font-semibold py-3 px-6 rounded-lg transition-all"
                 >
@@ -64,9 +101,8 @@ function Home() {
           </div>
         </section>
 
-
-        {/* Product Showcase Section */}
-        <ProductShowcase />
+        {/* Pass isDark into ProductShowcase so it can pick correct images synchronously */}
+        <ProductShowcase isDarkProp={isDark} />
 
         {/* Features Section */}
         <section id="features" className="py-20 px-4 bg-background-light dark:bg-background-dark">
