@@ -3,6 +3,7 @@ import Navbar from '../allPages/Navbar';
 import Footer from '../allPages/Footer';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import ProductShowcase from '../ProductShowcase';
 
 function Home() {
   useEffect(() => {
@@ -16,7 +17,7 @@ function Home() {
       </div>
       <main className="pt-14">
         {/* Hero Section */}
-        <section className="bg-black bg-opacity-25 text-white min-h-[92vh] flex items-center">
+        <section className="bg-background-light dark:bg-black text-white min-h-[92vh] flex items-center">
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
             {/* Left text */}
             <div data-aos="fade-right" className="max-w-xl px-4">
@@ -56,6 +57,9 @@ function Home() {
           </div>
         </section>
 
+        {/* Product Showcase Section */}
+        <ProductShowcase />
+
         {/* Features Section */}
         <section id="features" className="py-20 px-4 bg-background-light dark:bg-background-dark">
           <div className="container mx-auto">
@@ -65,15 +69,15 @@ function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
               {[
-                {
-                  title: "AI-Powered Insights",
-                  desc: "Our AI analyzes your work patterns to suggest optimal study times, predict productivity windows, and provide weekly performance overviews.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                    </svg>
-                  ),
-                },
+                // {
+                //   title: "AI-Powered Insights",
+                //   desc: "Our AI analyzes your work patterns to suggest optimal study times, predict productivity windows, and provide weekly performance overviews.",
+                //   icon: (
+                //     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                //     </svg>
+                //   ),
+                // },
                 {
                   title: "Kanban Boards",
                   desc: "Visualize your workflow with customizable Kanban boards. Move tasks through stages from 'To-Do' to 'Done' with simple drag-and-drop.",
