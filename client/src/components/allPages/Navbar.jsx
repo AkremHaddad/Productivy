@@ -4,7 +4,7 @@ import ThemeToggle from './ThemeToggle';
 
 function Navbar() {
   return (
-    <nav className='bg-navbar-light w-screen dark:bg-navbar-dark h-14 flex items-center select-none'>
+    <nav className='bg-[#222222] w-screen dark:bg-[#121212] h-14 flex items-center select-none shadow-md shadow-black/50 dark:shadow-white/10'>
       <a href="/">
         <img src="/logo.svg" alt="Productivy Logo" className="h-10 ml-2 rounded-sm" />
       </a>
