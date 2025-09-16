@@ -10,20 +10,21 @@ cron.schedule("* * * * *", async () => {
     const onlineUsers = await CurrentActivity.find({ isOnline: true });
     console.log(`${onlineUsers.length} online users`);
 
+    const now = new Date();
+
     for (const user of onlineUsers) {
-      const now = new Date();
+      const lastSeenDiff = now - user.lastSeen; // in ms
+      if (lastSeenDiff > 2 * 60 * 1000) continue; // skip if inactive >2min
+
       const dayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-      const hourKey = now.getHours().toString(); // use string for Map key
+      const hourKey = now.getHours().toString(); // Map key must be string
       const activity = user.activity;
 
       if (!activity) continue;
 
-      // Increment activity for this hour
       await Activity.findOneAndUpdate(
         { user: user.user, day: dayKey },
-        {
-          $inc: { [`hours.${hourKey}.${activity}`]: 1 },
-        },
+        { $inc: { [`hours.${hourKey}.${activity}`]: 1 } },
         { upsert: true, new: true }
       );
     }

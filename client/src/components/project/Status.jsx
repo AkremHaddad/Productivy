@@ -23,7 +23,7 @@ const Status = () => {
     const fetchActivity = async () => {
       try {
         const res = await API.get("/api/activity/current", { withCredentials: true });
-        setCurrentActivity(res.data?.activity || "working"); // default to "working"
+        setCurrentActivity(res.data?.activity || "working");
       } catch (err) {
         console.error("❌ Error fetching current activity:", err);
         setCurrentActivity("working");
@@ -33,34 +33,43 @@ const Status = () => {
     fetchActivity();
   }, []);
 
-  // ✅ Heartbeat: mark online every 30s
+  // ✅ Heartbeat: mark online every 30s if activity exists
   useEffect(() => {
     const markOnline = async () => {
+      if (!currentActivity) return;
       try {
         await API.post(
-          "/api/activity/set", // use existing endpoint
-          { activity: currentActivity || "working" },
+          "/api/activity/set-online",
+          { activity: currentActivity },
           { withCredentials: true }
         );
       } catch (err) {
-        console.error("Error marking online:", err);
+        console.error("❌ Error marking online:", err);
       }
     };
 
-    // Call immediately and then every 30s
+    // Call immediately, then every 30s
     markOnline();
     const interval = setInterval(markOnline, 30000);
 
     return () => clearInterval(interval);
   }, [currentActivity]);
 
+  // ✅ Mark offline on unload or tab hidden
   useEffect(() => {
     const goOffline = async () => {
-      await API.post("/api/activity/set-offline", {}, { withCredentials: true });
+      try {
+        await API.post("/api/activity/set-offline", {}, { withCredentials: true });
+      } catch (err) {
+        console.error("❌ Error marking offline:", err);
+      }
     };
+
     window.addEventListener("beforeunload", goOffline);
 
-    return () => window.removeEventListener("beforeunload", goOffline);
+    return () => {
+      window.removeEventListener("beforeunload", goOffline);
+    };
   }, []);
 
   // ✅ Handle activity change
