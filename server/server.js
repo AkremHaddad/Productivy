@@ -13,7 +13,7 @@ import authRoutes from "./routes/authRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import productiveTimeRoutes from "./routes/productiveTimeRoutes.js";
 import chartsRoutes from "./routes/chartsRoutes.js";
-
+import "./cron/activityCron.js"; // just importing starts the cron job
 
 
 import passport from "./config/passport.js"; // your Google strategy + serialize/deserialize

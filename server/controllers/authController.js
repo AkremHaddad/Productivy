@@ -64,46 +64,6 @@ export const googleAuth = (req, res) => {
   res.send("Google OAuth not implemented yet");
 };
 
-// @desc Update activity (ping from frontend every ~30s)
-export const updateActivity = async (req, res) => {
-  try {
-    if (!req.user) return res.status(401).json({ message: "Not logged in" });
-
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    user.lastActivity = new Date();
-    user.isOnline = true;
-    await user.save();
-
-    res.json({ success: true, lastActivity: user.lastActivity });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// @desc Get online/offline status of a user
-export const getStatus = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId);
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const now = new Date();
-    const lastActive = new Date(user.lastActivity || 0);
-
-    const diff = (now - lastActive) / 1000; // seconds
-    const isOnline = diff < 60; // online if active in last 60s
-
-    res.json({
-      userId: user._id,
-      status: isOnline ? "online" : "offline",
-      lastActivity: user.lastActivity,
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 
 // @desc Logout user (mark offline)
 export const logoutUser = async (req, res) => {

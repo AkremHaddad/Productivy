@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import User from "../models/User.js";
-import { getMe, logoutUser, updateActivity, getStatus } from "../controllers/authController.js";
+import { getMe, logoutUser} from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js"; // session/auth check
 
 const router = express.Router();
@@ -99,13 +99,5 @@ router.get("/google/callback",
     res.redirect("http://localhost:5173/projects");
   }
 );
-
-// -------------------- ACTIVITY & STATUS -------------------- //
-
-// Update activity (protected)
-router.post("/activity", protect, updateActivity);
-
-// Get online/offline status (protected)
-router.get("/status/:userId", protect, getStatus);
 
 export default router;

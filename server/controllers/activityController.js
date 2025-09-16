@@ -1,87 +1,80 @@
 import Activity from "../models/Activity.js";
-import User from "../models/User.js";
+import CurrentActivity from "../models/CurrentActivity.js";
 
-// Helper to truncate date to minute
-const truncateToMinute = (date) => {
-  return new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    date.getHours(),
-    date.getMinutes()
-  );
-};
-
-// @desc Add or update activity for the current minute
-export const addActivity = async (req, res) => {
+// Set current activity from UI
+export const setCurrentActivity = async (req, res) => {
   try {
     const userId = req.user._id;
     const { activity } = req.body;
 
     if (!activity) return res.status(400).json({ message: "Activity required" });
 
-    const date = truncateToMinute(new Date());
-
-    // Upsert: create or update existing minute record
-    const record = await Activity.findOneAndUpdate(
-      { user: userId, date },
-      { activity },
+    const record = await CurrentActivity.findOneAndUpdate(
+      { user: userId },
+      { activity, isOnline: true, lastSeen: new Date() },
       { upsert: true, new: true }
     );
 
-    res.json({ success: true, activity: record.activity, date: record.date });
+    res.json({ success: true, activity: record.activity });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Failed to update activity" });
   }
 };
 
-// @desc Get latest activity of the user
+// Get the user's current activity
 export const getCurrentActivity = async (req, res) => {
   try {
     const userId = req.user._id;
+    const record = await CurrentActivity.findOne({ user: userId });
 
-    const latest = await Activity.findOne({ user: userId })
-      .sort({ date: -1 });
-
-    res.json({ activity: latest?.activity || "" });
+    res.json({ activity: record?.activity || "working" });
   } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch current activity" });
+  }
+};
+
+// Add +1 minute to the current activity (called by cron)
+export const addActivityMinute = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const current = await CurrentActivity.findOne({ user: userId });
+    if (!current?.activity) {
+      return res.status(400).json({ message: "No current activity set" });
+    }
+
+    const now = new Date();
+    const day = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    const hour = now.getHours();
+    const activity = current.activity;
+
+    const updated = await Activity.findOneAndUpdate(
+      { user: userId, day, hour },
+      { $inc: { [`activities.${activity}`]: 1 } },
+      { upsert: true, new: true }
+    );
+
+    res.json({ success: true, record: updated });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 };
 
-// @desc Cleanup old activities older than 4 weeks
-export const cleanupOldActivities = async () => {
+export const setOffline = async (req, res) => {
   try {
-    const fourWeeksAgo = new Date(Date.now() - 28 * 24 * 60 * 60 * 1000);
-    await Activity.deleteMany({ date: { $lt: fourWeeksAgo } });
-    console.log("Old activities cleaned up");
-  } catch (err) {
-    console.error("Cleanup failed:", err.message);
-  }
-};
+    const userId = req.user._id;
 
-export const getTodayProductiveTime = async (req, res) => {
-  try {
-    const { userId } = req.params;
+    await CurrentActivity.findOneAndUpdate(
+      { user: userId },
+      { isOnline: false }
+    );
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const record = await ProductiveTime.findOne({ user: userId, date: today });
-
-    if (!record) {
-      return res.json({ hours: 0, minutes: 0 });
-    }
-
-    const hours = Math.floor(record.minutes / 60);
-    const minutes = record.minutes % 60;
-
-    res.json({ hours, minutes });
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch productive time" });
+    res.status(500).json({ message: "Failed to set offline" });
   }
 };
-
-
-
