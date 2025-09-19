@@ -19,12 +19,7 @@ export const activityColors = {
   socializing: "#e11d48",
   hobbying: "#f97316",
   others: "#6b7280",
-  offline: "#111",
+  offline: "#444444",
 };
 
 
-// --- Helper to get weekday names ---
-export const getWeekdayName = (dateStr) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", { weekday: "short" }); // Mon, Tue, ...
-};

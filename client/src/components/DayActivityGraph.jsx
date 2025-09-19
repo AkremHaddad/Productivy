@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { activityColors, activities, getWeekdayName } from "./pages/dummy";
+import { activityColors, activities } from "./pages/chartsHelper";
 import API from "../api/API";
+
 
 const DayActivityGraph = () => {
   const [selectedDay, setSelectedDay] = useState(0); // 0 = today
@@ -15,6 +16,11 @@ const DayActivityGraph = () => {
     hour: "",
     minutes: 0,
   });
+
+  const getWeekdayName = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", { weekday: "short" }); 
+  };
 
   const width = 1000;
   const height = 100;

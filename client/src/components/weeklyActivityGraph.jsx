@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { activityColors, activities } from "./pages/dummy";
+import { activityColors, activities } from "./pages/chartsHelper";
 import API from "../api/API";
 
 const WeeklyActivityGraph = () => {
