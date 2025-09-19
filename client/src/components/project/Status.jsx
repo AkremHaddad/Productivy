@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import API from "../../api/API";
 import Modal from "../common/Modal";
 
@@ -13,27 +13,31 @@ const activities = [
   "others",
 ];
 
-const Status = () => {
+const Status = ({ onMinutesUpdate }) => {
   const [currentActivity, setCurrentActivity] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fetch latest activity on mount
+  // refs for the timeout + interval so we can clear both
+  const timeoutRef = useRef(null);
+  const intervalRef = useRef(null);
+
+  // Fetch latest activity on mount
   useEffect(() => {
     const fetchActivity = async () => {
       try {
         const res = await API.get("/api/activity/current", { withCredentials: true });
-        setCurrentActivity(res.data?.activity || "working");
+        const act = res.data?.activity || "working";
+        setCurrentActivity(act);
       } catch (err) {
         console.error("❌ Error fetching current activity:", err);
         setCurrentActivity("working");
       }
     };
-
     fetchActivity();
   }, []);
 
-  // ✅ Heartbeat: mark online every 30s if activity exists
+  // Heartbeat: mark online every 30s if activity exists
   useEffect(() => {
     const markOnline = async () => {
       if (!currentActivity) return;
@@ -48,14 +52,12 @@ const Status = () => {
       }
     };
 
-    // Call immediately, then every 30s
     markOnline();
-    const interval = setInterval(markOnline, 30000);
-
-    return () => clearInterval(interval);
+    const hb = setInterval(markOnline, 30000);
+    return () => clearInterval(hb);
   }, [currentActivity]);
 
-  // ✅ Mark offline on unload or tab hidden
+  // Mark offline on unload
   useEffect(() => {
     const goOffline = async () => {
       try {
@@ -66,13 +68,71 @@ const Status = () => {
     };
 
     window.addEventListener("beforeunload", goOffline);
-
-    return () => {
-      window.removeEventListener("beforeunload", goOffline);
-    };
+    return () => window.removeEventListener("beforeunload", goOffline);
   }, []);
 
-  // ✅ Handle activity change
+  // Productive time UI increment: align to full minute (hh:mm:00)
+  useEffect(() => {
+    // clear any previous timers
+    const clearTimers = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+    clearTimers();
+
+    if (currentActivity !== "working") {
+      return () => clearTimers();
+    }
+
+    const tickOnceAndStartInterval = () => {
+      // update UI by 1 minute (parent setter expected)
+      try {
+        if (typeof onMinutesUpdate === "function") {
+          onMinutesUpdate((prev) => prev + 1);
+        }
+      } catch (e) {
+        // if parent passed a non-setter, do a best-effort call
+        try {
+          onMinutesUpdate && onMinutesUpdate();
+        } catch (_) {}
+      }
+
+      // start repeating every 60s on exact minute boundaries
+      intervalRef.current = setInterval(() => {
+        try {
+          if (typeof onMinutesUpdate === "function") {
+            onMinutesUpdate((prev) => prev + 1);
+          }
+        } catch (e) {
+          try {
+            onMinutesUpdate && onMinutesUpdate();
+          } catch (_) {}
+        }
+      }, 60000);
+    };
+
+    // compute ms until next full minute (hh:mm:00)
+    const now = new Date();
+    const msToNextFullMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+
+    // schedule first tick at the exact full minute, then interval runs every 60s
+    timeoutRef.current = setTimeout(() => {
+      tickOnceAndStartInterval();
+      timeoutRef.current = null;
+    }, msToNextFullMinute);
+
+    // cleanup
+    return () => clearTimers();
+  }, [currentActivity, onMinutesUpdate]);
+
+  // Handle activity change
   const saveActivity = async (activity) => {
     if (activity === currentActivity || loading) {
       setShowPopup(false);
@@ -81,11 +141,7 @@ const Status = () => {
 
     setLoading(true);
     try {
-      await API.post(
-        "/api/activity/set",
-        { activity },
-        { withCredentials: true }
-      );
+      await API.post("/api/activity/set", { activity }, { withCredentials: true });
       setCurrentActivity(activity);
     } catch (err) {
       console.error("❌ Error saving activity:", err.response?.data || err);
@@ -103,10 +159,10 @@ const Status = () => {
         className="flex-1 flex flex-col justify-evenly items-center p-2 bg-inherit h-[150px] border-x-2 border-gray-400 dark:border-gray-700 cursor-pointer"
         onClick={() => !loading && setShowPopup(true)}
       >
-        <div className="font-normal text-md text-white dark:text-white text-center font-jaro">
+        <div className="font-normal text-md text-white text-center font-jaro">
           status
         </div>
-        <div className="font-normal text-md text-[#C3C3C3] dark:text-[#A6A6A6] text-center font-jaro">
+        <div className="font-normal text-md text-[#C3C3C3] text-center font-jaro">
           {loading ? "Saving..." : currentActivity || "No activity"}
         </div>
       </div>

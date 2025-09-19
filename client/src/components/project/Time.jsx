@@ -1,73 +1,72 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import API from "../../api/API";
 
 const Time = () => {
   const [minutesWorked, setMinutesWorked] = useState(0);
-  const [isWorking, setIsWorking] = useState(false);
-  const intervalRef = useRef(null);
+  const [currentActivity, setCurrentActivity] = useState("working"); // track activity
 
-  // Fetch today's productive minutes + current activity
+  // Fetch productive time and current activity once on page load
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [timeRes, activityRes] = await Promise.all([
-          API.get("/api/productive-time/today", { withCredentials: true }),
+          API.get("/api/activity/today", { withCredentials: true }),
           API.get("/api/activity/current", { withCredentials: true }),
         ]);
 
         setMinutesWorked(timeRes.data.minutes || 0);
-        setIsWorking(activityRes.data.activity === "working");
+        setCurrentActivity(activityRes.data.activity || "working");
       } catch (err) {
         console.error("Fetch error:", err);
+        setCurrentActivity("working");
       }
     };
 
     fetchData();
   }, []);
 
-  // Tick every minute if working
+  // Increment UI every full minute if activity is "working"
   useEffect(() => {
-    if (!isWorking) return;
-
-    intervalRef.current = setInterval(async () => {
-      setMinutesWorked((prev) => prev + 1); // update UI
-
-      // Send to backend
-      try {
-        console.log('test')
-        await API.post("/api/productive-time/add", {}, { withCredentials: true });
-      } catch (err) {
-        console.error("Add minute error:", err);
+    const tick = () => {
+      const now = new Date();
+      if (now.getSeconds() === 0 && currentActivity === "working") {
+        setMinutesWorked((prev) => prev + 1);
       }
-    }, 60000); // 1 minute
+    };
 
-    return () => clearInterval(intervalRef.current);
-  }, [isWorking]);
+    const interval = setInterval(tick, 1000); // check every second
+    return () => clearInterval(interval);
+  }, [currentActivity]); // re-run effect if activity changes
 
-  // Format hours + minutes (e.g., "2h 15m")
+  // Listen for activity changes every 10s to keep currentActivity in sync
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        const res = await API.get("/api/activity/current", { withCredentials: true });
+        setCurrentActivity(res.data.activity || "working");
+      } catch (err) {
+        console.error("Error fetching activity:", err);
+      }
+    };
+
+    const activityInterval = setInterval(fetchActivity, 10000); // poll every 10s
+    return () => clearInterval(activityInterval);
+  }, []);
+
   const formatTime = (totalMinutes) => {
     const h = Math.floor(totalMinutes / 60);
     const m = totalMinutes % 60;
-
     if (h > 0 && m > 0) return `${h}h ${m}m`;
     if (h > 0) return `${h}h`;
     return `${m}m`;
   };
 
   return (
-    <div
-      id="Time"
-      className="flex-1 flex flex-col justify-evenly items-center p-2 justify-around dark:bg-inherit h-[150px] rounded-r-md"
-    >
-      <div className="font-jaro text-md text-white dark:text-white text-center">
-        time worked today
-      </div>
-      <div className="font-jaro text-md text-[#C3C3C3] dark:text-[#A6A6A6] text-center">
+    <div className="flex-1 flex flex-col justify-evenly items-center p-2 justify-around dark:bg-inherit h-[150px] rounded-r-md">
+      <div className="font-jaro text-md text-white text-center">time worked today</div>
+      <div className="font-jaro text-md text-[#C3C3C3] text-center">
         {formatTime(minutesWorked)}
       </div>
-      {/* <div className="flex justify-center max-h-[24px] invert brightness-0">
-        <img src="../worker.svg" alt="Worker" />
-      </div> */}
     </div>
   );
 };

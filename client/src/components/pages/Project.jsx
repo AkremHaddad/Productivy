@@ -15,7 +15,10 @@ const Project = () => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [selectedSprint, setSelectedSprint] = useState(null);
-  const [showTools, setShowTools] = useState(true); 
+  const [showTools, setShowTools] = useState(true);
+
+  // ✅ new shared state
+  const [minutesWorked, setMinutesWorked] = useState(0);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -36,7 +39,6 @@ const Project = () => {
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       <Navbar />
 
-      {/* Pass toggle function to Tabs */}
       <Tabs showTools={showTools} setShowTools={setShowTools} />
 
       <div className="flex-1 flex bg-background-light dark:bg-black p-5 pb-0 gap-2.5">
@@ -48,9 +50,11 @@ const Project = () => {
         >
           <div className="select-none flex flex-row bg-[#1F2937] dark:bg-[#131313] rounded-md border border-gray-400 dark:border-gray-700">
             <Pomodoro />
-            <Status />
-            <Time />
+            {/* ✅ pass down state + updater */}
+            <Status onMinutesUpdate={setMinutesWorked} />
+            <Time minutesWorked={minutesWorked} />
           </div>
+
           <div className="flex flex-row gap-2.5">
             <Sprints
               projectId={project._id}
@@ -60,6 +64,7 @@ const Project = () => {
             <Kanban projectId={project._id} selectedSprint={selectedSprint} />
           </div>
         </div>
+
         <Board projectId={project._id} boards={project.boards} />
       </div>
     </div>

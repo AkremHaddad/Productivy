@@ -138,3 +138,16 @@ export const reorderCards = async (projectId, boardId, newColumns) => {
   const res = await API.post(`/api/projects/${projectId}/boards/${boardId}/cards/change-order`, { newColumns });
   return res.data;
 };
+
+// ==================== Activity ====================
+// // Fetch today's productive time
+// export const getTodayProductiveTime = async () => {
+//   const res = await API.get("/api/activity/today");
+//   return res.data;
+// };
+
+// // Increment today's productive time by 1 minute
+// export const incrementProductiveTime = async () => {
+//   const res = await API.post("/api/activity/increment");
+//   return res.data;
+// };

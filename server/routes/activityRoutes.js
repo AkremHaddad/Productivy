@@ -2,9 +2,10 @@ import express from "express";
 import {
   setCurrentActivity,
   getCurrentActivity,
-  addActivityMinute,
+  // addActivityMinute,
   setOffline,
-  setOnline
+  setOnline,
+  getTodayProductiveTime
 } from "../controllers/activityController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -19,6 +20,11 @@ router.post("/set-online", protect, setOnline);
 router.get("/current", protect, getCurrentActivity);
 
 // Add +1 minute (cron tick)
-router.post("/tick", protect, addActivityMinute);
+// router.post("/tick", protect, addActivityMinute);
+
+router.get("/today", protect, getTodayProductiveTime);
 
 export default router;
+
+
+
