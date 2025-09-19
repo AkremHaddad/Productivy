@@ -122,7 +122,7 @@ const DayActivityGraph = () => {
 
       {/* Legend */}
       <div className="flex gap-4 mb-6 flex-wrap">
-        {[...activities, "offline"].map((act) => (
+        {[...activities].map((act) => (
           <div
             key={act}
             className="flex items-center gap-2 cursor-pointer select-none p-2 rounded-md transition-colors"
