@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { activityColors, activities, getWeekdayName } from "./pages/dummy";
-import { fetchDailySummary } from "../api/charts";
+import API from "../api/API";
 
 const DayActivityGraph = () => {
   const [selectedDay, setSelectedDay] = useState(0); // 0 = today
-  const [weekDays, setWeekDays] = useState([]); // Array of Date objects for last 7 days
-  const [dayData, setDayData] = useState({ summary: [] }); // fetched summary
+  const [weekDays, setWeekDays] = useState([]);
+  const [dayData, setDayData] = useState([]); // hourly data
   const [hoveredActivity, setHoveredActivity] = useState(null);
   const [tooltipData, setTooltipData] = useState({
     visible: false,
     x: 0,
     y: 0,
     activity: "",
-    startTime: "",
-    endTime: "",
-    totalDuration: "",
+    hour: "",
+    minutes: 0,
   });
 
   const width = 1000;
@@ -32,43 +31,55 @@ const DayActivityGraph = () => {
     setWeekDays(days);
   }, []);
 
-  // --- Fetch daily summary for selected day
+  // --- Fetch daily data for selected day
   useEffect(() => {
     if (!weekDays.length) return;
-
     const selectedDate = weekDays[selectedDay].toISOString().split("T")[0];
-    fetchDailySummary(selectedDate)
-      .then((data) => setDayData(data))
-      .catch((err) => console.error(err));
+
+    const fetchDayData = async () => {
+      try {
+        const res = await API.get(`/api/charts/daily?date=${selectedDate}`, { withCredentials: true });
+        const raw = res.data; // Activity doc for that day
+        
+        // Build hourly array including offline
+        const hoursArr = [];
+        for (let h = 0; h < 24; h++) {
+          const hourData = raw.hours?.[h] || {};
+          const totalMinutes = Object.values(hourData).reduce((a, b) => a + b, 0);
+          const hourActivities = [];
+
+          for (const [act, mins] of Object.entries(hourData)) {
+            if (mins > 0) hourActivities.push({ activity: act, minutes: mins });
+          }
+
+          // Add offline if less than 60 minutes
+          if (totalMinutes < 60) {
+            hourActivities.push({ activity: "offline", minutes: 60 - totalMinutes });
+          }
+
+          hoursArr.push(hourActivities);
+        }
+
+        setDayData(hoursArr);
+      } catch (err) {
+        console.error(err);
+        setDayData([]);
+      }
+    };
+
+    fetchDayData();
   }, [selectedDay, weekDays]);
 
-  const timeToPercent = (time) => {
-    const [h, m] = time.split(":").map(Number);
-    return ((h * 60 + m) / 1440) * 100;
-  };
-
-  const calculateTotalDuration = (activity) => {
-    let totalMinutes = 0;
-    activity.intervals.forEach(({ start, end }) => {
-      const [sh, sm] = start.split(":").map(Number);
-      const [eh, em] = end.split(":").map(Number);
-      totalMinutes += (eh * 60 + em) - (sh * 60 + sm);
-    });
-    const h = Math.floor(totalMinutes / 60);
-    const m = totalMinutes % 60;
-    return `${h}h ${m}m`;
-  };
-
-  const handleActivityHover = (activity, interval) => {
+  // --- Tooltip handlers
+  const handleActivityHover = (activity, hour) => {
     setHoveredActivity(activity.activity);
     setTooltipData({
       visible: true,
       x: 0,
       y: 0,
       activity: activity.activity,
-      startTime: interval.start,
-      endTime: interval.end,
-      totalDuration: calculateTotalDuration(activity),
+      hour,
+      minutes: activity.minutes,
     });
   };
 
@@ -85,6 +96,7 @@ const DayActivityGraph = () => {
     setTooltipData((prev) => ({ ...prev, visible: false }));
   };
 
+  // --- Render
   return (
     <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md transition-colors">
       <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
@@ -110,12 +122,12 @@ const DayActivityGraph = () => {
 
       {/* Legend */}
       <div className="flex gap-4 mb-6 flex-wrap">
-        {activities.map((act) => (
+        {[...activities, "offline"].map((act) => (
           <div
             key={act}
             className="flex items-center gap-2 cursor-pointer select-none p-2 rounded-md transition-colors"
             style={{
-              backgroundColor: hoveredActivity === act ? `${activityColors[act]}20` : 'transparent',
+              backgroundColor: hoveredActivity === act ? `${activityColors[act]}20` : "transparent",
               border: `1px solid ${activityColors[act]}40`,
             }}
             onMouseEnter={() => setHoveredActivity(act)}
@@ -127,6 +139,7 @@ const DayActivityGraph = () => {
         ))}
       </div>
 
+      {/* Graph */}
       <div className="overflow-x-auto">
         <svg
           width={width}
@@ -163,39 +176,41 @@ const DayActivityGraph = () => {
           })}
 
           {/* Activity rectangles */}
-          {dayData.summary?.map((activity) =>
-            activity.intervals?.map((interval, idx) => {
-              const left = margin.left + (timeToPercent(interval.start) / 100) * (width - margin.left - margin.right);
-              const right = margin.left + (timeToPercent(interval.end) / 100) * (width - margin.left - margin.right);
-              const rectWidth = right - left;
+          {dayData.map((hourActivities, h) => {
+            const left = margin.left + (h / 24) * (width - margin.left - margin.right);
+            const hourWidth = (width - margin.left - margin.right) / 24;
+
+            let stackedOffset = 0;
+            return hourActivities.map((activity, idx) => {
+              const rectHeight = (activity.minutes / 60) * height;
+              const y = margin.top + height - rectHeight - stackedOffset;
+              stackedOffset += rectHeight;
+
               const isHovered = hoveredActivity === activity.activity;
 
               return (
                 <rect
-                  key={`${activity.activity}-${idx}`}
+                  key={`${h}-${idx}`}
                   x={left}
-                  y={margin.top}
-                  width={rectWidth}
-                  height={height}
+                  y={y}
+                  width={hourWidth}
+                  height={rectHeight}
                   fill={activityColors[activity.activity]}
                   opacity={hoveredActivity ? (isHovered ? 0.9 : 0.3) : 0.7}
-                  rx={4}
+                  rx={2}
                   stroke={isHovered ? "#ffffff" : "none"}
                   strokeWidth={isHovered ? 2 : 0}
-                  style={{
-                    cursor: "pointer",
-                    zIndex: isHovered ? 10 : 1,
-                    transition: "all 0.5s ease",
-                  }}
-                  onMouseEnter={() => handleActivityHover(activity, interval)}
+                  style={{ cursor: "pointer", transition: "all 0.5s ease" }}
+                  onMouseEnter={() => handleActivityHover(activity, h)}
                   onMouseMove={handleActivityMove}
                   onMouseLeave={handleActivityLeave}
                 />
               );
-            })
-          )}
+            });
+          })}
         </svg>
       </div>
+
       {/* Tooltip */}
       {tooltipData.visible && (
         <div
@@ -203,14 +218,14 @@ const DayActivityGraph = () => {
           style={{
             left: `${tooltipData.x}px`,
             top: `${tooltipData.y}px`,
-            backgroundColor: "#1f2937", // dark background
+            backgroundColor: "#1f2937",
             color: activityColors[tooltipData.activity] || "#ffffff",
-            borderLeft: `4px solid ${activityColors[tooltipData.activity] || '#6b7280'}`,
+            borderLeft: `4px solid ${activityColors[tooltipData.activity] || "#6b7280"}`,
           }}
         >
           <div className="capitalize font-medium mb-1">{tooltipData.activity}</div>
-          <div className="text-xs mb-1">{tooltipData.startTime} - {tooltipData.endTime}</div>
-          <div className="text-xs font-semibold">Total: {tooltipData.totalDuration}</div>
+          <div className="text-xs mb-1">{tooltipData.hour}:00</div>
+          <div className="text-xs font-semibold">Minutes: {tooltipData.minutes}</div>
         </div>
       )}
 
