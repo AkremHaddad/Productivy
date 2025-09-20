@@ -18,9 +18,9 @@ const Status = ({ onMinutesUpdate }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // refs for the timeout + interval so we can clear both
   const timeoutRef = useRef(null);
   const intervalRef = useRef(null);
+  const lastTickRef = useRef(new Date()); // keep last increment timestamp
 
   // Fetch latest activity on mount
   useEffect(() => {
@@ -71,66 +71,77 @@ const Status = ({ onMinutesUpdate }) => {
     return () => window.removeEventListener("beforeunload", goOffline);
   }, []);
 
-  // Productive time UI increment: align to full minute (hh:mm:00)
-  useEffect(() => {
-    // clear any previous timers
-    const clearTimers = () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
+  // Productive time UI increment (catch up if tab inactive)
+useEffect(() => {
+  const clearTimers = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
 
-    clearTimers();
+  clearTimers();
 
-    if (currentActivity !== "working") {
-      return () => clearTimers();
+  if (currentActivity !== "working") {
+    return () => clearTimers();
+  }
+
+  // snap lastTick to current minute boundary when starting
+  const nowStart = new Date();
+  lastTickRef.current = new Date(
+    nowStart.getFullYear(),
+    nowStart.getMonth(),
+    nowStart.getDate(),
+    nowStart.getHours(),
+    nowStart.getMinutes(),
+    0,
+    0
+  );
+
+  const tick = () => {
+    const now = new Date();
+    const diffMs = now.getTime() - lastTickRef.current.getTime();
+    const diffMinutes = Math.floor(diffMs / 60000);
+
+    // Ensure we always add at least 1 minute on the first aligned tick,
+    // and catch up with multiple minutes if the tab was inactive.
+    const minutesToAdd = Math.max(1, diffMinutes);
+
+    if (typeof onMinutesUpdate === "function") {
+      onMinutesUpdate((prev) => prev + minutesToAdd);
     }
 
-    const tickOnceAndStartInterval = () => {
-      // update UI by 1 minute (parent setter expected)
-      try {
-        if (typeof onMinutesUpdate === "function") {
-          onMinutesUpdate((prev) => prev + 1);
-        }
-      } catch (e) {
-        // if parent passed a non-setter, do a best-effort call
-        try {
-          onMinutesUpdate && onMinutesUpdate();
-        } catch (_) {}
-      }
+    // snap lastTick to the exact minute boundary we just processed
+    lastTickRef.current = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      0,
+      0
+    );
+  };
 
-      // start repeating every 60s on exact minute boundaries
-      intervalRef.current = setInterval(() => {
-        try {
-          if (typeof onMinutesUpdate === "function") {
-            onMinutesUpdate((prev) => prev + 1);
-          }
-        } catch (e) {
-          try {
-            onMinutesUpdate && onMinutesUpdate();
-          } catch (_) {}
-        }
-      }, 60000);
-    };
-
-    // compute ms until next full minute (hh:mm:00)
+  const schedule = () => {
     const now = new Date();
     const msToNextFullMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
 
-    // schedule first tick at the exact full minute, then interval runs every 60s
     timeoutRef.current = setTimeout(() => {
-      tickOnceAndStartInterval();
+      tick(); // guaranteed to add at least 1
+      intervalRef.current = setInterval(tick, 60000);
       timeoutRef.current = null;
     }, msToNextFullMinute);
+  };
 
-    // cleanup
+  schedule();
     return () => clearTimers();
   }, [currentActivity, onMinutesUpdate]);
+
 
   // Handle activity change
   const saveActivity = async (activity) => {
@@ -153,7 +164,7 @@ const Status = ({ onMinutesUpdate }) => {
 
   return (
     <>
-      {/* Small Status Box */}
+      {/* Status Box */}
       <div
         id="Status"
         className="flex-1 flex flex-col justify-evenly items-center p-2 bg-inherit h-[150px] border-x-2 border-gray-400 dark:border-gray-700 cursor-pointer"

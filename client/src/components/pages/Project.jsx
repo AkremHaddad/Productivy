@@ -10,6 +10,7 @@ import Kanban from "../project/Kanban";
 import Tabs from "../project/Tabs";
 import Board from "../project/Board";
 import { getProject } from "../../api/project";
+import API from "../../api/API"; // ✅ import API for fetching minutes
 
 const Project = () => {
   const { id } = useParams();
@@ -17,9 +18,10 @@ const Project = () => {
   const [selectedSprint, setSelectedSprint] = useState(null);
   const [showTools, setShowTools] = useState(true);
 
-  // ✅ new shared state
+  // ✅ shared state
   const [minutesWorked, setMinutesWorked] = useState(0);
 
+  // Fetch project
   useEffect(() => {
     const fetchProject = async () => {
       try {
@@ -32,6 +34,20 @@ const Project = () => {
     };
     fetchProject();
   }, [id]);
+
+  // ✅ Fetch initial minutes worked
+  useEffect(() => {
+    const fetchMinutesWorked = async () => {
+      try {
+        const res = await API.get("/api/activity/today", { withCredentials: true });
+        setMinutesWorked(res.data?.minutes || 0);
+      } catch (err) {
+        console.error("❌ Failed to fetch minutes worked:", err);
+      }
+    };
+
+    fetchMinutesWorked();
+  }, []);
 
   if (!project) return <div className="text-center p-10">Loading...</div>;
 
@@ -50,7 +66,7 @@ const Project = () => {
         >
           <div className="select-none flex flex-row bg-[#1F2937] dark:bg-[#131313] rounded-md border border-gray-400 dark:border-gray-700">
             <Pomodoro />
-            {/* ✅ pass down state + updater */}
+            {/* ✅ Status updates minutesWorked; Time only displays */}
             <Status onMinutesUpdate={setMinutesWorked} />
             <Time minutesWorked={minutesWorked} />
           </div>
