@@ -18,7 +18,9 @@ const Pomodoro = () => {
   const [showSettings, setShowSettings] = useState(false);
 
   const intervalRef = useRef(null);
-  const alarmPlayedRef = useRef(false);
+  const alarmRef = useRef(null);
+  const alarmPlayedRef = useRef(false); // separate flag for alarm
+  const unlockedRef = useRef(false);
 
   // Format MM:SS
   const formatTime = (seconds) => {
@@ -27,13 +29,22 @@ const Pomodoro = () => {
     return `${m}:${s}`;
   };
 
-  // Alarm
+  // Init alarm
+  useEffect(() => {
+    alarmRef.current = new Audio("/alarm.mp3");
+    alarmRef.current.load();
+  }, []);
+
   const playAlarm = () => {
-    const audio = new Audio("/alarm.mp3"); // place alarm.mp3 in public/
-    audio.play();
+    if (alarmRef.current) {
+      alarmRef.current.currentTime = 0;
+      alarmRef.current
+        .play()
+        .catch((err) => console.log("Alarm blocked:", err));
+    }
   };
 
-  // Persist values whenever they change
+  // Persist values
   useEffect(() => {
     localStorage.setItem("workTime", workTime);
     localStorage.setItem("breakTime", breakTime);
@@ -41,22 +52,28 @@ const Pomodoro = () => {
     localStorage.setItem("isWork", isWork);
   }, [workTime, breakTime, timeLeft, isWork]);
 
-  // Timer logic
+  // Timer logic (timestamp-based)
   useEffect(() => {
     if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev > 0) {
-            if (prev === 11 && !alarmPlayedRef.current) {
-              playAlarm();
-              alarmPlayedRef.current = true;
-            }
-            return prev - 1;
-          }
+      const startTime = Date.now();
+      const targetTime = startTime + timeLeft * 1000;
 
-          // Switch mode when timer hits 0
+      intervalRef.current = setInterval(() => {
+        const now = Date.now();
+        const diff = Math.max(0, Math.round((targetTime - now) / 1000));
+        setTimeLeft(diff);
+
+        // 🔔 Alarm 10 seconds before end
+        if (diff === 10 && !alarmPlayedRef.current) {
+          playAlarm();
+          alarmPlayedRef.current = true;
+        }
+
+        // ⏱️ Switch mode at 0
+        if (diff <= 0) {
           clearInterval(intervalRef.current);
-          alarmPlayedRef.current = false;
+          alarmPlayedRef.current = false; // reset for next round
+
           if (isWork) {
             setIsWork(false);
             setTimeLeft(breakTime);
@@ -64,19 +81,28 @@ const Pomodoro = () => {
             setIsWork(true);
             setTimeLeft(workTime);
           }
-          return prev;
-        });
+        }
       }, 1000);
     }
+
     return () => clearInterval(intervalRef.current);
   }, [isRunning, isWork, workTime, breakTime]);
 
-  useEffect(() => {
-    alarmPlayedRef.current = false;
-  }, [timeLeft, isWork]);
-
   // Handlers
-  const toggleStart = () => setIsRunning((prev) => !prev);
+  const toggleStart = () => {
+    // Unlock audio on first user interaction
+    if (!unlockedRef.current && alarmRef.current) {
+      alarmRef.current
+        .play()
+        .then(() => {
+          alarmRef.current.pause();
+          alarmRef.current.currentTime = 0;
+          unlockedRef.current = true;
+        })
+        .catch(() => {});
+    }
+    setIsRunning((prev) => !prev);
+  };
 
   const restart = () => {
     clearInterval(intervalRef.current);
@@ -102,25 +128,42 @@ const Pomodoro = () => {
       id="pomodoro"
       className="flex-1 flex bg-inherit h-[150px] rounded-l-md seperate"
     >
-      {/* Left side with buttons from top to bottom */}
+      {/* Left side with buttons */}
       <div className="flex flex-col justify-evenly border-r-2 border-gray-400 dark:border-gray-700 divide-y divide-gray-400 dark:divide-gray-700">
-        <button onClick={toggleStart} className="p-2 flex-grow transition-all duration-200">
+        <button
+          onClick={toggleStart}
+          className="p-2 flex-grow transition-all duration-200"
+        >
           <img
             src={isRunning ? "../pause.svg" : "../start.svg"}
             alt="start/pause"
             className="w-4 h-4 invert brightness-0"
           />
         </button>
-        <button onClick={restart} className="p-2 flex-grow transition-all duration-200">
-          <img src="../restart.svg" alt="restart" className="w-4 h-4 invert brightness-0" />
+        <button
+          onClick={restart}
+          className="p-2 flex-grow transition-all duration-200"
+        >
+          <img
+            src="../restart.svg"
+            alt="restart"
+            className="w-4 h-4 invert brightness-0"
+          />
         </button>
-        <button onClick={() => setShowSettings(true)} className="p-2 flex-grow transition-all duration-200">
-          <img src="../timer.svg" alt="timer" className="w-4 h-4 invert brightness-0" />
+        <button
+          onClick={() => setShowSettings(true)}
+          className="p-2 flex-grow transition-all duration-200"
+        >
+          <img
+            src="../timer.svg"
+            alt="timer"
+            className="w-4 h-4 invert brightness-0"
+          />
         </button>
       </div>
 
-      {/* Right side with Pomodoro text at top and timer at bottom */}
-      <div className="flex-1 flex flex-col justify-evenly items-center p-2">    
+      {/* Right side */}
+      <div className="flex-1 flex flex-col justify-evenly items-center p-2">
         <div className="font-jaro text-md text-white dark:text-white text-center drop-shadow-md tracking-wider">
           {isWork ? "work!" : "break!"}
         </div>
@@ -130,7 +173,11 @@ const Pomodoro = () => {
       </div>
 
       {/* Settings Modal */}
-      <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Timer Settings">
+      <Modal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        title="Timer Settings"
+      >
         <form onSubmit={saveSettings} className="flex flex-col gap-4">
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
