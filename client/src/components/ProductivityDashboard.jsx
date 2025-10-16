@@ -116,13 +116,14 @@ const ProductivityDashboard = () => {
     return { boards, columns, tasks, completed, pending: Math.max(0, tasks - completed) };
   }, [projects]);
 
-  if (loading) {
-    return (
-      <div className="p-6 bg-ui-light dark:bg-ui-dark rounded-md shadow text-center">
-        Loading dashboard...
-      </div>
-    );
-  }
+if (loading) {
+  return (
+    <div className="flex items-center justify-center min-h-[229.6px] p-6 bg-ui-light dark:bg-ui-dark rounded-md shadow text-center text-black dark:text-white">
+      Loading dashboard...
+    </div>
+  );
+}
+
 
   return (
     <div className="p-6 bg-ui-light dark:bg-ui-dark rounded-md space-y-6">
