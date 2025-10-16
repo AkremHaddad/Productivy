@@ -60,7 +60,7 @@ const Projects = () => {
       <Navbar />
       <main className="flex-1 p-6 max-w-6xl mx-auto w-full">
         <div className="flex justify-between items-center mb-8 mt-4">
-          <h1 className="text-4xl font-bold text-secondary-light dark:text-accent font-jaro">
+          <h1 className="text-4xl font-bold text-secondary-light dark:text-accent">
             My Projects
           </h1>
           <button
@@ -83,7 +83,7 @@ const Projects = () => {
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="p-6 bg-white dark:bg-gray-900 shadow-md rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300 border border-ui-light dark:border-gray-800 group relative"
+                className="p-6 bg-white dark:bg-ui-dark shadow-md rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300 border-[1px] border-border-light dark:border-border-dark group relative"
                 onClick={() => navigate(`/project/${project._id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -141,24 +141,24 @@ const Projects = () => {
             placeholder="Enter project name"
             value={newProjectName}
             onChange={(e) => setNewProjectName(e.target.value)}
-            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 text-text-light dark:text-text-dark focus:ring-2 focus:ring-secondary-light dark:focus:ring-accent outline-none mb-4"
+            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-white/10 text-text-light dark:text-text-dark focus:ring-2 focus:ring-black dark:focus:ring-white outline-none mb-4"
             autoFocus
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
           />
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setShowCreateModal(false)}
-              className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
-                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
-                        transition-all duration-200 font-medium border border-transparent 
-                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                        text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium 
+                        hover:border-black dark:hover:border-white"
             >
               Cancel
             </button>
             <button
               onClick={handleCreate}
               disabled={!newProjectName.trim()}
-              className="px-4 py-2.5 bg-secondary-light dark:bg-accent text-white dark:text-black rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              className="px-4 py-2.5 bg-white dark:bg-white text-white dark:text-black rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
             >
               Create Project
             </button>
@@ -171,10 +171,10 @@ const Projects = () => {
           <div className="flex justify-end gap-3 mt-4">
             <button
               onClick={() => setShowDeleteModal(false)}
-              className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
-                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
-                        transition-all duration-200 font-medium border border-transparent 
-                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                        text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium 
+                        hover:border-black dark:hover:border-white"
                 >
                 Cancel
             </button>

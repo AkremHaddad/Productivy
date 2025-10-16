@@ -23,9 +23,9 @@ export default function ThemeToggle() {
       className="p-2 rounded-lg transition-colors duration-200"
     >
       {theme === "dark" ? (
-        <MoonIcon className="h-6 w-6 text-text-dark hover:text-accent" />
+        <MoonIcon className="h-6 w-6 text-black dark:text-white" />
       ) : (
-        <SunIcon className="h-6 w-6 text-text-dark hover:text-accent" />
+        <SunIcon className="h-6 w-6 text-black dark:text-white" />
       )}
     </button>
   );

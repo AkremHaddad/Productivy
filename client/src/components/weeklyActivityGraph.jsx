@@ -98,7 +98,7 @@ const WeeklyActivityGraph = () => {
   };
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md transition-colors">
+    <div className="p-6 bg-ui-light dark:bg-ui-dark rounded-lg shadow-md transition-colors">
       <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
         Weekly Activity Timeline
       </h2>

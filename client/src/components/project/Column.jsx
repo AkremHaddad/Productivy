@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import { useTheme } from "../../api/useTheme";
 import Card from "./Card";
 import EditColumnModal from "../common/EditColumnModal";
@@ -108,7 +109,10 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-black rounded-lg p-4 min-w-[280px] max-w-[300px] flex flex-col gap-2 shadow-md group transition-all hover:shadow-lg">
+    <div 
+      className="bg-white dark:bg-background-dark rounded-lg p-4 min-w-[280px] max-w-[300px] flex flex-col gap-2 shadow-md group transition-all hover:shadow-lg"
+      style={{ backgroundColor: isDarkMode ? undefined : fillColor }}
+    >
 
       {/* Column Header */}
       <div className="flex items-center justify-between">
@@ -151,6 +155,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
                       setEditCardData={setEditCardData}
                       handleEditCard={handleEditCardLocal}
                       handleDeleteCard={handleDeleteCardLocal}
+                      cardBg={isDarkMode ? fillColor : undefined}
                     />
                   </div>
                 )}
@@ -165,7 +170,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       <button
         onClick={handleAddCard}
         disabled={isAddingLoading}
-        className="mt-2 px-3 py-2 bg-gray-400 dark:bg-gray-800 text-gray-800 dark:text-gray-300 rounded hover:bg-gray-500 dark:hover:bg-gray-700 transition"
+        className="mt-2 px-3 py-2 bg-inherit dark:bg-background-dark text-gray-800 dark:text-gray-300 rounded hover:bg-white/40 dark:hover:bg-gray-700 transition"
       >
         {isAddingLoading ? "Adding..." : "+ Add Card"}
       </button>
@@ -186,23 +191,39 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       )}
 
       {/* Delete Column Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-background-light dark:bg-black border-2 border-accent-dark dark:border-accent p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4">
-            <h2 className="text-2xl font-jaro font-bold text-center text-accent-dark dark:text-accent">Delete Column</h2>
+      {deleteConfirm && ReactDOM.createPortal(
+        <div 
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm"
+          onClick={() => setDeleteConfirm(false)}
+        >
+          <div 
+            className="bg-background-light dark:bg-black  p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold text-center text-black dark:text-white">Delete Column</h2>
             <p className="text-text-light dark:text-text-dark text-center">
               Are you sure you want to delete this column? This will also delete all cards within it. This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3 mt-4">
-              <button onClick={() => setDeleteConfirm(false)} className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark transition-all duration-200 font-medium border border-transparent hover:border-accent-light/30 dark:hover:border-accent/30">
+              <button 
+                onClick={() => setDeleteConfirm(false)} 
+                className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                          text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                          transition-all duration-200 font-medium 
+                          hover:border-black dark:hover:border-white"
+              >
                 Cancel
               </button>
-              <button onClick={handleDeleteColumn} className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:bg-red-600 dark:hover:bg-red-700 transform hover:scale-[1.02]">
+              <button 
+                onClick={handleDeleteColumn} 
+                className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white font-bold shadow-md hover:shadow-lg transition-all duration-200 hover:bg-red-600 dark:hover:bg-red-700 transform hover:scale-[1.02]"
+              >
                 Delete
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

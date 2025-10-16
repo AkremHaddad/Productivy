@@ -90,103 +90,10 @@ export default function ProductShowcase({ isDarkProp = undefined }) {
   }, [activeTab, isHovered]);
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-[#090909] dark:to-[#111111]">
-      <div className="container mx-auto text-center max-w-6xl">
-        <h2 className="text-4xl font-bold text-secondary-dark dark:text-accent mb-4">
-          Boost Your Productivity
-        </h2>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-          Discover how Productivy helps teams and individuals accomplish more with less effort
-        </p>
-
-        {/* Tabs */}
-        <div
-          className="flex flex-wrap justify-center gap-4 mb-16"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {Object.keys(features).map((key) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`flex items-center px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                activeTab === key
-                  ? "bg-secondary-light dark:bg-accent text-white shadow-lg transform -translate-y-1"
-                  : "bg-white dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 shadow-md"
-              }`}
-            >
-              <span className="mr-2 text-xl">{features[key].icon}</span>
-              {features[key].title}
-            </button>
-          ))}
-        </div>
-
-        {/* Content */}
-        <div className="flex flex-col lg:flex-row items-center gap-12 bg-white dark:bg-black rounded-2xl p-8 shadow-xl">
-          {/* Description */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`desc-${activeTab}`}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 30 }}
-              transition={{ duration: 0.4 }}
-              className="flex-1 text-left"
-            >
-              <div className="flex items-center mb-6">
-                <span className="text-3xl mr-3">{activeFeature.icon}</span>
-                <h3 className="text-2xl font-semibold text-secondary-dark dark:text-accent">{activeFeature.title}</h3>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{activeFeature.description}</p>
-
-              <div className="mb-8">
-                <h4 className="font-medium text-secondary-dark dark:text-gray-300 mb-3">Key Benefits:</h4>
-                <ul className="space-y-2">
-                  {activeFeature.benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-center text-gray-600 dark:text-gray-400">
-                      <span className="w-2 h-2 bg-accent rounded-full mr-3" />
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Image */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`img-${activeTab}`}
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.5 }}
-              className="flex-1 relative flex justify-center"
-            >
-              <div className="relative rounded overflow-hidden shadow-2xl max-w-md">
-                <img
-                  src={imageSrc}
-                  alt={activeFeature.title}
-                  className="w-full h-auto object-contain transition-transform duration-700 transform hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Indicators */}
-        <div className="flex justify-center mt-8 space-x-2">
-          {Object.keys(features).map((key) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${activeTab === key ? "bg-accent scale-125" : "bg-gray-300 dark:bg-gray-600"}`}
-              aria-label={`Show ${features[key].title}`}
-            />
-          ))}
-        </div>
+    <section className="py-20 px-4 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-[#090909] dark:to-[#111111]
+    ">
+      <div>
+        <img src={`../${imageSrc}`} alt="" />
       </div>
     </section>
   );

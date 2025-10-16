@@ -72,93 +72,98 @@ const Status = ({ onMinutesUpdate }) => {
   }, []);
 
   // Productive time UI increment (catch up if tab inactive)
-useEffect(() => {
-  const clearTimers = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
+  useEffect(() => {
+    const clearTimers = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
 
-  clearTimers();
+    clearTimers();
 
-  if (currentActivity !== "working") {
-    return () => clearTimers();
-  }
-
-  // snap lastTick to current minute boundary when starting
-  const nowStart = new Date();
-  lastTickRef.current = new Date(
-    nowStart.getFullYear(),
-    nowStart.getMonth(),
-    nowStart.getDate(),
-    nowStart.getHours(),
-    nowStart.getMinutes(),
-    0,
-    0
-  );
-
-  const tick = () => {
-    const now = new Date();
-    const diffMs = now.getTime() - lastTickRef.current.getTime();
-    const diffMinutes = Math.floor(diffMs / 60000);
-
-    // Ensure we always add at least 1 minute on the first aligned tick,
-    // and catch up with multiple minutes if the tab was inactive.
-    const minutesToAdd = Math.max(1, diffMinutes);
-
-    if (typeof onMinutesUpdate === "function") {
-      onMinutesUpdate((prev) => prev + minutesToAdd);
+    if (currentActivity !== "working") {
+      return () => clearTimers();
     }
 
-    // snap lastTick to the exact minute boundary we just processed
+    // snap lastTick to current minute boundary when starting
+    const nowStart = new Date();
     lastTickRef.current = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      now.getHours(),
-      now.getMinutes(),
+      nowStart.getFullYear(),
+      nowStart.getMonth(),
+      nowStart.getDate(),
+      nowStart.getHours(),
+      nowStart.getMinutes(),
       0,
       0
     );
-  };
 
-  const schedule = () => {
-    const now = new Date();
-    const msToNextFullMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+    const tick = () => {
+      const now = new Date();
+      const diffMs = now.getTime() - lastTickRef.current.getTime();
+      const diffMinutes = Math.floor(diffMs / 60000);
 
-    timeoutRef.current = setTimeout(() => {
-      tick(); // guaranteed to add at least 1
-      intervalRef.current = setInterval(tick, 60000);
-      timeoutRef.current = null;
-    }, msToNextFullMinute);
-  };
+      // Ensure we always add at least 1 minute on the first aligned tick,
+      // and catch up with multiple minutes if the tab was inactive.
+      const minutesToAdd = Math.max(1, diffMinutes);
 
-  schedule();
-    return () => clearTimers();
-  }, [currentActivity, onMinutesUpdate]);
+      if (typeof onMinutesUpdate === "function") {
+        onMinutesUpdate((prev) => prev + minutesToAdd);
+      }
+
+      // snap lastTick to the exact minute boundary we just processed
+      lastTickRef.current = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        0,
+        0
+      );
+    };
+
+    const schedule = () => {
+      const now = new Date();
+      const msToNextFullMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+
+      timeoutRef.current = setTimeout(() => {
+        tick(); // guaranteed to add at least 1
+        intervalRef.current = setInterval(tick, 60000);
+        timeoutRef.current = null;
+      }, msToNextFullMinute);
+    };
+
+    schedule();
+      return () => clearTimers();
+    }, [currentActivity, onMinutesUpdate]);
 
 
   // Handle activity change
   const saveActivity = async (activity) => {
-    if (activity === currentActivity || loading) {
+    if (activity === currentActivity) {
       setShowPopup(false);
       return;
     }
 
+    const previousActivity = currentActivity;
+    setCurrentActivity(activity);
+    setShowPopup(false);
     setLoading(true);
+
     try {
       await API.post("/api/activity/set", { activity }, { withCredentials: true });
-      setCurrentActivity(activity);
     } catch (err) {
       console.error("❌ Error saving activity:", err.response?.data || err);
+      setCurrentActivity(previousActivity);
+      // Optionally, show an error message to the user
+      alert("Failed to update activity. Reverting to previous.");
     } finally {
       setLoading(false);
-      setShowPopup(false);
     }
   };
 
@@ -167,13 +172,13 @@ useEffect(() => {
       {/* Status Box */}
       <div
         id="Status"
-        className="flex-1 flex flex-col justify-evenly items-center p-2 bg-inherit h-[150px] border-x-2 border-gray-400 dark:border-gray-700 cursor-pointer"
+        className="flex-1 flex flex-col justify-evenly items-center p-2 bg-inherit h-[150px] border-x-[1px] border-border-light dark:border-border-dark cursor-pointer"
         onClick={() => !loading && setShowPopup(true)}
       >
-        <div className="font-normal text-md text-white text-center font-jaro">
+        <div className="font-normal text-md text-black dark:text-white text-center font-jaro">
           status
         </div>
-        <div className="font-normal text-md text-[#C3C3C3] text-center font-jaro">
+        <div className="font-normal text-md text-black dark:text-white text-center font-jaro">
           {loading ? "Saving..." : currentActivity || "No activity"}
         </div>
       </div>
@@ -189,10 +194,10 @@ useEffect(() => {
             <button
               key={act}
               disabled={loading}
-              className={`py-2 rounded-lg font-medium border-2 transition-all duration-200 ${
+              className={`py-2 rounded-lg font-medium border-2  transition-all duration-200 text-black dark:text-white ${
                 currentActivity === act
-                  ? "dark:border-accent border-black/30 bg-accent-light dark:bg-accent text-black"
-                  : "dark:border-gray-400 bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark hover:border-black dark:hover:border-accent"
+                  ? "dark:border-white border-black bg-black/10 dark:bg-white/10 "
+                  : "   hover:border-black dark:hover:border-accent border-border-light dark:border-border-dark"
               }`}
               onClick={() => saveActivity(act)}
             >
@@ -202,8 +207,10 @@ useEffect(() => {
         </div>
 
         <button
-          className="mt-4 px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark 
-                     hover:bg-opacity-80 transition-all border border-transparent dark:hover:border-accent font-jaro font-medium"
+          className="mt-4 px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-black dark:text-white
+                     hover:bg-opacity-80 transition-all 
+                     border-[1px] border-border-light dark:border-border-dark  hover:border-black dark:hover:border-white
+                      font-medium  hover:ring-2 hover:ring-black dark:hover:ring-white"
           onClick={() => setShowPopup(false)}
           disabled={loading}
         >

@@ -3,8 +3,9 @@ import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import ProductShowcase from "../ProductShowcase";
 import { useTheme } from "../../api/useTheme";
+import showcaseLight from "../../../public/showcaseLight.png";
+import showcaseDark from "../../../public/showcaseDark.png";
 
 /**
  * Synchronous theme detection helper
@@ -42,6 +43,9 @@ function Home() {
     setIsDark(liveTheme);
   }, [liveTheme]);
 
+  // Get the appropriate showcase image based on theme
+  const showcaseImage = isDark ? showcaseDark : showcaseLight;
+
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
   }, []);
@@ -50,39 +54,40 @@ function Home() {
   if (!themeReady) return null;
 
   return (
-    <div className={`min-h-screen overflow-x-hidden ${isDark ? "bg-background-dark" : "bg-background-light"}`}>
+    <div className={`min-h-screen overflow-x-hidden dark:bg-background-dark bg-background-light`}>
       <div className="fixed inset-x-0 top-0 z-50">
         <Navbar />
       </div>
 
       <main className="pt-14">
         {/* Hero Section */}
-        <section className={`${isDark ? "bg-black" : "bg-background-light"} text-white min-h-[92vh] flex items-center`}>
+        {/* Hero Section */}
+        <section className={" text-black dark:text-white min-h-[92vh] flex items-center"}>
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
             {/* Left text */}
             <div data-aos="fade-right" className="px-4">
               <h1 className="text-4xl md:text-5xl font-bold text-secondary-dark dark:text-accent leading-tight">
                 Stay Focused. Plan Smarter. Get More Done.
               </h1>
-              <p className={`${isDark ? "text-text-dark" : "text-text-light"} mt-4 text-lg`}>
+              <p className={`dark:text-text-dark text-text-light"} mt-4 text-lg`}>
                 Organize your projects, track your progress, and stay focused with built-in Pomodoro timers, smart task lists, and sprint management — all in one simple tool.
               </p>
 
-              <ul className={`${isDark ? "text-text-dark" : "text-text-light"} mt-6 list-disc list-inside space-y-2 text-base`}>
+              <ul className={`dark:text-text-dark text-text-light"} mt-6 list-disc list-inside space-y-2 text-base`}>
                 <li>Visualize your workflow with customizable Kanban boards.</li>
                 <li>Plan and execute sprints efficiently with your team.</li>
                 <li>Track your focused hours and daily progress effortlessly.</li>
                 <li>Analyze your productivity with activity visualizers and reports.</li>
               </ul>
 
-              <p className={`${isDark ? "text-text-dark" : "text-text-light"} mt-4`}>
+              <p className={`dark:text-text-dark text-text-light mt-4`}>
                 Whether you’re managing personal tasks or collaborating with a team, Productivy gives you the clarity, focus, and tools to achieve more every day.
               </p>
 
               <div className="mt-6 flex gap-4 flex-wrap">
                 <a
                   href="/account"
-                  className="bg-secondary-dark hover:bg-secondary-light dark:bg-accent dark:hover:opacity-90 text-black font-semibold py-3 px-6 rounded-lg transition-all"
+                  className="bg-secondary-dark hover:bg-secondary-light dark:bg-accent dark:hover:opacity-90 text-white dark:text-black font-semibold py-3 px-6 rounded-lg transition-all"
                 >
                   Get Started Free
                 </a>
@@ -101,8 +106,38 @@ function Home() {
           </div>
         </section>
 
-        {/* Pass isDark into ProductShowcase so it can pick correct images synchronously */}
-        <ProductShowcase isDarkProp={isDark} />
+        {/* Showcase Section */}
+        <section className="py-20 px-4 bg-ui-light dark:bg-black">
+          <div className="container mx-auto">
+            <div className="text-center mb-16" data-aos="fade-up">
+              <h2 className="text-3xl md:text-4xl font-bold text-secondary-dark dark:text-accent mb-4">
+                Beautiful, Intuitive Interface
+              </h2>
+              <p className="text-xl text-text-light dark:text-text-dark max-w-2xl mx-auto">
+                Experience a clean, modern design that makes productivity effortless and enjoyable
+              </p>
+            </div>
+            
+            <div data-aos="zoom-in" data-aos-delay="200" className="max-w-6xl mx-auto">
+              <div className="relative bg-background-light dark:bg-background-dark rounded-2xl shadow-2xl p-2 md:p-4 border border-gray-200 dark:border-gray-700">
+                <img 
+                  src={showcaseImage} 
+                  alt="Productivy App Interface Showcase" 
+                  className="w-full h-auto rounded-xl"
+                />
+                {/* Optional decorative elements */}
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-accent rounded-full opacity-20 blur-xl"></div>
+                <div className="absolute -top-4 -left-4 w-32 h-32 bg-secondary-dark rounded-full opacity-10 blur-xl"></div>
+              </div>
+            </div>
+            
+            <div className="text-center mt-12" data-aos="fade-up" data-aos-delay="400">
+              <p className="text-text-light dark:text-text-dark text-lg">
+                Join thousands of users who have transformed their workflow with Productivy
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Features Section */}
         <section id="features" className="py-20 px-4 bg-background-light dark:bg-background-dark">
@@ -111,78 +146,77 @@ function Home() {
               Powerful Features to Boost Your Productivity
             </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
-            {[
-              {
-                title: "Kanban Boards",
-                desc: "Visualize your workflow with customizable Kanban boards. Move tasks through stages from 'To-Do' to 'Done' with simple drag-and-drop.",
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
-                  </svg>
-                ),
-              },
-              {
-                title: "Sprint Planning",
-                desc: "Break your work into manageable sprints. Set goals, track progress, and review accomplishments to maintain steady momentum.",
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                  </svg>
-                ),
-              },
-              {
-                title: "Pomodoro Timer",
-                desc: "Built-in Pomodoro timer with customizable work/break intervals. Stay focused and prevent burnout with structured work sessions.",
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                ),
-              },
-              {
-                title: "Smart Task Lists",
-                desc: "Prioritize, categorize, and schedule tasks with ease. Set deadlines, add reminders, and break large tasks into subtasks.",
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                  </svg>
-                ),
-              },
-              {
-                title: "Project Boards",
-                desc: "Create multiple boards per project and organize them your way. Each board can contain columns, and each column can hold cards with titles and descriptions — perfect for detailed workflows.",
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7h18M3 12h18M3 17h18M4 6v12M20 6v12"></path>
-                  </svg>
-                ),
-              },
-              {
-                title: "Activity Visualizer",
-                desc: "Track and visualize how you spend your time with charts and daily summaries. See where your focus goes and optimize your workflow.",
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3v18M5 9h6m-6 6h6m4 3h4m-4-6h4m-4-6h4"></path>
-                  </svg>
-                ),
-              },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{feature.title}</h3>
-                  <div className="text-secondary-dark dark:text-accent">{feature.icon}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+              {[
+                {
+                  title: "Kanban Boards",
+                  desc: "Visualize your workflow with customizable Kanban boards. Move tasks through stages from 'To-Do' to 'Done' with simple drag-and-drop.",
+                  icon: (
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Sprint Planning",
+                  desc: "Break your work into manageable sprints. Set goals, track progress, and review accomplishments to maintain steady momentum.",
+                  icon: (
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Pomodoro Timer",
+                  desc: "Built-in Pomodoro timer with customizable work/break intervals. Stay focused and prevent burnout with structured work sessions.",
+                  icon: (
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Smart Task Lists",
+                  desc: "Prioritize, categorize, and schedule tasks with ease. Set deadlines, add reminders, and break large tasks into subtasks.",
+                  icon: (
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Project Boards",
+                  desc: "Create multiple boards per project and organize them your way. Each board can contain columns, and each column can hold cards with titles and descriptions — perfect for detailed workflows.",
+                  icon: (
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7h18M3 12h18M3 17h18M4 6v12M20 6v12"></path>
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Activity Visualizer",
+                  desc: "Track and visualize how you spend your time with charts and daily summaries. See where your focus goes and optimize your workflow.",
+                  icon: (
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3v18M5 9h6m-6 6h6m4 3h4m-4-6h4m-4-6h4"></path>
+                    </svg>
+                  ),
+                },
+              ].map((feature, index) => (
+                <div
+                  key={index}
+                  data-aos="fade-up"
+                  data-aos-delay={index * 100}
+                  className="bg-white dark:bg-ui-dark p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow border-[1px] border-border-light dark:border-border-dark"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{feature.title}</h3>
+                    <div className="text-secondary-dark dark:text-accent">{feature.icon}</div>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300">{feature.desc}</p>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
-
+              ))}
+            </div>
           </div>
         </section>
       </main>

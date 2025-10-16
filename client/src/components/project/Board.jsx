@@ -230,7 +230,7 @@ const Board = ({ projectId }) => {
 
   if (error) {
     return (
-      <div className="ml-1.5 bg-accent-light dark:bg-accent-dark rounded-md flex-1 overflow-hidden w-full">
+      <div className="ml-1.5 bg-ui-light dark:bg-ui-dark rounded-md flex-1 overflow-hidden w-full">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="text-red-500 mb-2">{error}</p>
@@ -308,10 +308,11 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
 
 
   return (
-    <div className="bg-gradient-to-r from-[#2E837F] to-[#40C1BB] dark:from-[#113533] dark:to-[#2D8984] rounded-md flex-1 overflow-hidden w-full h-[622px] flex flex-col">
+    <div className="bg-ui-light dark:bg-ui-dark rounded-md flex-1 overflow-hidden w-full h-[622px] flex flex-col
+    border-[1px] border-border-light dark:border-border-dark">
       
       {/* Header Tabs */}
-      <div className="bg-black bg-opacity-25 min-h-[50px] font-normal text-3xl text-white flex items-stretch rounded-t-md">
+      <div className="bg-black dark:bg-white bg-opacity-5 dark:bg-opacity-5 min-h-[50px] font-normal text-3xl text-black dark:text-white flex items-stretch rounded-t-md">
         <div
           ref={boardsContainerRef}
           className="flex overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-500 dark:scrollbar-thumb-gray-700"
@@ -323,7 +324,7 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
                 key={board._id}
                 className={`group flex items-stretch flex-shrink-0 px-2 transition-colors min-h-full ${
                   isActive
-                    ? "bg-black/50 dark:bg-black/50"
+                    ? "bg-black/20 dark:bg-black/50"
                     : "hover:bg-black/20 dark:hover:bg-white/10"
                 }`}
               >
@@ -347,7 +348,7 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
                       }}
                       onBlur={() => handleEditBoard(board._id)}
                       autoFocus
-                      className="bg-transparent text-white border-none outline-none px-2 py-1 font-semibold text-lg"
+                      className="bg-transparent text-black dark:text-white border-none outline-none px-2 py-1 font-semibold text-lg"
                       style={{ minWidth: 24 }}
                       onClick={(e) => e.stopPropagation()}
                     />
@@ -412,7 +413,7 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
 
                   <button
                     onClick={handleAddColumn}
-                    className="min-w-[200px] max-h-[50px] bg-gray-400 dark:bg-black rounded-lg p-3 flex items-center justify-center text-gray-800 dark:text-gray-400 shadow-md hover:bg-gray-500 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                    className="min-w-[200px] max-h-[50px] bg-background-light dark:bg-background-dark rounded-lg p-3 flex items-center justify-center text-gray-800 dark:text-gray-400 shadow-md hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
                   >
                     + Add new column
                   </button>
@@ -433,8 +434,10 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
         <div className="flex justify-end gap-3 mt-4">
           <button
             onClick={() => setDeleteConfirm(null)}
-            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark transition-all duration-200 font-medium border border-transparent hover:border-accent-light/30 dark:hover:border-accent/30"
-          >
+            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                        text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium 
+                        hover:border-black dark:hover:border-white">
             Cancel
           </button>
           <button

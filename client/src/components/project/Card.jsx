@@ -29,7 +29,8 @@ const Card = ({
   setEditingCard,
   setEditCardData,
   handleEditCard,
-  handleDeleteCard
+  handleDeleteCard,
+  cardBg
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -38,7 +39,8 @@ const Card = ({
     <>
       {/* Card preview */}
       <div
-        className="bg-gray-200 dark:bg-navbar-dark p-2 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        className="bg-white p-2 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        style={{ backgroundColor: cardBg }}
         onClick={() => setIsOpen(true)}
       >
         <h4 className="text-sm text-gray-900 dark:text-gray-100 truncate">{card.title}</h4>
@@ -50,7 +52,7 @@ const Card = ({
 
           {/* Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-jaro text-secondary-light dark:text-accent">Card Details</h2>
+            <h2 className="text-xl text-black dark:text-white">Card Details</h2>
             <div className="flex gap-2">
               <button
                 onClick={() => {
@@ -80,11 +82,11 @@ const Card = ({
                 value={editCardData.title}
                 onChange={(e) => setEditCardData(prev => ({ ...prev, title: e.target.value }))}
                 rows={2}
-                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:border-black focus:ring-black dark:focus:ring-accentresize-y"
+                className="w-full px-4 py-2 rounded-lg border-[1px] border-border-white dark:border-border-black bg-black/20 dark:bg-white/20 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:border-black focus:ring-black dark:focus:ring-white"
                 autoFocus
               />
             ) : (
-              <p className="px-4 py-2 rounded-lg bg-white border-navbar-light border-2 dark:bg-navbar-dark text-text-light dark:text-text-dark">
+              <p className="px-4 py-2 rounded-lg  dark:bg-white/10 border-navbar-light border-2 dark:bg-navbar-dark text-text-light dark:text-text-dark">
                 {card.title}
               </p>
             )}
@@ -98,10 +100,10 @@ const Card = ({
                 value={editCardData.description}
                 onChange={(e) => setEditCardData(prev => ({ ...prev, description: e.target.value }))}
                 rows={5}
-                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light dark:border-navbar-dark bg-white dark:bg-navbar-dark text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:border-black focus:ring-black dark:focus:ring-accent resize-y"
+                className="w-full px-4 py-2 rounded-lg border-[1px] border-border-white dark:border-border-black bg-black/20 dark:bg-white/20 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:border-black focus:ring-black dark:focus:ring-white resize-y"
               />
             ) : (
-              <p className="px-4 py-2 rounded-lg bg-white border-navbar-light border-2 dark:bg-navbar-dark text-text-light dark:text-text-dark min-h-[120px] whitespace-pre-line">
+              <p className="px-4 py-2 rounded-lg dark:bg-white/10 border-navbar-light border-2 dark:bg-navbar-dark text-text-light dark:text-text-dark min-h-[120px] whitespace-pre-line">
                 {card.description || "No description added."}
               </p>
             )}
@@ -112,16 +114,16 @@ const Card = ({
             <div className="flex justify-end gap-3 mt-2">
               <button
                 onClick={() => setEditingCard(null)}
-                className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
-                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
-                        transition-all duration-200 font-medium border border-transparent 
-                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+                className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                          text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                          transition-all duration-200 font-medium 
+                          hover:border-black dark:hover:border-white"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleEditCard(card._id)}
-                className="px-5 py-2 rounded-lg bg-secondary-light dark:bg-accent text-white dark:text-black
+                className="px-5 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black
                       font-bold shadow-md hover:shadow-lg transition-all duration-200
                       hover:scale-[1.02]"
               >
@@ -131,9 +133,15 @@ const Card = ({
           )}
 
           {/* Delete Confirmation */}
-          {deleteConfirm && (
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-background-light dark:bg-background-dark border-2 border-red-600 dark:border-red-500 p-6 rounded-xl shadow-2xl w-full max-w-sm animate-fadeScale">
+          {deleteConfirm && ReactDOM.createPortal(
+            <div 
+              className="fixed inset-0 bg-black/60 flex items-center justify-center z-60"
+              onClick={() => setDeleteConfirm(false)}
+            >
+              <div 
+                className="bg-background-light dark:bg-background-dark  p-6 rounded-xl shadow-2xl w-full max-w-sm animate-fadeScale"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <h3 className="text-lg font-bold mb-2 text-red-600 dark:text-red-500 text-center">Delete Card</h3>
                 <p className="mb-6 opacity-80 dark:text-text-dark">
                   Are you sure you want to delete this card? This action cannot be undone.
@@ -141,10 +149,10 @@ const Card = ({
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={() => setDeleteConfirm(false)}
-                    className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
-                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
-                        transition-all duration-200 font-medium border border-transparent 
-                        hover:border-secondary-light/30 dark:hover:border-accent/30"
+                    className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                              text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                              transition-all duration-200 font-medium 
+                              hover:border-black dark:hover:border-white"
                   >
                     Cancel
                   </button>
@@ -160,7 +168,8 @@ const Card = ({
                   </button>
                 </div>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
 
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import API from "../../api/API";
 import { changeTaskOrder } from "../../api/project";
 import Modal from "../common/Modal";
@@ -42,19 +42,36 @@ const Kanban = ({ projectId, selectedSprint }) => {
   const handleAddTask = async () => {
     if (!newTaskTitle.trim() || !selectedSprint) return;
 
+    const tempId = `temp_${Date.now()}`;
+    const tempTask = { _id: tempId, title: newTaskTitle, completed: false };
+    const previousTasks = [...tasks];
+    setTasks([...tasks, tempTask]);
+    setNewTaskTitle("");
+
     try {
       const res = await API.post(
         `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks`,
         { title: newTaskTitle }
       );
       setTasks(res.data);
-      setNewTaskTitle("");
     } catch (err) {
       console.error("Error adding task:", err);
+      setTasks(previousTasks);
     }
   };
 
   const toggleTask = async (taskId) => {
+    const taskIndex = tasks.findIndex((t) => t._id === taskId);
+    if (taskIndex === -1) return;
+
+    const previousTasks = [...tasks];
+    const updatedTasks = [...tasks];
+    updatedTasks[taskIndex] = {
+      ...updatedTasks[taskIndex],
+      completed: !updatedTasks[taskIndex].completed,
+    };
+    setTasks(updatedTasks);
+
     try {
       const res = await API.patch(
         `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}/toggle`
@@ -64,6 +81,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
       );
     } catch (err) {
       console.error("Error toggling task:", err);
+      setTasks(previousTasks);
     }
   };
 
@@ -75,6 +93,18 @@ const Kanban = ({ projectId, selectedSprint }) => {
   const handleEditTask = async (taskId) => {
     if (!editTitle.trim()) return;
 
+    const taskIndex = tasks.findIndex((t) => t._id === taskId);
+    if (taskIndex === -1) return;
+
+    const previousTitle = tasks[taskIndex].title;
+    setTasks((prev) =>
+      prev.map((t) =>
+        t._id === taskId ? { ...t, title: editTitle } : t
+      )
+    );
+    setEditingTask(null);
+    setEditTitle("");
+
     try {
       const res = await API.patch(
         `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}`,
@@ -83,22 +113,32 @@ const Kanban = ({ projectId, selectedSprint }) => {
       setTasks((prev) =>
         prev.map((t) => (t._id === taskId ? res.data : t))
       );
-      setEditingTask(null);
-      setEditTitle("");
     } catch (err) {
       console.error("Error editing task:", err);
+      setTasks((prev) =>
+        prev.map((t) =>
+          t._id === taskId ? { ...t, title: previousTitle } : t
+        )
+      );
     }
   };
 
   const handleDeleteTask = async (taskId) => {
+    const taskIndex = tasks.findIndex((t) => t._id === taskId);
+    if (taskIndex === -1) return;
+
+    const previousTasks = [...tasks];
+    const updatedTasks = tasks.filter((t) => t._id !== taskId);
+    setTasks(updatedTasks);
+    setDeleteConfirm(null);
+
     try {
       await API.delete(
         `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}`
       );
-      setTasks((prev) => prev.filter((t) => t._id !== taskId));
-      setDeleteConfirm(null);
     } catch (err) {
       console.error("Error deleting task:", err);
+      setTasks(previousTasks);
     }
   };
 
@@ -141,13 +181,14 @@ const Kanban = ({ projectId, selectedSprint }) => {
     // If dropped in delete zone
     if (result.destination.droppableId === "deleteZone") {
       const taskId = tasks[result.source.index]._id;
-      setDeleteConfirm(taskId);
+      handleDeleteTask(taskId); // Instant delete without confirm
       return;
     }
 
     // Normal reordering
     if (result.destination.index === result.source.index) return;
 
+    const previousTasks = [...tasks];
     const newTasks = reorder(
       tasks,
       result.source.index,
@@ -164,13 +205,14 @@ const Kanban = ({ projectId, selectedSprint }) => {
       );
     } catch (err) {
       console.error("Error saving task order:", err);
+      setTasks(previousTasks);
     }
   };
 
   return (
-    <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[460px] rounded-md shadow-lg overflow-hidden flex flex-col">
+    <div className="flex-1 bg-ui-light dark:bg-ui-dark h-[460px] rounded-md shadow-lg overflow-hidden flex flex-col border-[1px] border-border-light dark:border-border-dark">
       {/* Header */}
-      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg font-jaro flex
+      <div className="bg-header-light dark:bg-header-dark h-[40px] text-black dark:text-white text-center text-lg font-jaro flex border-b-[1px] border-border-light dark:border-border-dark
                        items-center justify-center rounded-t-md relative">
         <span className="drop-shadow-md">Sprint Tasks</span>
       </div>
@@ -202,11 +244,11 @@ const Kanban = ({ projectId, selectedSprint }) => {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`flex items-center justify-between text-sm p-2 rounded-xl shadow-sm transition-all duration-200 ease-in-out group
-                          ${
+                        className={`flex items-center justify-between text-sm p-2 rounded-xl shadow-sm transition-all duration-200 ease-in-out group  border border-border-light dark:border-border-dark
+                          ${ 
                             task.completed
-                              ? "bg-white/50 dark:bg-black/75 text-gray-500"
-                              : "bg-white/75 dark:bg-black/25 dark:text-text-dark hover:shadow-md"
+                              ? "bg-white dark:bg-background-dark text-gray-500"
+                              : "bg-white dark:bg-background-dark dark:text-text-dark hover:shadow-md"
                           }
                           ${snapshot.isDragging ? "opacity-70 scale-[1.02] shadow-lg" : ""}
                         `}
@@ -217,13 +259,14 @@ const Kanban = ({ projectId, selectedSprint }) => {
                             className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200
                               ${
                                 task.completed
-                                  ? "border-secondary-light bg-secondary-light/50 dark:border-accent dark:bg-accent/20"
-                                  : "border-secondary-light/50 dark:border-navbar-dark group-hover:border-secondary-dark dark:group-hover:border-accent"
+  ? "border-black bg-black/10 dark:border-white dark:bg-white/10"
+  : "border-black/30 dark:border-white/30 group-hover:border-black dark:group-hover:border-white"
+
                               }`}
                           >
                             {task.completed && (
                               <svg
-                                className="w-3 h-3 text-accent"
+                                className="w-3 h-3 text-black dark:text-white"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -308,24 +351,25 @@ const Kanban = ({ projectId, selectedSprint }) => {
                   </div>
                 </div>
               ) : (
-                <div className="flex gap-2 items-center p-2">
+                <div className="flex gap-2 items-center p-2 bg-header-light dark:bg-header-dark border-t-[1px] border-border-light dark:border-border-dark">
                   <input
                     type="text"
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Enter a new task..."
-                    className="flex-1 min-w-0 px-2 py-1 rounded-xl border-2 border-navbar-light/30 dark:border-navbar-dark/30
-                              bg-ui-light dark:bg-black/50 text-text-light dark:text-text-dark
-                              focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
+                    className="flex-1 min-w-0 px-2 py-1 rounded-xl border-[1px] border-border-light dark:border-border-dark
+                               bg-ui-light dark:bg-ui-dark text-text-light dark:text-text-dark
+                              focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all"
                     disabled={!selectedSprint}
                   />
                   <button
                     onClick={handleAddTask}
                     disabled={!selectedSprint || !newTaskTitle.trim()}
-                    className="shrink-0 w-8 h-8 bg-accent-light text-white rounded-xl
+                    className="shrink-0 w-8 h-8 bg-white dark:bg-black  text-black dark:text-white rounded-xl
                               hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed
-                              transition-all shadow-md hover:shadow-lg flex items-center justify-center"
+                              transition-all shadow-sm hover:shadow-lg flex items-center justify-center
+                              border-[1px] border-border-light dark:border-border-dark"
                   >
                     <svg
                       className="w-5 h-5"
@@ -349,36 +393,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
         </Droppable>
       </DragDropContext>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
-        isOpen={!!deleteConfirm}
-        onClose={() => setDeleteConfirm(null)}
-        title="Delete Task"
-      >
-        <p className="text-text-light dark:text-text-dark text-center">
-          Are you sure you want to delete this task? This action cannot be undone.
-        </p>
-        <div className="flex justify-end gap-3 mt-4">
-          <button
-            onClick={() => setDeleteConfirm(null)}
-            className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark 
-                      text-text-dark hover:bg-opacity-80 transition-all
-                      font-medium border border-transparent hover:border-accent"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => handleDeleteTask(deleteConfirm)}
-            className="px-5 py-2 rounded-lg bg-red-500 dark:bg-red-600 text-white
-                      font-bold shadow-md hover:shadow-lg
-                      transition-all duration-200
-                      hover:bg-red-600 dark:hover:bg-red-700
-                      transform hover:scale-[1.02]"
-          >
-            Delete
-          </button>
-        </div>
-      </Modal>
+      {/* Delete Confirmation Modal - Removed since delete is now instant on drop */}
     </div>
   );
 };

@@ -11,6 +11,7 @@ import Tabs from "../project/Tabs";
 import Board from "../project/Board";
 import { getProject } from "../../api/project";
 import API from "../../api/API"; // ✅ import API for fetching minutes
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const Project = () => {
   const { id } = useParams();
@@ -48,23 +49,41 @@ const Project = () => {
 
     fetchMinutesWorked();
   }, []);
-
-  if (!project) return <div className="text-center p-10">Loading...</div>;
+if (!project) return (
+  <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center p-4">
+    <div className="text-center space-y-6">
+      {/* Main Spinner - matches your LoadingSpinner component style */}
+      <div className="flex justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 dark:border-white border-black"></div>
+      </div>
+      
+      {/* Loading Text */}
+      <div className="space-y-2">
+        <h3 className="text-lg font-medium text-gray-800 dark:text-white">
+          Loading Project
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Please wait while we fetch your project details...
+        </p>
+      </div>
+    </div>
+  </div>
+);
 
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden">
+    <div className="flex flex-col min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark">
       <Navbar />
 
       <Tabs showTools={showTools} setShowTools={setShowTools} />
 
-      <div className="flex-1 flex bg-background-light dark:bg-black p-5 pb-0 gap-2.5">
+      <div className="flex-1 flex  p-5 pb-0 gap-2.5">
         <div
           id="tools"
           className={`flex flex-col gap-2.5 overflow-hidden transition-all duration-500 ease-in-out
             ${showTools ? "max-w-[500px] opacity-100" : "max-w-0 opacity-0 mr-0"}
           `}
         >
-          <div className="select-none flex flex-row bg-[#1F2937] dark:bg-[#131313] rounded-md border border-gray-400 dark:border-gray-700">
+          <div className="select-none flex flex-row bg-ui-light dark:bg-ui-dark rounded-md border border-border-light dark:border-border-dark">
             <Pomodoro />
             {/* ✅ Status updates minutesWorked; Time only displays */}
             <Status onMinutesUpdate={setMinutesWorked} />

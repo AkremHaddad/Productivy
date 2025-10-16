@@ -129,7 +129,7 @@ const Pomodoro = () => {
       className="flex-1 flex bg-inherit h-[150px] rounded-l-md seperate"
     >
       {/* Left side with buttons */}
-      <div className="flex flex-col justify-evenly border-r-2 border-gray-400 dark:border-gray-700 divide-y divide-gray-400 dark:divide-gray-700">
+      <div className="flex flex-col justify-evenly border-r-[1px] border-border-light dark:border-border-dark divide-y-[1px] divide-border-light dark:divide-border-dark">
         <button
           onClick={toggleStart}
           className="p-2 flex-grow transition-all duration-200"
@@ -137,7 +137,7 @@ const Pomodoro = () => {
           <img
             src={isRunning ? "../pause.svg" : "../start.svg"}
             alt="start/pause"
-            className="w-4 h-4 invert brightness-0"
+            className="w-4 h-4 dark:invert "
           />
         </button>
         <button
@@ -147,7 +147,7 @@ const Pomodoro = () => {
           <img
             src="../restart.svg"
             alt="restart"
-            className="w-4 h-4 invert brightness-0"
+            className="w-4 h-4 dark:invert"
           />
         </button>
         <button
@@ -157,17 +157,17 @@ const Pomodoro = () => {
           <img
             src="../timer.svg"
             alt="timer"
-            className="w-4 h-4 invert brightness-0"
+            className="w-4 h-4 dark:invert"
           />
         </button>
       </div>
 
       {/* Right side */}
       <div className="flex-1 flex flex-col justify-evenly items-center p-2">
-        <div className="font-jaro text-md text-white dark:text-white text-center drop-shadow-md tracking-wider">
+        <div className="font-jaro text-md text-black dark:text-white text-center drop-shadow-md tracking-wider">
           {isWork ? "work!" : "break!"}
         </div>
-        <div className="font-jaro text-md text-[#C3C3C3] dark:text-[#A6A6A6] text-center">
+        <div className="font-jaro text-md text-black dark:text-white text-center">
           {formatTime(timeLeft)}
         </div>
       </div>
@@ -181,7 +181,7 @@ const Pomodoro = () => {
         <form onSubmit={saveSettings} className="flex flex-col gap-4">
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
-              <label className="text-text-light dark:text-text-dark font-medium">
+              <label className="text-black dark:text-white font-medium">
                 Work Duration (minutes)
               </label>
               <input
@@ -190,17 +190,17 @@ const Pomodoro = () => {
                 defaultValue={workTime / 60}
                 min="1"
                 max="120"
-                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light/30 dark:border-accent/30 
-                          bg-white/80 dark:bg-navbar-dark/80 
-                          text-text-light dark:text-text-dark
-                          focus:outline-none focus:ring-2 focus:ring-accent-light/50 dark:focus:ring-accent/50
+                className="w-full px-4 py-2 rounded-lg border-[1px] border-border-light dark:border-border-dark
+                          bg-black/5 dark:bg-white/5 
+                          text-black dark:text-white
+                          focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white/50
                           transition-all duration-200
                           appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-text-light dark:text-text-dark font-medium">
+              <label className="text-black dark:text-white font-medium">
                 Break Duration (minutes)
               </label>
               <input
@@ -209,10 +209,10 @@ const Pomodoro = () => {
                 defaultValue={breakTime / 60}
                 min="1"
                 max="30"
-                className="w-full px-4 py-2 rounded-lg border-2 border-navbar-light/30 dark:border-accent/30 
-                          bg-white/80 dark:bg-navbar-dark/80 
-                          text-text-light dark:text-text-dark
-                          focus:outline-none focus:ring-2 focus:ring-accent-light/50 dark:focus:ring-accent/50
+                className="w-full px-4 py-2 rounded-lg border-[1px] border-border-light dark:border-border-dark
+                          bg-black/5 dark:bg-white/5 
+                          text-black dark:text-white
+                          focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white/50
                           transition-all duration-200
                           appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
               />
@@ -223,19 +223,19 @@ const Pomodoro = () => {
             <button
               type="button"
               onClick={() => setShowSettings(false)}
-              className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
-                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
-                        transition-all duration-200 font-medium border border-transparent 
-                        hover:border-accent-light/30 dark:hover:border-accent/30"
+              className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                        text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium 
+                        hover:border-black dark:hover:border-white"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-accent-light dark:bg-accent text-white dark:text-black
+              className="px-5 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black
                         font-bold shadow-md hover:shadow-lg
                         transition-all duration-200 hover:scale-[1.02]
-                        hover:bg-accent-light/90 dark:hover:bg-accent/90"
+                        hover:bg-black/70 dark:hover:bg-white/90"
             >
               Save Changes
             </button>

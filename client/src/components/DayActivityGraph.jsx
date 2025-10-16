@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { activityColors, activities } from "./pages/chartsHelper";
 import API from "../api/API";
 
-
 const DayActivityGraph = () => {
   const [selectedDay, setSelectedDay] = useState(0); // 0 = today
   const [weekDays, setWeekDays] = useState([]);
@@ -17,21 +16,19 @@ const DayActivityGraph = () => {
     minutes: 0,
   });
 
-  const getWeekdayName = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", { weekday: "short" }); 
-  };
+  const getWeekdayName = (date) =>
+    date.toLocaleDateString("en-US", { weekday: "short" });
 
   const width = 1000;
   const height = 100;
   const margin = { top: 20, right: 20, bottom: 40, left: 60 };
 
-  // --- Initialize last 7 days
+  // --- Initialize last 7 days, today first
   useEffect(() => {
     const days = [];
-    for (let i = 6; i >= 0; i--) {
+    for (let i = 0; i < 7; i++) {
       const d = new Date();
-      d.setDate(d.getDate() - i);
+      d.setDate(d.getDate() - i); // today, yesterday, ...
       days.push(new Date(d));
     }
     setWeekDays(days);
@@ -40,14 +37,19 @@ const DayActivityGraph = () => {
   // --- Fetch daily data for selected day
   useEffect(() => {
     if (!weekDays.length) return;
-    const selectedDate = weekDays[selectedDay].toISOString().split("T")[0];
+
+    const selectedDate = weekDays[selectedDay]
+      .toISOString()
+      .split("T")[0];
 
     const fetchDayData = async () => {
       try {
-        const res = await API.get(`/api/charts/daily?date=${selectedDate}`, { withCredentials: true });
+        const res = await API.get(
+          `/api/charts/daily?date=${selectedDate}`,
+          { withCredentials: true }
+        );
         const raw = res.data; // Activity doc for that day
-        
-        // Build hourly array including offline
+
         const hoursArr = [];
         for (let h = 0; h < 24; h++) {
           const hourData = raw.hours?.[h] || {};
@@ -58,10 +60,7 @@ const DayActivityGraph = () => {
             if (mins > 0) hourActivities.push({ activity: act, minutes: mins });
           }
 
-          // Add offline if less than 60 minutes
-          if (totalMinutes < 60) {
-            hourActivities.push({ activity: "offline", minutes: 60 - totalMinutes });
-          }
+
 
           hoursArr.push(hourActivities);
         }
@@ -76,7 +75,6 @@ const DayActivityGraph = () => {
     fetchDayData();
   }, [selectedDay, weekDays]);
 
-  // --- Tooltip handlers
   const handleActivityHover = (activity, hour) => {
     setHoveredActivity(activity.activity);
     setTooltipData({
@@ -102,9 +100,8 @@ const DayActivityGraph = () => {
     setTooltipData((prev) => ({ ...prev, visible: false }));
   };
 
-  // --- Render
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md transition-colors">
+    <div className="p-6 bg-ui-light dark:bg-ui-dark rounded-lg shadow-md transition-colors">
       <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
         Daily Activity Timeline
       </h2>
@@ -121,7 +118,7 @@ const DayActivityGraph = () => {
             }`}
             onClick={() => setSelectedDay(idx)}
           >
-            {idx === weekDays.length - 1 ? "Today" : getWeekdayName(day)}
+            {idx === 0 ? "Today" : getWeekdayName(day)}
           </button>
         ))}
       </div>
@@ -134,7 +131,7 @@ const DayActivityGraph = () => {
             className="flex items-center gap-2 cursor-pointer select-none p-2 rounded-md transition-colors"
             style={{
               backgroundColor: hoveredActivity === act ? `${activityColors[act]}20` : "transparent",
-              border: `1px solid ${activityColors[act]}40`,
+              border: `1px solid ${activityColors[act]}`,
             }}
             onMouseEnter={() => setHoveredActivity(act)}
             onMouseLeave={() => setHoveredActivity(null)}
@@ -146,13 +143,12 @@ const DayActivityGraph = () => {
       </div>
 
       {/* Graph */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-white dark:bg-background-dark shadow-sm ">
         <svg
           width={width}
           height={height + margin.top + margin.bottom}
           className="border border-gray-200 dark:border-gray-700 rounded-md transition-colors"
         >
-          {/* Background grid */}
           {[...Array(25)].map((_, i) => {
             const x = margin.left + (i / 24) * (width - margin.left - margin.right);
             return (
@@ -181,7 +177,6 @@ const DayActivityGraph = () => {
             );
           })}
 
-          {/* Activity rectangles */}
           {dayData.map((hourActivities, h) => {
             const left = margin.left + (h / 24) * (width - margin.left - margin.right);
             const hourWidth = (width - margin.left - margin.right) / 24;
@@ -220,12 +215,11 @@ const DayActivityGraph = () => {
       {/* Tooltip */}
       {tooltipData.visible && (
         <div
-          className="fixed px-3 py-2 rounded-md text-sm shadow-lg z-20 pointer-events-none w-48 transition-colors"
+          className="fixed px-3 py-2 rounded-md text-sm shadow-lg z-20 pointer-events-none w-48 transition-colors text-gray-300 dark:text-white"
           style={{
             left: `${tooltipData.x}px`,
             top: `${tooltipData.y}px`,
             backgroundColor: "#1f2937",
-            color: activityColors[tooltipData.activity] || "#ffffff",
             borderLeft: `4px solid ${activityColors[tooltipData.activity] || "#6b7280"}`,
           }}
         >

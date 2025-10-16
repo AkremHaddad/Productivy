@@ -121,10 +121,10 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
   };
 
   return (
-    <div className="flex-1 bg-primary-light dark:bg-primary-dark h-[460px] rounded-md shadow-lg 
+    <div className="flex-1 bg-ui-light dark:bg-ui-dark h-[460px] rounded-md shadow-lg border-[1px] border-border-light dark:border-border-dark
     overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-black bg-opacity-40 h-[40px] text-white text-center text-lg 
+      <div className="bg-header-light dark:bg-header-dark h-[40px] text-black dark:text-white text-center text-lg border-b-[1px] border-border-light dark:border-border-dark
       font-jaro flex items-center justify-center rounded-t-md ">
         Sprints
       </div>
@@ -141,11 +141,11 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
             <div
               key={s._id}
               onClick={() => handleSprintClick(s)}
-              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex font-medium m-2 rounded-lg
-                          items-center justify-between border ${
+              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex font-medium m-2 rounded-lg text-black dark:text-white
+                          items-center justify-between ${
                 selectedSprintId === s._id
-                  ? "bg-[#2D8984] dark:bg-[#2D8984]/40 text-white border-black shadow-md"
-                  : "bg-gray-300 dark:bg-[#131313] text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-400 dark:border-gray-700"
+                  ? "bg-background-light dark:bg-background-dark  border border-border-light dark:border-border-dark shadow-sm "
+                  : ""
               }`}
             >
               <div className="flex-1 min-w-0">
@@ -195,22 +195,24 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         )}
       </div>
       {/* Add Sprint Form */}
-      <div className="flex gap-2 items-center p-2 bg-black/20 ">
+      <div className="flex gap-2 items-center p-2 bg-header-light dark:bg-header-dark border-t-[1px] border-border-light dark:border-border-dark">
         <input
           type="text"
           value={sprintTitle}
           onChange={(e) => setSprintTitle(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Enter a new sprint..."
-          className="flex-1 min-w-0 px-2 py-1 rounded-xl border-2
-           border-navbar-light/30 dark:border-navbar-dark/30 bg-ui-light
-            dark:bg-black/50 text-text-light dark:text-text-dark focus:outline-none
-             focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all"
+          className="flex-1 min-w-0 px-2 py-1 rounded-xl border-[1px] border-border-light dark:border-border-dark bg-ui-light
+            dark:bg-ui-dark text-text-light dark:text-text-dark focus:outline-none
+             focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all"
         />
         <button
           onClick={handleAddSprint}
           disabled={!sprintTitle.trim()}
-          className="shrink-0 w-8 h-8 bg-accent-light  text-white rounded-xl hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg flex items-center justify-center"
+          className="shrink-0 w-8 h-8 bg-white dark:bg-black  text-black dark:text-white rounded-xl 
+          hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed transition-all 
+          shadow-sm hover:shadow-lg flex items-center justify-center
+          border-[1px] border-border-light dark:border-border-dark"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -229,7 +231,10 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         <div className="flex justify-end gap-3 mt-4">
           <button
             onClick={() => setDeleteConfirm(null)}
-            className="px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-text-dark hover:bg-opacity-80 transition-all font-medium border border-transparent hover:border-accent"
+            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                        text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium 
+                        hover:border-black dark:hover:border-white"
           >
             Cancel
           </button>

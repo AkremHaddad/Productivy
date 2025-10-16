@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { updateColumn } from "../../api/project";
 import { useTheme } from "../../api/useTheme";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -25,13 +26,13 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+  const modalContent = (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm" onClick={onClose}>
       <form
         onSubmit={handleSubmit}
-        className="bg-background-light dark:bg-background-dark
-                  border-2 border-accent-dark dark:border-accent
+        className="bg-white dark:bg-black  
                   p-6 rounded-xl shadow-2xl flex flex-col gap-5 w-full max-w-md relative"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
@@ -44,7 +45,7 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-jaro font-bold text-center text-accent-light dark:text-accent-dark">
+        <h2 className="text-2xl font-bold text-center text-black dark:text-white">
           Edit Column
         </h2>
 
@@ -57,10 +58,10 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border-2 border-black dark:border-navbar-dark 
-                      bg-white dark:bg-navbar-dark
+            className="w-full px-4 py-2 rounded-lg border-2 border-black dark:border-white
+                      bg-black/10 dark:bg-white/20
                       text-text-light dark:text-text-dark
-                      focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-accent"
+                      focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white"
             placeholder="Enter column title"
           />
         </div>
@@ -81,12 +82,12 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
                   type="button"
                   key={key}
                   onClick={() => setColorKey(key)}
-                  className={`flex items-center justify-center rounded-lg p-2 transition-shadow shadow-md 
-                    ${isSelected ? "bg-black/30 dark:bg-accent/20 ring-2 ring-black/50 dark:ring-accent" : "bg-white dark:bg-black/30 hover:bg-black/30 dark:hover:bg-black/10 dark:hover:bg-white/10"}`}
+                  className={`w-10 h-10 flex items-center justify-center rounded-md p-2 transition-shadow shadow-md 
+                    ${isSelected ? "ring-1 ring-black/50 dark:ring-gray-300 scale-110" : "bg-white dark:bg-black/30 hover:bg-black/30  dark:hover:bg-white/10"}`}
                 >
                   <div
-                    className="w-5 h-5 rounded-full border-[2.5px]"
-                    style={{ backgroundColor: fillColor, borderColor }}
+                    className="w-6 h-6 rounded"
+                    style={{ backgroundColor: fillColor, borderColor, borderWidth: '2.5px' }}
                   />
                 </button>
               );
@@ -99,16 +100,16 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80 
-                        text-text-light dark:text-text-dark hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
-                        transition-all duration-200 font-medium border border-transparent 
-                        hover:border-accent-light/30 dark:hover:border-accent/30"
+            className="px-5 py-2 rounded-lg bg-navbar-light/30 dark:bg-navbar-dark/80  border-[1px] border-border-light dark:border-border-dark
+                        text-black dark:text-white hover:bg-navbar-light/50 dark:hover:bg-navbar-dark
+                        transition-all duration-200 font-medium 
+                        hover:border-black dark:hover:border-white"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-5 py-2 rounded-lg bg-accent-light dark:bg-accent text-white dark:text-black
+            className="px-5 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black
                       font-bold shadow-md hover:shadow-lg transition-all duration-200
                       hover:scale-[1.02]"
           >
@@ -117,8 +118,9 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
         </div>
       </form>
     </div>
-
   );
+
+  return ReactDOM.createPortal(modalContent, document.body);
 };
 
 export default EditColumnModal;

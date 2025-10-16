@@ -7,7 +7,6 @@ export const activities = [
   "socializing",
   "hobbying",
   "others",
-  "offline",
 ];
 
 export const activityColors = {
@@ -19,7 +18,6 @@ export const activityColors = {
   socializing: "#e11d48",
   hobbying: "#f97316",
   others: "#6b7280",
-  offline: "#444444",
 };
 
 

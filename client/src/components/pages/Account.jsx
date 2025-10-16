@@ -4,6 +4,7 @@ import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
 import { FcGoogle } from "react-icons/fc";
 import { getUser, login, register, logout } from "../../api/auth";
+import ProductivityDashboard from "../ProductivityDashboard";
 import DayActivityGraph from "../DayActivityGraph";
 import WeeklyActivityGraph from "../WeeklyActivityGraph";
 
@@ -74,34 +75,37 @@ const Account = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden">
+    <div className="min-h-screen flex flex-col overflow-hidden bg-background-light dark:bg-background-dark ">
       <Navbar />
-      <div className="flex-1 min-w-full bg-background-light dark:bg-background-dark p-6 flex items-center justify-center">
+      <div className="flex-1 min-w-full p-6 flex items-center justify-center">
         {loading ? (
           <p className="text-lg text-text-light dark:text-text-dark">Loading...</p>
         ) : user ? (
           <div className="flex flex-col items-center justify-center">
-            <h1 className="text-2xl font-bold mb-4 text-text-light dark:text-text-dark">
-              Welcome, {user.username || user.email}!
-            </h1>
-            <button
-              className="px-4 py-2 bg-gray-700 text-white rounded-md hover:opacity-90 transition"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>             
-            <div className="mt-6 w-full">
-              <h2 className="text-xl font-semibold mb-2 text-text-light dark:text-text-dark">
-                Activity for Selected Day
-              </h2>
+            <div className="flex flex-columns items-center justify-between w-full">
+              <h1 className="text-2xl font-bold mb-4 text-text-light dark:text-text-dark">
+                Welcome, {user.username || user.email}! enjoy your experience.
+              </h1>
+              <button
+                className="px-4 py-2 bg-red-400 dark:bg-red-600 text-white rounded-md hover:opacity-90 transition"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>  
+            </div>
+
+            <div className="mt-6 w-full mt-6 w-full rounded-md border-[1px] border-border-light dark:border-border-dark">
+
+              <ProductivityDashboard />
+            </div>
+            <div className="mt-6 w-full rounded-md border-[1px] border-border-light dark:border-border-dark">
+
               <DayActivityGraph />
             </div>
-            <div className="mt-6 w-full">
-              <h2 className="text-xl font-semibold mb-2 text-text-light dark:text-text-dark">
-                Activity for Selected Week
-              </h2>
+            {/* <div className="mt-6 w-full rounded-md border-[1px] border-border-light dark:border-border-dark">
+
               <WeeklyActivityGraph />
-            </div>
+            </div> */}
           </div>
         ) : (
           <div className="bg-ui-light dark:bg-black/40 rounded-lg shadow-lg w-full max-w-md p-6">

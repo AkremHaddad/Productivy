@@ -11,8 +11,8 @@ const Time = ({ minutesWorked }) => {
 
   return (
     <div className="flex-1 flex flex-col justify-evenly items-center p-2 justify-around dark:bg-inherit h-[150px] rounded-r-md">
-      <div className="font-jaro text-md text-white text-center">time worked today</div>
-      <div className="font-jaro text-md text-[#C3C3C3] text-center">
+      <div className="font-jaro text-md text-black dark:text-white text-center">time worked today</div>
+      <div className="font-jaro text-md text-black dark:text-white text-center">
         {formatTime(minutesWorked)}
       </div>
     </div>
