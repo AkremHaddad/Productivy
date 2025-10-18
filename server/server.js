@@ -17,7 +17,7 @@ import "./cron/activityCron.js"; // just importing starts the cron job
 
 import passport from "./config/passport.js"; // your Google strategy + serialize/deserialize
 
-dotenv.config({ debug : false, quiet : true });
+dotenv.config({ debug: false, quiet: true });
 
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || "development";
@@ -60,11 +60,9 @@ app.use(
     }),
     cookie: {
       httpOnly: true,
-      // For localhost (http): secure must be false; in production with https set to true
-      secure: false,
-      // Cross-site cookie rules for dev vs prod:
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      secure: NODE_ENV === "production", // important
+      sameSite: NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })
 );
