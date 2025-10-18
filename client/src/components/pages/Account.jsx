@@ -6,7 +6,6 @@ import { FcGoogle } from "react-icons/fc";
 import { getUser, login, register, logout } from "../../api/auth";
 import ProductivityDashboard from "../ProductivityDashboard";
 import DayActivityGraph from "../DayActivityGraph";
-import WeeklyActivityGraph from "../WeeklyActivityGraph";
 
 const Account = () => {
   const [activeTab, setActiveTab] = useState("login");
