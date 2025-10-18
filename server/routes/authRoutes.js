@@ -93,11 +93,16 @@ router.get("/logout", (req, res) => {
 
 // -------------------- GOOGLE OAUTH -------------------- //
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/google/callback",
-  passport.authenticate("google", { failureRedirect: "http://localhost:5173/login" }),
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { 
+    failureRedirect: `${process.env.FRONTEND_URL}/login` 
+  }),
   (req, res) => {
-    res.redirect("http://localhost:5173/projects");
+    res.redirect(`${process.env.FRONTEND_URL}/projects`);
   }
 );
+
 
 export default router;
