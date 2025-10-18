@@ -7,7 +7,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/api/auth/google/callback",
+      callbackURL: process.env.GOOGLE_CALLBACK_URL, // ✅ dynamic
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -17,7 +17,7 @@ passport.use(
             googleId: profile.id,
             username: profile.displayName,
             email: profile.emails[0].value,
-            password: "google-oauth", // not used, just placeholder
+            password: "google-oauth", // placeholder
           });
         }
         done(null, user);
@@ -28,11 +28,7 @@ passport.use(
   )
 );
 
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
+passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
@@ -41,6 +37,5 @@ passport.deserializeUser(async (id, done) => {
     done(err, null);
   }
 });
-
 
 export default passport;
