@@ -33,12 +33,26 @@ if (NODE_ENV === "production") {
 }
 
 // CORS (allow your React app)
+const allowedOrigins = [
+  "http://localhost:5173",           // local dev
+  "https://productivy.vercel.app",  // your live frontend
+];
+
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: function (origin, callback) {
+      // allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = `CORS policy: ${origin} not allowed`;
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
+
 
 // JSON body parser
 app.use(express.json());
