@@ -19,6 +19,11 @@ const currentActivitySchema = new mongoose.Schema({
   },
   isOnline: { type: Boolean, default: false },
   lastSeen: { type: Date, default: Date.now },
+  // Last time the activityCron actually credited this user with time.
+  // Distinct from lastSeen (last client heartbeat ping) — this is what lets
+  // the cron compute real elapsed time instead of assuming a flat minute
+  // passed every tick. Null until the first tick after coming online.
+  lastAccountedAt: { type: Date, default: null },
 });
 
 export default mongoose.model("CurrentActivity", currentActivitySchema);
