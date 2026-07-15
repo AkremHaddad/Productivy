@@ -109,6 +109,11 @@ const Pomodoro = () => {
     setIsRunning(false);
     setIsWork(true);
     setTimeLeft(workTime);
+    // BUGFIX: this never reset alarmPlayedRef, so once the alarm had fired
+    // once, restarting mid-cycle (before the natural diff<=0 reset at line
+    // ~75) left it permanently "already played" — the alarm would silently
+    // never fire again for the rest of the session.
+    alarmPlayedRef.current = false;
   };
 
   const saveSettings = (e) => {
@@ -121,6 +126,8 @@ const Pomodoro = () => {
     setIsWork(true);
     setIsRunning(false);
     setShowSettings(false);
+    // Same reset as restart() — changing settings also effectively restarts.
+    alarmPlayedRef.current = false;
   };
 
   return (
