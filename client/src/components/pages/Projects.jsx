@@ -158,7 +158,7 @@ const Projects = () => {
             <button
               onClick={handleCreate}
               disabled={!newProjectName.trim()}
-              className="px-4 py-2.5 bg-white dark:bg-white text-white dark:text-black rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              className="px-4 py-2.5 bg-secondary-light dark:bg-accent text-white dark:text-black rounded-lg font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
             >
               Create Project
             </button>

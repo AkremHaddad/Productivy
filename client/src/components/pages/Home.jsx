@@ -69,11 +69,11 @@ function Home() {
               <h1 className="text-4xl md:text-5xl font-bold text-secondary-dark dark:text-accent leading-tight">
                 Stay Focused. Plan Smarter. Get More Done.
               </h1>
-              <p className={`dark:text-text-dark text-text-light"} mt-4 text-lg`}>
+              <p className={`dark:text-text-dark text-text-light mt-4 text-lg`}>
                 Organize your projects, track your progress, and stay focused with built-in Pomodoro timers, smart task lists, and sprint management — all in one simple tool.
               </p>
 
-              <ul className={`dark:text-text-dark text-text-light"} mt-6 list-disc list-inside space-y-2 text-base`}>
+              <ul className={`dark:text-text-dark text-text-light mt-6 list-disc list-inside space-y-2 text-base`}>
                 <li>Visualize your workflow with customizable Kanban boards.</li>
                 <li>Plan and execute sprints efficiently with your team.</li>
                 <li>Track your focused hours and daily progress effortlessly.</li>
