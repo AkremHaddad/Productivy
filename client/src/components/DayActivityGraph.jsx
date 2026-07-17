@@ -53,7 +53,6 @@ const DayActivityGraph = () => {
         const hoursArr = [];
         for (let h = 0; h < 24; h++) {
           const hourData = raw.hours?.[h] || {};
-          const totalMinutes = Object.values(hourData).reduce((a, b) => a + b, 0);
           const hourActivities = [];
 
           for (const [act, mins] of Object.entries(hourData)) {

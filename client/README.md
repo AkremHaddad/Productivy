@@ -1,12 +1,31 @@
-# React + Vite
+# Productivy — client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite + Tailwind frontend for **Productivy**, a personal project/sprint/notes tracker with a Pomodoro timer and an online-presence-based "time worked" tracker. Trello was the design inspiration. Live at [productivy.vercel.app](https://productivy.vercel.app).
 
-Currently, two official plugins are available:
+See the repo root [`CLAUDE.md`](../CLAUDE.md) for full architecture notes, known issues, and standing rules for this project.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
 
-## Expanding the ESLint configuration
+- **React 19** + **React Router 7**, bundled with **Vite**
+- **Tailwind CSS** for styling, dark/light theme via a `dark` class on `<html>` (see `src/api/useTheme.js`)
+- **Framer Motion** for animation, **Recharts**/**D3** for charts, **@hello-pangea/dnd** for the Kanban drag-and-drop
+- Talks to the `server/` (Express + MongoDB) API via `axios` (`src/api/`)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Pages
+
+- `/` — landing page (`Home`)
+- `/account` — Google OAuth login, profile
+- `/projects` — project list / Kanban board overview
+- `/project/:id` — a single project's board, notes, and Pomodoro timer
+
+## Getting started
+
+```bash
+npm install
+npm run dev       # start the Vite dev server
+npm run build      # production build
+npm run preview    # preview the production build locally
+npm run lint        # eslint
+```
+
+Requires the `server/` API running (or reachable) for anything beyond the static landing page — see the server's own setup in `../server`.

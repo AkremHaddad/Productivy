@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../api/useTheme";
 
 export default function ProductShowcase({ isDarkProp = undefined }) {
@@ -90,8 +89,12 @@ export default function ProductShowcase({ isDarkProp = undefined }) {
   }, [activeTab, isHovered]);
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-[#090909] dark:to-[#111111]
-    ">
+    <section
+      className="py-20 px-4 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-[#090909] dark:to-[#111111]
+    "
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div>
         <img src={`../${imageSrc}`} alt="" />
       </div>
