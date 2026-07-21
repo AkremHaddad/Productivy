@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import API from "../../api/API";
 import Modal from "../common/Modal"; // Adjust path to your Modal.jsx
 
@@ -24,29 +24,11 @@ const CompletionDial = ({ sprint }) => {
   );
 };
 
-const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
-  const [sprints, setSprints] = useState([]);
+const Sprints = ({ projectId, sprints, onSprintsChange, selectedSprintId, onSprintSelect }) => {
   const [sprintTitle, setSprintTitle] = useState("");
   const [editingSprint, setEditingSprint] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-
-  useEffect(() => {
-    if (!projectId) return;
-    const fetchSprints = async () => {
-      try {
-        const res = await API.get(`/api/projects/${projectId}`);
-        const fetchedSprints = res.data.sprints || [];
-        setSprints(fetchedSprints);
-        if (!selectedSprintId && fetchedSprints.length > 0) {
-          onSprintSelect(fetchedSprints[0]);
-        }
-      } catch (err) {
-        console.error("Error fetching sprints:", err);
-      }
-    };
-    fetchSprints();
-  }, [projectId, selectedSprintId, onSprintSelect]);
 
   const handleAddSprint = async () => {
     if (!sprintTitle.trim()) return;
@@ -60,7 +42,7 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         : Array.isArray(res.data)
         ? res.data
         : [...sprints, res.data]; // Fallback: append single sprint to existing array
-      setSprints(updatedSprints);
+      onSprintsChange(updatedSprints);
       setSprintTitle("");
       const newSprint = updatedSprints[updatedSprints.length - 1];
       onSprintSelect(newSprint);
@@ -89,7 +71,7 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         : sprints.map((sprint) =>
             sprint._id === sprintId ? { ...sprint, title: editTitle } : sprint
           ); // Fallback: update locally
-      setSprints(updatedSprints);
+      onSprintsChange(updatedSprints);
       setEditingSprint(null);
       setEditTitle("");
     } catch (err) {
@@ -106,7 +88,7 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
         : Array.isArray(res.data)
         ? res.data
         : sprints.filter((sprint) => sprint._id !== sprintId); // Fallback: remove locally
-      setSprints(updatedSprints);
+      onSprintsChange(updatedSprints);
       if (selectedSprintId === sprintId) {
         onSprintSelect(updatedSprints[0] || null);
       }

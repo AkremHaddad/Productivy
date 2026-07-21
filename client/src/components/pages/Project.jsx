@@ -16,7 +16,13 @@ import LoadingSpinner from "../common/LoadingSpinner";
 const Project = () => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
-  const [selectedSprint, setSelectedSprint] = useState(null);
+  // Sprints (with their tasks) live here, not in Sprints.jsx/Kanban.jsx
+  // separately - both used to independently fetch/hold their own copy,
+  // so a task toggled in Kanban never reached Sprints' completion dial
+  // until a full reload. Single shared source of truth fixes that: any
+  // change updates this once, both children re-render from the same data.
+  const [sprints, setSprints] = useState([]);
+  const [selectedSprintId, setSelectedSprintId] = useState(null);
   const [showTools, setShowTools] = useState(true);
 
   // ✅ shared state
@@ -28,13 +34,20 @@ const Project = () => {
       try {
         const data = await getProject(id);
         setProject(data);
-        if (data.sprints?.length > 0) setSelectedSprint(data.sprints[0]);
+        setSprints(data.sprints || []);
+        if (data.sprints?.length > 0) setSelectedSprintId(data.sprints[0]._id);
       } catch (err) {
         console.error("Failed to load project", err);
       }
     };
     fetchProject();
   }, [id]);
+
+  const selectedSprint = sprints.find((s) => s._id === selectedSprintId) || null;
+
+  const updateSprintTasks = (sprintId, newTasks) => {
+    setSprints((prev) => prev.map((s) => (s._id === sprintId ? { ...s, tasks: newTasks } : s)));
+  };
 
   // ✅ Fetch initial minutes worked
   useEffect(() => {
@@ -93,10 +106,16 @@ const Project = () => {
           <div className="flex flex-row gap-2.5">
             <Sprints
               projectId={project._id}
-              selectedSprintId={selectedSprint?._id}
-              onSprintSelect={(s) => setSelectedSprint(s)}
+              sprints={sprints}
+              onSprintsChange={setSprints}
+              selectedSprintId={selectedSprintId}
+              onSprintSelect={(s) => setSelectedSprintId(s?._id ?? null)}
             />
-            <Kanban projectId={project._id} selectedSprint={selectedSprint} />
+            <Kanban
+              projectId={project._id}
+              selectedSprint={selectedSprint}
+              onTasksChange={(newTasks) => updateSprintTasks(selectedSprintId, newTasks)}
+            />
           </div>
         </div>
 

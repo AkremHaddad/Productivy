@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import API from "../../api/API";
 import { changeTaskOrder } from "../../api/project";
 import Modal from "../common/Modal";
@@ -7,12 +7,14 @@ import {
   Droppable,
   Draggable,
 } from "@hello-pangea/dnd";
-import LoadingSpinner from "../common/LoadingSpinner";
 
-const Kanban = ({ projectId, selectedSprint }) => {
-  const [tasks, setTasks] = useState([]);
+// Tasks live in Project.jsx's shared `sprints` state (see the sync-bug fix
+// note there) - this component reads the selected sprint's tasks directly
+// as a prop and writes changes back up via onTasksChange, instead of
+// fetching/holding its own separate copy that could go stale.
+const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
+  const tasks = selectedSprint?.tasks || [];
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -20,34 +22,13 @@ const Kanban = ({ projectId, selectedSprint }) => {
   const [openNoteId, setOpenNoteId] = useState(null);
   const [noteDraft, setNoteDraft] = useState("");
 
-  // Fetch tasks whenever selectedSprint changes
-  useEffect(() => {
-    const fetchTasks = async () => {
-      if (!projectId || !selectedSprint) return;
-
-      setIsLoading(true);
-      try {
-        const res = await API.get(
-          `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks`
-        );
-        setTasks(res.data);
-      } catch (err) {
-        console.error("Error fetching tasks:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTasks();
-  }, [projectId, selectedSprint]);
-
   const handleAddTask = async () => {
     if (!newTaskTitle.trim() || !selectedSprint) return;
 
     const tempId = `temp_${Date.now()}`;
     const tempTask = { _id: tempId, title: newTaskTitle, completed: false };
-    const previousTasks = [...tasks];
-    setTasks([...tasks, tempTask]);
+    const previousTasks = tasks;
+    onTasksChange([...tasks, tempTask]);
     setNewTaskTitle("");
 
     try {
@@ -55,10 +36,10 @@ const Kanban = ({ projectId, selectedSprint }) => {
         `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks`,
         { title: newTaskTitle }
       );
-      setTasks(res.data);
+      onTasksChange(res.data);
     } catch (err) {
       console.error("Error adding task:", err);
-      setTasks(previousTasks);
+      onTasksChange(previousTasks);
     }
   };
 
@@ -66,24 +47,22 @@ const Kanban = ({ projectId, selectedSprint }) => {
     const taskIndex = tasks.findIndex((t) => t._id === taskId);
     if (taskIndex === -1) return;
 
-    const previousTasks = [...tasks];
+    const previousTasks = tasks;
     const updatedTasks = [...tasks];
     updatedTasks[taskIndex] = {
       ...updatedTasks[taskIndex],
       completed: !updatedTasks[taskIndex].completed,
     };
-    setTasks(updatedTasks);
+    onTasksChange(updatedTasks);
 
     try {
       const res = await API.patch(
         `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}/toggle`
       );
-      setTasks((prev) =>
-        prev.map((t) => (t._id === taskId ? res.data : t))
-      );
+      onTasksChange(updatedTasks.map((t) => (t._id === taskId ? res.data : t)));
     } catch (err) {
       console.error("Error toggling task:", err);
-      setTasks(previousTasks);
+      onTasksChange(previousTasks);
     }
   };
 
@@ -98,12 +77,11 @@ const Kanban = ({ projectId, selectedSprint }) => {
     const taskIndex = tasks.findIndex((t) => t._id === taskId);
     if (taskIndex === -1) return;
 
-    const previousTitle = tasks[taskIndex].title;
-    setTasks((prev) =>
-      prev.map((t) =>
-        t._id === taskId ? { ...t, title: editTitle } : t
-      )
+    const previousTasks = tasks;
+    const optimisticTasks = tasks.map((t) =>
+      t._id === taskId ? { ...t, title: editTitle } : t
     );
+    onTasksChange(optimisticTasks);
     setEditingTask(null);
     setEditTitle("");
 
@@ -112,16 +90,10 @@ const Kanban = ({ projectId, selectedSprint }) => {
         `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}`,
         { title: editTitle }
       );
-      setTasks((prev) =>
-        prev.map((t) => (t._id === taskId ? res.data : t))
-      );
+      onTasksChange(optimisticTasks.map((t) => (t._id === taskId ? res.data : t)));
     } catch (err) {
       console.error("Error editing task:", err);
-      setTasks((prev) =>
-        prev.map((t) =>
-          t._id === taskId ? { ...t, title: previousTitle } : t
-        )
-      );
+      onTasksChange(previousTasks);
     }
   };
 
@@ -129,9 +101,9 @@ const Kanban = ({ projectId, selectedSprint }) => {
     const taskIndex = tasks.findIndex((t) => t._id === taskId);
     if (taskIndex === -1) return;
 
-    const previousTasks = [...tasks];
+    const previousTasks = tasks;
     const updatedTasks = tasks.filter((t) => t._id !== taskId);
-    setTasks(updatedTasks);
+    onTasksChange(updatedTasks);
     setDeleteConfirm(null);
 
     try {
@@ -140,7 +112,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
       );
     } catch (err) {
       console.error("Error deleting task:", err);
-      setTasks(previousTasks);
+      onTasksChange(previousTasks);
     }
   };
 
@@ -153,8 +125,9 @@ const Kanban = ({ projectId, selectedSprint }) => {
     const taskIndex = tasks.findIndex((t) => t._id === taskId);
     if (taskIndex === -1) return;
 
-    const previousNote = tasks[taskIndex].note;
-    setTasks((prev) => prev.map((t) => (t._id === taskId ? { ...t, note: noteDraft } : t)));
+    const previousTasks = tasks;
+    const optimisticTasks = tasks.map((t) => (t._id === taskId ? { ...t, note: noteDraft } : t));
+    onTasksChange(optimisticTasks);
     setOpenNoteId(null);
 
     try {
@@ -162,10 +135,10 @@ const Kanban = ({ projectId, selectedSprint }) => {
         `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}`,
         { note: noteDraft }
       );
-      setTasks((prev) => prev.map((t) => (t._id === taskId ? res.data : t)));
+      onTasksChange(optimisticTasks.map((t) => (t._id === taskId ? res.data : t)));
     } catch (err) {
       console.error("Error saving note:", err);
-      setTasks((prev) => prev.map((t) => (t._id === taskId ? { ...t, note: previousNote } : t)));
+      onTasksChange(previousTasks);
     }
   };
 
@@ -210,14 +183,14 @@ const Kanban = ({ projectId, selectedSprint }) => {
     // Normal reordering
     if (result.destination.index === result.source.index) return;
 
-    const previousTasks = [...tasks];
+    const previousTasks = tasks;
     const newTasks = reorder(
       tasks,
       result.source.index,
       result.destination.index
     );
 
-    setTasks(newTasks);
+    onTasksChange(newTasks);
 
     try {
       await changeTaskOrder(
@@ -227,7 +200,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
       );
     } catch (err) {
       console.error("Error saving task order:", err);
-      setTasks(previousTasks);
+      onTasksChange(previousTasks);
     }
   };
 
@@ -248,11 +221,7 @@ const Kanban = ({ projectId, selectedSprint }) => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {isLoading ? (
-                <div className="flex justify-center items-center h-32">
-                  <LoadingSpinner />
-                </div>
-              ) : tasks.length === 0 ? (
+              {tasks.length === 0 ? (
                 <div className="text-center py-8 text-text-light dark:text-text-dark/70">
                   <div className="text-4xl mb-2">📋</div>
                   <p>No tasks yet</p>
