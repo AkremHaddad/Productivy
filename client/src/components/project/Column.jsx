@@ -8,15 +8,18 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { addCard, updateCard, deleteCard, toggleCardCompleted } from "../../api/project";
 import API from "../../api/API";
 
+// Light-theme fills darkened one step from their original values (design
+// review feedback: against the newer, less-pale surface tones these read
+// as washed-out and hard to tell apart). Dark-theme values untouched.
 export const COLOR_MAP = {
-  grey: { light: { fill: "#E5E7EB", border: "#6B7280" }, dark: { fill: "#374151", border: "#9CA3AF" } },
-  red: { light: { fill: "#FCA5A5", border: "#B91C1C" }, dark: { fill: "#7F1D1D", border: "#F87171" } },
-  pink: { light: { fill: "#FBCFE8", border: "#BE185D" }, dark: { fill: "#701A3D", border: "#F472B6" } },
-  orange: { light: { fill: "#FED7AA", border: "#C2410C" }, dark: { fill: "#7C2D12", border: "#FB923C" } },
-  yellow: { light: { fill: "#FEF08A", border: "#A16207" }, dark: { fill: "#713F12", border: "#FACC15" } },
-  blue: { light: { fill: "#93C5FD", border: "#2563EB" }, dark: { fill: "#1E3A8A", border: "#60A5FA" } },
-  green: { light: { fill: "#86EFAC", border: "#15803D" }, dark: { fill: "#14532D", border: "#4ADE80" } },
-  purple: { light: { fill: "#DDD6FE", border: "#6D28D9" }, dark: { fill: "#4C1D95", border: "#A78BFA" } },
+  grey: { light: { fill: "#D1D5DB", border: "#4B5563" }, dark: { fill: "#374151", border: "#9CA3AF" } },
+  red: { light: { fill: "#F87171", border: "#B91C1C" }, dark: { fill: "#7F1D1D", border: "#F87171" } },
+  pink: { light: { fill: "#F9A8D4", border: "#BE185D" }, dark: { fill: "#701A3D", border: "#F472B6" } },
+  orange: { light: { fill: "#FDBA74", border: "#C2410C" }, dark: { fill: "#7C2D12", border: "#FB923C" } },
+  yellow: { light: { fill: "#FDE047", border: "#A16207" }, dark: { fill: "#713F12", border: "#FACC15" } },
+  blue: { light: { fill: "#60A5FA", border: "#2563EB" }, dark: { fill: "#1E3A8A", border: "#60A5FA" } },
+  green: { light: { fill: "#4ADE80", border: "#15803D" }, dark: { fill: "#14532D", border: "#4ADE80" } },
+  purple: { light: { fill: "#C4B5FD", border: "#6D28D9" }, dark: { fill: "#4C1D95", border: "#A78BFA" } },
 };
 
 const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {

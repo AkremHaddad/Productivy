@@ -235,7 +235,7 @@ const ProductivityDashboard = () => {
         <div className="md:border-l-[1px] border-border-light dark:border-border-dark md:pl-6">
           <div className="font-mono text-[11px] font-semibold tracking-widest uppercase text-secondary-light dark:text-secondary-dark mb-3">Momentum</div>
           <div className="flex items-baseline gap-2 mb-2">
-            <div className="font-mono font-bold text-3xl text-accent-light dark:text-accent">{streak}</div>
+            <div className="font-mono font-bold text-3xl text-accent-deep dark:text-accent">{streak}</div>
             <div className="text-sm text-secondary-light dark:text-secondary-dark">day streak</div>
           </div>
           {heatmap.length > 1 && (

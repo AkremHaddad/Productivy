@@ -148,7 +148,7 @@ const Sprints = ({ projectId, sprints, onSprintsChange, selectedSprintId, onSpri
               className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex font-medium m-2 rounded-lg text-text-light dark:text-text-dark
                           items-center justify-between gap-2 ${
                 selectedSprintId === s._id
-                  ? "bg-accent/[.08]"
+                  ? "bg-accent-deep/[.07] dark:bg-accent/[.08]"
                   : ""
               }`}
             >

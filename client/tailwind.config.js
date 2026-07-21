@@ -22,28 +22,32 @@ export default {
 
         // Lime accent — full-brightness for fills (both themes), a
         // darker olive variant for text on the light (paper) background
-        // so it still holds contrast.
+        // so it still holds contrast. accent-deep is a genuine dark green
+        // (not just a dimmer lime) for light-theme emphasis that needs
+        // real weight — active-sprint highlights, stat numbers, hover
+        // states — instead of everything leaning on one soft olive tone.
         'accent': '#C9F24C',
         'accent-dark': '#C9F24C',
-        'accent-light': '#5C7A12',
+        'accent-light': '#4A6410',
+        'accent-deep': '#2F4A0A',
 
         // Amber, secondary accent used for streaks/milestones
         'amber': '#F2B84C',
 
         'background-dark': '#0B0D0F',
-        'background-light': '#F3EFE6',
+        'background-light': '#EDE6D3',
 
         'border-dark': '#262B30',
-        'border-light': '#E4DDCB',
+        'border-light': '#D9CDAE',
 
         // Surface (cards/panels)
-        'ui-light': '#FFFEFB',
+        'ui-light': '#FBF8F0',
         'ui-dark': '#14171A',
 
         // Raised surface (headers, popovers, modals)
-        'header-light': '#FBF7EF',
+        'header-light': '#F2EAD6',
         'header-dark': '#1C2023',
-        'navbar-light': '#FBF7EF',
+        'navbar-light': '#F2EAD6',
         'navbar-dark': '#1C2023',
       },
       fontFamily: {
