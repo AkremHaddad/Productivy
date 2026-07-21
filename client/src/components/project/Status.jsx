@@ -1,23 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import API from "../../api/API";
-import Modal from "../common/Modal";
 
-const activities = [
-  "working",
-  "learning",
-  "sleeping",
-  "training",
-  "playing",
-  "socializing",
-  "hobbying",
-  "others",
-];
+const activities = ["working", "learning", "training", "playing", "socializing", "off"];
+
+// Old 8-category values collapse onto the new 6: sleeping+others -> off,
+// hobbying -> playing. Handles records written before this change without
+// a DB migration - they get overwritten the next time status changes.
+const LEGACY_ACTIVITY_MAP = { sleeping: "off", others: "off", hobbying: "playing" };
+const normalizeActivity = (act) => LEGACY_ACTIVITY_MAP[act] || act;
+
+const ACTIVITY_DOT = {
+  working: "bg-[#8B7CF6]",
+  learning: "bg-[#3FCB6B]",
+  training: "bg-amber",
+  playing: "bg-[#E5484D]",
+  socializing: "bg-[#D6538E]",
+  off: "bg-secondary-dark",
+};
 
 const Status = ({ onMinutesUpdate }) => {
   const [currentActivity, setCurrentActivity] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const popoverRef = useRef(null);
   const timeoutRef = useRef(null);
   const intervalRef = useRef(null);
   const lastTickRef = useRef(new Date()); // keep last increment timestamp
@@ -27,7 +33,7 @@ const Status = ({ onMinutesUpdate }) => {
     const fetchActivity = async () => {
       try {
         const res = await API.get("/api/activity/current", { withCredentials: true });
-        const act = res.data?.activity || "working";
+        const act = normalizeActivity(res.data?.activity || "working");
         setCurrentActivity(act);
       } catch (err) {
         console.error("❌ Error fetching current activity:", err);
@@ -35,6 +41,17 @@ const Status = ({ onMinutesUpdate }) => {
       }
     };
     fetchActivity();
+  }, []);
+
+  // Close popover on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
+        setShowPopup(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Heartbeat: mark online every 30s if activity exists
@@ -160,7 +177,6 @@ const Status = ({ onMinutesUpdate }) => {
     } catch (err) {
       console.error("❌ Error saving activity:", err.response?.data || err);
       setCurrentActivity(previousActivity);
-      // Optionally, show an error message to the user
       alert("Failed to update activity. Reverting to previous.");
     } finally {
       setLoading(false);
@@ -168,56 +184,44 @@ const Status = ({ onMinutesUpdate }) => {
   };
 
   return (
-    <>
-      {/* Status Box */}
-      <div
-        id="Status"
-        className="flex-1 flex flex-col justify-evenly items-center p-2 bg-inherit h-[150px] border-x-[1px] border-border-light dark:border-border-dark cursor-pointer"
-        onClick={() => !loading && setShowPopup(true)}
+    <div ref={popoverRef} className="relative flex-1 flex bg-inherit h-[150px] border-x-[1px] border-border-light dark:border-border-dark">
+      {/* Status pill */}
+      <button
+        onClick={() => !loading && setShowPopup((prev) => !prev)}
+        className="flex-1 flex flex-col justify-evenly items-center p-2 cursor-pointer"
       >
         <div className="font-normal text-md text-black dark:text-white text-center font-jaro">
           status
         </div>
-        <div className="font-normal text-md text-black dark:text-white text-center font-jaro">
-          {loading ? "Saving..." : currentActivity || "No activity"}
+        <div className="flex items-center gap-1.5">
+          <span className={`w-1.5 h-1.5 rounded-full flex-none ${ACTIVITY_DOT[currentActivity] || "bg-secondary-dark"}`} />
+          <span className="font-normal text-sm text-black dark:text-white text-center font-jaro capitalize">
+            {loading ? "Saving..." : currentActivity || "No activity"}
+          </span>
         </div>
-      </div>
+      </button>
 
-      {/* Modal */}
-      <Modal
-        isOpen={showPopup}
-        onClose={() => setShowPopup(false)}
-        title="Set Your Activity"
-      >
-        <div className="grid grid-cols-2 gap-3">
+      {/* Popover - non-blocking, closes on outside click */}
+      {showPopup && (
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-56 bg-header-light dark:bg-header-dark border-[1px] border-border-light dark:border-border-dark rounded-xl shadow-xl p-2 flex flex-wrap gap-1.5">
           {activities.map((act) => (
             <button
               key={act}
               disabled={loading}
-              className={`py-2 rounded-lg font-medium border-2  transition-all duration-200 text-black dark:text-white ${
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold capitalize transition-all ${
                 currentActivity === act
-                  ? "dark:border-white border-black bg-black/10 dark:bg-white/10 "
-                  : "   hover:border-black dark:hover:border-accent border-border-light dark:border-border-dark"
+                  ? "bg-black/10 dark:bg-white/10 border-[1px] border-black dark:border-white text-black dark:text-white"
+                  : "border-[1px] border-transparent text-black dark:text-white hover:border-border-light dark:hover:border-border-dark"
               }`}
               onClick={() => saveActivity(act)}
             >
-              {act.charAt(0).toUpperCase() + act.slice(1)}
+              <span className={`w-1.5 h-1.5 rounded-full flex-none ${ACTIVITY_DOT[act]}`} />
+              {act}
             </button>
           ))}
         </div>
-
-        <button
-          className="mt-4 px-5 py-2 rounded-lg bg-navbar-light dark:bg-navbar-dark text-black dark:text-white
-                     hover:bg-opacity-80 transition-all 
-                     border-[1px] border-border-light dark:border-border-dark  hover:border-black dark:hover:border-white
-                      font-medium  hover:ring-2 hover:ring-black dark:hover:ring-white"
-          onClick={() => setShowPopup(false)}
-          disabled={loading}
-        >
-          Cancel
-        </button>
-      </Modal>
-    </>
+      )}
+    </div>
   );
 };
 

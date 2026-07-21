@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Modal from "../common/Modal"; // adjust path as needed
+import API from "../../api/API";
 
 const Pomodoro = () => {
   const [workTime, setWorkTime] = useState(() => {
@@ -87,6 +88,14 @@ const Pomodoro = () => {
 
     return () => clearInterval(intervalRef.current);
   }, [isRunning, isWork, workTime, breakTime]);
+
+  // Auto-infer activity status: a running work session means "working",
+  // without requiring a manual status switch (per the design review -
+  // switching status manually was pure friction nobody used).
+  useEffect(() => {
+    if (!isRunning || !isWork) return;
+    API.post("/api/activity/set", { activity: "working" }, { withCredentials: true }).catch(() => {});
+  }, [isRunning, isWork]);
 
   // Handlers
   const toggleStart = () => {

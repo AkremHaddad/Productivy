@@ -3,17 +3,20 @@ import mongoose from "mongoose";
 
 const currentActivitySchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
+  // Collapsed from 8 to 6 categories (design review, Phase 3): merged
+  // sleeping + others -> off, hobbying -> playing, to cut choice overload.
+  // Old stale values from before this change are handled client-side
+  // (Status.jsx normalizes them on read) rather than via a DB migration -
+  // they get overwritten the next time the user changes status anyway.
   activity: {
     type: String,
     enum: [
       "working",
       "learning",
-      "sleeping",
       "training",
       "playing",
       "socializing",
-      "hobbying",
-      "others",
+      "off",
     ],
     default: "working",
   },
