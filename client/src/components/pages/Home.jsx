@@ -24,6 +24,68 @@ const getInitialIsDark = () => {
   }
 };
 
+const FEATURES = [
+  {
+    title: "Kanban Boards",
+    desc: "Multiple boards per project, custom column colors, and drag-and-drop cards.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Sprint Planning",
+    desc: "Break projects into sprints with their own task lists and progress.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Pomodoro Timer",
+    desc: "Customizable work/break intervals with an alarm to protect deep focus.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Focus Tracking",
+    desc: "Time worked shown against a daily goal, with streaks and a weekly heatmap.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" strokeWidth="1.8" opacity="0.35" />
+        <path strokeLinecap="round" strokeWidth="1.8" d="M12 3a9 9 0 016.4 15.4" />
+      </svg>
+    ),
+  },
+  {
+    title: "Session Recaps",
+    desc: "A daily summary auto-written from what moved on your boards and timer.",
+    icon: (
+      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+        <rect x="2" y="4" width="20" height="3.5" rx="1.5"></rect>
+        <rect x="2" y="10.5" width="14" height="3.5" rx="1.5" opacity="0.6"></rect>
+        <rect x="2" y="17" width="9" height="3.5" rx="1.5" opacity="0.3"></rect>
+      </svg>
+    ),
+  },
+  {
+    title: "Milestones",
+    desc: "Total focus hours, longest streak, sprints shipped — quiet, not gamey.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 2l10 18H2L12 2z"></path>
+      </svg>
+    ),
+  },
+];
+
+const STACK = ["React", "Vite", "Tailwind", "Built solo · used daily"];
+
 function Home() {
   // synchronous initial theme value used for first render
   const initialIsDark = getInitialIsDark();
@@ -54,87 +116,123 @@ function Home() {
   if (!themeReady) return null;
 
   return (
-    <div className={`min-h-screen overflow-x-hidden dark:bg-background-dark bg-background-light`}>
+    <div className="min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark">
       <div className="fixed inset-x-0 top-0 z-50">
         <Navbar />
       </div>
 
       <main className="pt-14">
         {/* Hero Section */}
-        {/* Hero Section */}
-        <section className={" text-black dark:text-white min-h-[92vh] flex items-center"}>
-          <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
-            {/* Left text */}
-            <div data-aos="fade-right" className="px-4">
-              <h1 className="text-4xl md:text-5xl font-bold text-secondary-dark dark:text-accent leading-tight">
-                Stay Focused. Plan Smarter. Get More Done.
+        <section className="min-h-[92vh] flex items-center">
+          <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center px-4 lg:px-8">
+            {/* Left: pitch */}
+            <div data-aos="fade-right">
+              <div className="font-mono text-xs font-semibold tracking-widest uppercase text-accent-light dark:text-accent mb-4">
+                Focus tool for solo builders
+              </div>
+              <h1 className="text-4xl md:text-5xl font-extrabold text-text-light dark:text-text-dark leading-[1.08] tracking-tight">
+                Stay in flow.
+                <br />
+                Ship the side project.
               </h1>
-              <p className={`dark:text-text-dark text-text-light mt-4 text-lg`}>
-                Organize your projects, track your progress, and stay focused with built-in Pomodoro timers, smart task lists, and sprint management — all in one simple tool.
+              <p className="text-secondary-light dark:text-secondary-dark mt-5 text-lg max-w-md">
+                Pomodoro focus, sprints, and Kanban boards in one place — built to keep you moving on your own projects, one focused session at a time.
               </p>
 
-              <ul className={`dark:text-text-dark text-text-light mt-6 list-disc list-inside space-y-2 text-base`}>
-                <li>Visualize your workflow with customizable Kanban boards.</li>
-                <li>Plan and execute sprints efficiently with your team.</li>
-                <li>Track your focused hours and daily progress effortlessly.</li>
-                <li>Analyze your productivity with activity visualizers and reports.</li>
-              </ul>
-
-              <p className={`dark:text-text-dark text-text-light mt-4`}>
-                Whether you’re managing personal tasks or collaborating with a team, Productivy gives you the clarity, focus, and tools to achieve more every day.
-              </p>
-
-              <div className="mt-6 flex gap-4 flex-wrap">
+              <div className="mt-7 flex gap-3 flex-wrap">
                 <a
                   href="/account"
-                  className="bg-secondary-dark hover:bg-secondary-light dark:bg-accent dark:hover:opacity-90 text-white dark:text-black font-semibold py-3 px-6 rounded-lg transition-all"
+                  className="bg-accent hover:opacity-90 text-black font-bold py-3 px-6 rounded-lg transition-all"
                 >
                   Get Started Free
                 </a>
                 <a
-                  href="#features"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="border-2 border-secondary-dark text-secondary-dark hover:bg-secondary-dark hover:text-black dark:border-accent dark:text-accent dark:hover:bg-accent dark:hover:text-black font-semibold py-3 px-6 rounded-lg transition-all"
+                  href="https://github.com/AkremHaddad/Productivy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border-[1px] border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:border-accent-light dark:hover:border-accent font-bold py-3 px-6 rounded-lg transition-all"
                 >
-                  See How It Works
+                  View Source
                 </a>
+              </div>
+
+              <div className="mt-6 flex gap-2 flex-wrap">
+                {STACK.map((tag) => (
+                  <span
+                    key={tag}
+                    className="font-mono text-[11px] font-semibold text-secondary-light dark:text-secondary-dark border-[1px] border-border-light dark:border-border-dark rounded-full px-3 py-1"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: mini product preview */}
+            <div data-aos="fade-left" data-aos-delay="150" className="relative hidden md:block">
+              <div className="absolute -inset-8 bg-accent/10 dark:bg-accent/10 blur-3xl rounded-full"></div>
+              <div className="relative bg-ui-light dark:bg-ui-dark border-[1px] border-border-light dark:border-border-dark rounded-2xl p-5 shadow-2xl">
+                <div className="flex gap-4 mb-4">
+                  <svg width="64" height="64" viewBox="0 0 64 64" className="flex-none">
+                    <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" className="text-border-light dark:text-border-dark" strokeWidth="7" />
+                    <circle
+                      cx="32" cy="32" r="26" fill="none" stroke="currentColor" className="text-accent"
+                      strokeWidth="7" strokeLinecap="round" strokeDasharray="106 163" transform="rotate(-90 32 32)"
+                    />
+                  </svg>
+                  <div className="flex-1">
+                    <div className="font-mono font-semibold text-lg text-text-light dark:text-text-dark">3h 49m</div>
+                    <div className="text-[11px] text-secondary-light dark:text-secondary-dark mb-2">of 6h focus goal</div>
+                    <div className="flex gap-1">
+                      {[0.3, 0.6, 0.9, 1].map((o, i) => (
+                        <div key={i} className="w-3 h-3 rounded-sm bg-accent" style={{ opacity: o }} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-header-light dark:bg-header-dark rounded-lg p-2">
+                    <div className="text-[10px] font-semibold text-secondary-light dark:text-secondary-dark mb-1.5">To do</div>
+                    <div className="h-1.5 rounded bg-accent-light dark:bg-accent opacity-70 mb-1"></div>
+                    <div className="h-1.5 rounded bg-accent-light dark:bg-accent opacity-40"></div>
+                  </div>
+                  <div className="bg-header-light dark:bg-header-dark rounded-lg p-2">
+                    <div className="text-[10px] font-semibold text-secondary-light dark:text-secondary-dark mb-1.5">Doing</div>
+                    <div className="h-1.5 rounded bg-amber opacity-70"></div>
+                  </div>
+                  <div className="bg-header-light dark:bg-header-dark rounded-lg p-2">
+                    <div className="text-[10px] font-semibold text-secondary-light dark:text-secondary-dark mb-1.5">Done</div>
+                    <div className="h-1.5 rounded bg-accent opacity-70 mb-1"></div>
+                    <div className="h-1.5 rounded bg-accent opacity-40"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Showcase Section */}
-        <section className="py-20 px-4 bg-ui-light dark:bg-black">
+        <section className="py-20 px-4 bg-ui-light dark:bg-ui-dark">
           <div className="container mx-auto">
             <div className="text-center mb-16" data-aos="fade-up">
-              <h2 className="text-3xl md:text-4xl font-bold text-secondary-dark dark:text-accent mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-text-light dark:text-text-dark mb-4">
                 Beautiful, Intuitive Interface
               </h2>
-              <p className="text-xl text-text-light dark:text-text-dark max-w-2xl mx-auto">
-                Experience a clean, modern design that makes productivity effortless and enjoyable
+              <p className="text-xl text-secondary-light dark:text-secondary-dark max-w-2xl mx-auto">
+                A clean, considered design across both light and dark theme — not an afterthought toggle.
               </p>
             </div>
-            
+
             <div data-aos="zoom-in" data-aos-delay="200" className="max-w-6xl mx-auto">
-              <div className="relative bg-background-light dark:bg-background-dark rounded-2xl shadow-2xl p-2 md:p-4 border border-gray-200 dark:border-gray-700">
-                <img 
-                  src={showcaseImage} 
-                  alt="Productivy App Interface Showcase" 
+              <div className="relative bg-background-light dark:bg-background-dark rounded-2xl shadow-2xl p-2 md:p-4 border-[1px] border-border-light dark:border-border-dark">
+                <img
+                  src={showcaseImage}
+                  alt="Productivy App Interface Showcase"
                   className="w-full h-auto rounded-xl"
                 />
-                {/* Optional decorative elements */}
                 <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-accent rounded-full opacity-20 blur-xl"></div>
-                <div className="absolute -top-4 -left-4 w-32 h-32 bg-secondary-dark rounded-full opacity-10 blur-xl"></div>
+                <div className="absolute -top-4 -left-4 w-32 h-32 bg-accent rounded-full opacity-10 blur-xl"></div>
               </div>
-            </div>
-            
-            <div className="text-center mt-12" data-aos="fade-up" data-aos-delay="400">
-              <p className="text-text-light dark:text-text-dark text-lg">
-                Join thousands of users who have transformed their workflow with Productivy
-              </p>
             </div>
           </div>
         </section>
@@ -142,78 +240,21 @@ function Home() {
         {/* Features Section */}
         <section id="features" className="py-20 px-4 bg-background-light dark:bg-background-dark">
           <div className="container mx-auto">
-            <h2 data-aos="fade-up" className="text-3xl font-bold text-center text-secondary-dark dark:text-accent mb-12 px-4">
+            <h2 data-aos="fade-up" className="text-3xl font-bold text-center text-text-light dark:text-text-dark mb-12 px-4">
               Powerful Features to Boost Your Productivity
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
-              {[
-                {
-                  title: "Kanban Boards",
-                  desc: "Visualize your workflow with customizable Kanban boards. Move tasks through stages from 'To-Do' to 'Done' with simple drag-and-drop.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Sprint Planning",
-                  desc: "Break your work into manageable sprints. Set goals, track progress, and review accomplishments to maintain steady momentum.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Pomodoro Timer",
-                  desc: "Built-in Pomodoro timer with customizable work/break intervals. Stay focused and prevent burnout with structured work sessions.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Smart Task Lists",
-                  desc: "Prioritize, categorize, and schedule tasks with ease. Set deadlines, add reminders, and break large tasks into subtasks.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Project Boards",
-                  desc: "Create multiple boards per project and organize them your way. Each board can contain columns, and each column can hold cards with titles and descriptions — perfect for detailed workflows.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7h18M3 12h18M3 17h18M4 6v12M20 6v12"></path>
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Activity Visualizer",
-                  desc: "Track and visualize how you spend your time with charts and daily summaries. See where your focus goes and optimize your workflow.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3v18M5 9h6m-6 6h6m4 3h4m-4-6h4m-4-6h4"></path>
-                    </svg>
-                  ),
-                },
-              ].map((feature, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+              {FEATURES.map((feature, index) => (
                 <div
-                  key={index}
+                  key={feature.title}
                   data-aos="fade-up"
                   data-aos-delay={index * 100}
-                  className="bg-white dark:bg-ui-dark p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow border-[1px] border-border-light dark:border-border-dark"
+                  className="bg-ui-light dark:bg-ui-dark p-6 rounded-2xl shadow-sm hover:shadow-lg transition-shadow border-[1px] border-border-light dark:border-border-dark"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{feature.title}</h3>
-                    <div className="text-secondary-dark dark:text-accent">{feature.icon}</div>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300">{feature.desc}</p>
+                  <div className="text-accent-light dark:text-accent mb-4">{feature.icon}</div>
+                  <h3 className="text-lg font-bold text-text-light dark:text-text-dark mb-2">{feature.title}</h3>
+                  <p className="text-secondary-light dark:text-secondary-dark text-sm leading-relaxed">{feature.desc}</p>
                 </div>
               ))}
             </div>
