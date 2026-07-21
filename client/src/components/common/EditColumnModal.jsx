@@ -27,7 +27,7 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
   };
 
   const modalContent = (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <form
         onSubmit={handleSubmit}
         className="bg-white dark:bg-black  

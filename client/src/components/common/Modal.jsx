@@ -6,7 +6,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   return (
     <div
       className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 backdrop-blur-sm "
-      onClick={onClose} // close when clicking overlay
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }} // close only if the drag/click started on the overlay itself
     >
       <div
         className="bg-background-light dark:bg-black 

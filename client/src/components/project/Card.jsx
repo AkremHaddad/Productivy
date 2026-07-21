@@ -8,7 +8,7 @@ const ModalPortal = ({ isOpen, onClose, children }) => {
   return ReactDOM.createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={onClose} // Click on overlay closes modal
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }} // close only if the drag/click started on the overlay itself
     >
       <div
         className="bg-background-light dark:bg-black rounded-lg p-6 relative max-w-lg w-full shadow-2xl"
@@ -136,7 +136,7 @@ const Card = ({
           {deleteConfirm && ReactDOM.createPortal(
             <div 
               className="fixed inset-0 bg-black/60 flex items-center justify-center z-60"
-              onClick={() => setDeleteConfirm(false)}
+              onMouseDown={(e) => { if (e.target === e.currentTarget) setDeleteConfirm(false); }}
             >
               <div 
                 className="bg-background-light dark:bg-background-dark  p-6 rounded-xl shadow-2xl w-full max-w-sm animate-fadeScale"

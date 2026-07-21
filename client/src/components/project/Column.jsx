@@ -194,7 +194,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       {deleteConfirm && ReactDOM.createPortal(
         <div 
           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm"
-          onClick={() => setDeleteConfirm(false)}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) setDeleteConfirm(false); }}
         >
           <div 
             className="bg-background-light dark:bg-black  p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4"
