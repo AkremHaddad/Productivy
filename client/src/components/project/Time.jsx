@@ -2,8 +2,9 @@ import React from "react";
 
 const Time = ({ minutesWorked }) => {
   const formatTime = (totalMinutes) => {
-    const h = Math.floor(totalMinutes / 60);
-    const m = totalMinutes % 60;
+    const rounded = Math.round(totalMinutes);
+    const h = Math.floor(rounded / 60);
+    const m = rounded % 60;
     if (h > 0 && m > 0) return `${h}h ${m}m`;
     if (h > 0) return `${h}h`;
     return `${m}m`;

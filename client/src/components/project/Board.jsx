@@ -13,6 +13,7 @@ const Board = ({ projectId }) => {
   const [currentBoardIndex, setCurrentBoardIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
   const [editingBoard, setEditingBoard] = useState(null);
   const [editBoardTitle, setEditBoardTitle] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -63,6 +64,12 @@ const Board = ({ projectId }) => {
   }, [fetchBoards]);
 
   useEffect(() => {
+    if (!actionError) return;
+    const t = setTimeout(() => setActionError(""), 5000);
+    return () => clearTimeout(t);
+  }, [actionError]);
+
+  useEffect(() => {
     const container = boardsContainerRef.current;
     if (!container) return;
     const handleWheel = (e) => {
@@ -92,7 +99,7 @@ const Board = ({ projectId }) => {
       setCurrentBoardIndex(updated.length - 1);
     } catch (err) {
       console.error("Error adding board:", err);
-      setError("Failed to add board. Please try again.");
+      setActionError("Failed to add board. Please try again.");
     }
   };
 
@@ -109,7 +116,7 @@ const Board = ({ projectId }) => {
       setEditBoardTitle("");
     } catch (err) {
       console.error("Error updating board:", err);
-      setError("Failed to update board title. Please try again.");
+      setActionError("Failed to update board title. Please try again.");
     }
   };
 
@@ -125,7 +132,7 @@ const Board = ({ projectId }) => {
       setCurrentBoardIndex(0);
     } catch (err) {
       console.error("Error deleting board:", err);
-      setError("Failed to delete board. Please try again.");
+      setActionError("Failed to delete board. Please try again.");
     }
   };
 
@@ -140,7 +147,7 @@ const Board = ({ projectId }) => {
       );
     } catch (err) {
       console.error("Error adding column:", err);
-      setError("Failed to add column. Please try again.");
+      setActionError("Failed to add column. Please try again.");
     }
   };
 
@@ -173,7 +180,7 @@ const Board = ({ projectId }) => {
         reorderColumns(projectId, currentBoard._id, newOrderIds)
           .catch(err => {
             console.error("Failed to save column order:", err);
-            setError("Failed to save column order. Please try again.");
+            setActionError("Failed to save column order. Please try again.");
           });
       }
 
@@ -200,7 +207,7 @@ const Board = ({ projectId }) => {
         const payload = newCols.map(col => ({ _id: col._id, cards: col.cards.map(c => c._id) }));
         reorderCards(projectId, currentBoard._id, payload).catch((err) => {
           console.error("Failed to save card order:", err);
-          setError("Failed to save card order. Please try again.");
+          setActionError("Failed to save card order. Please try again.");
           // (Optional) re-fetch or rollback if you want stronger consistency
           // fetchBoards(); 
         });
@@ -218,7 +225,7 @@ const Board = ({ projectId }) => {
         const payload = newCols.map(col => ({ _id: col._id, cards: col.cards.map(c => c._id) }));
         reorderCards(projectId, currentBoard._id, payload).catch((err) => {
           console.error("Failed to save card order:", err);
-          setError("Failed to save card order. Please try again.");
+          setActionError("Failed to save card order. Please try again.");
           // (Optional) re-fetch or rollback
           // fetchBoards();
         });
@@ -310,7 +317,14 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
   return (
     <div className="bg-ui-light dark:bg-ui-dark rounded-md flex-1 overflow-hidden w-full h-[622px] flex flex-col
     border-[1px] border-border-light dark:border-border-dark">
-      
+
+      {actionError && (
+        <div className="flex items-center justify-between gap-3 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm rounded-t-md">
+          <span>{actionError}</span>
+          <button onClick={() => setActionError("")} className="font-bold px-1">×</button>
+        </div>
+      )}
+
       {/* Header Tabs */}
       <div className="bg-black dark:bg-white bg-opacity-5 dark:bg-opacity-5 min-h-[50px] font-normal text-3xl text-black dark:text-white flex items-stretch rounded-t-md">
         <div
@@ -404,7 +418,7 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
                             boardId={currentBoard._id}
                             column={col}
                             onColumnsUpdate={updateColumns}
-                            onError={setError}
+                            onError={setActionError}
                           />
                         </div>
                       )}
