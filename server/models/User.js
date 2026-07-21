@@ -9,7 +9,10 @@ const userSchema = new mongoose.Schema({
 
   // 🔥 For activity/status tracking
   lastActivity: { type: Date, default: Date.now },
-  isOnline: { type: Boolean, default: false }   // 👈 NEW FIELD
+  isOnline: { type: Boolean, default: false },   // 👈 NEW FIELD
+
+  // Daily focus-time goal in minutes, used by the dashboard goal ring. 360 = 6h.
+  dailyGoalMinutes: { type: Number, default: 360 }
 }, { timestamps: true });
 
 // Hash password before saving

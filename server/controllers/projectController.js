@@ -1,5 +1,6 @@
 // ==================== CONTROLLERS (projectController.js) ====================
 import Project from "../models/Project.js";
+import { logEvent } from "../utils/logEvent.js";
 
 // Helper function to find project with user validation
 const findProjectByUser = async (projectId, userId) => {
@@ -71,6 +72,13 @@ export const addSprint = async (req, res) => {
     const project = await findProjectByUser(projectId, req.user.id);
     project.sprints.push({ title: title.trim(), tasks: [] });
     await project.save();
+
+    logEvent({
+      user: req.user.id,
+      project: project._id,
+      type: "sprint_started",
+      message: `Started "${title.trim()}"`,
+    });
 
     res.status(201).json(project.sprints);
   } catch (err) {
@@ -206,8 +214,10 @@ export const addTask = async (req, res) => {
 export const updateTask = async (req, res) => {
   try {
     const { projectId, sprintId, taskId } = req.params;
-    const { title } = req.body;
-    if (!title?.trim()) return res.status(400).json({ error: "Task title required" });
+    const { title, note } = req.body;
+    if (title !== undefined && !title.trim()) {
+      return res.status(400).json({ error: "Task title required" });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
     const sprint = project.sprints.id(sprintId);
@@ -216,7 +226,8 @@ export const updateTask = async (req, res) => {
     const task = sprint.tasks.id(taskId);
     if (!task) return res.status(404).json({ error: "Task not found" });
 
-    task.title = title.trim();
+    if (title !== undefined) task.title = title.trim();
+    if (note !== undefined) task.note = note;
     await project.save();
 
     res.json(task);
@@ -241,6 +252,15 @@ export const toggleTask = async (req, res) => {
 
     task.completed = !task.completed;
     await project.save();
+
+    if (task.completed) {
+      logEvent({
+        user: req.user.id,
+        project: project._id,
+        type: "task_completed",
+        message: `Completed "${task.title}"`,
+      });
+    }
 
     res.json(task);
   } catch (err) {
@@ -511,6 +531,41 @@ export const updateCard = async (req, res) => {
   }
 };
 
+export const toggleCard = async (req, res) => {
+  try {
+    const { projectId, boardId, columnId, cardId } = req.params;
+
+    const project = await findProjectByUser(projectId, req.user.id);
+    const board = project.boards.id(boardId);
+    if (!board) return res.status(404).json({ error: "Board not found" });
+
+    const column = board.columns.id(columnId);
+    if (!column) return res.status(404).json({ error: "Column not found" });
+
+    const card = column.cards.id(cardId);
+    if (!card) return res.status(404).json({ error: "Card not found" });
+
+    card.completed = !card.completed;
+    await project.save();
+
+    if (card.completed) {
+      logEvent({
+        user: req.user.id,
+        project: project._id,
+        type: "card_completed",
+        message: `Completed "${card.title}"`,
+      });
+    }
+
+    res.json(card);
+  } catch (err) {
+    if (err.message === "Project not found") {
+      return res.status(404).json({ error: err.message });
+    }
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const deleteCard = async (req, res) => {
   try {
     const { projectId, boardId, columnId, cardId } = req.params;
@@ -549,11 +604,15 @@ export const changeCardOrder = async (req, res) => {
     const board = project.boards.id(boardId);
     if (!board) return res.status(404).json({ message: "Board not found" });
 
-    // Build a map of all cards by _id
+    // Build a map of all cards by _id, and remember which column each one
+    // started in so we can detect actual moves (not just reorders) below.
     const allCards = {};
+    const oldColumnByCard = {};
     board.columns.forEach(col => {
       col.cards.forEach(card => {
-        allCards[card._id.toString()] = card;
+        const id = card._id.toString();
+        allCards[id] = card;
+        oldColumnByCard[id] = { columnId: col._id.toString(), columnTitle: col.title };
       });
     });
 
@@ -568,6 +627,24 @@ export const changeCardOrder = async (req, res) => {
     });
 
     await project.save();
+
+    newColumns.forEach(colOrder => {
+      const destColumn = board.columns.id(colOrder._id);
+      if (!destColumn) return;
+      colOrder.cards.forEach(cardId => {
+        const prev = oldColumnByCard[cardId];
+        const card = allCards[cardId];
+        if (prev && card && prev.columnId !== colOrder._id) {
+          logEvent({
+            user: req.user.id,
+            project: project._id,
+            type: "card_moved",
+            message: `Moved "${card.title}" to ${destColumn.title}`,
+          });
+        }
+      });
+    });
+
     res.json(board.columns);
   } catch (err) {
     console.error(err);

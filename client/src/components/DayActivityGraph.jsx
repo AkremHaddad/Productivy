@@ -100,8 +100,8 @@ const DayActivityGraph = () => {
   };
 
   return (
-    <div className="p-6 bg-ui-light dark:bg-ui-dark rounded-lg shadow-md transition-colors">
-      <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
+    <div className="p-6 bg-ui-light dark:bg-ui-dark rounded-2xl border-[1px] border-border-light dark:border-border-dark transition-colors">
+      <h2 className="text-lg font-bold mb-4 text-text-light dark:text-text-dark transition-colors">
         Daily Activity Timeline
       </h2>
 
@@ -110,10 +110,10 @@ const DayActivityGraph = () => {
         {weekDays.map((day, idx) => (
           <button
             key={idx}
-            className={`px-3 py-1 rounded-md font-medium text-sm transition-colors ${
+            className={`px-3 py-1 rounded-full font-semibold text-sm transition-colors ${
               selectedDay === idx
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                ? "bg-accent text-black"
+                : "bg-header-light dark:bg-header-dark text-secondary-light dark:text-secondary-dark"
             }`}
             onClick={() => setSelectedDay(idx)}
           >
@@ -136,17 +136,17 @@ const DayActivityGraph = () => {
             onMouseLeave={() => setHoveredActivity(null)}
           >
             <span className="w-4 h-4 rounded-sm" style={{ backgroundColor: activityColors[act] }} />
-            <span className="capitalize text-sm font-medium text-gray-700 dark:text-gray-200">{act}</span>
+            <span className="capitalize text-sm font-medium text-secondary-light dark:text-secondary-dark">{act}</span>
           </div>
         ))}
       </div>
 
       {/* Graph */}
-      <div className="overflow-x-auto bg-white dark:bg-background-dark shadow-sm ">
+      <div className="overflow-x-auto bg-background-light dark:bg-background-dark shadow-sm ">
         <svg
           width={width}
           height={height + margin.top + margin.bottom}
-          className="border border-gray-200 dark:border-gray-700 rounded-md transition-colors"
+          className="border-[1px] border-border-light dark:border-border-dark rounded-md transition-colors"
         >
           {[...Array(25)].map((_, i) => {
             const x = margin.left + (i / 24) * (width - margin.left - margin.right);
@@ -157,17 +157,15 @@ const DayActivityGraph = () => {
                   y1={margin.top}
                   x2={x}
                   y2={height + margin.top}
-                  stroke="#e5e7eb"
                   strokeWidth={1}
                   strokeDasharray="2,2"
-                  className="dark:stroke-gray-700 transition-colors"
+                  className="stroke-border-light dark:stroke-border-dark transition-colors"
                 />
                 <text
                   x={x}
                   y={height + margin.top + 20}
                   fontSize={10}
-                  fill="#6b7280"
-                  className="dark:fill-gray-400 transition-colors"
+                  className="fill-secondary-light dark:fill-secondary-dark transition-colors"
                   textAnchor="middle"
                 >
                   {i}:00

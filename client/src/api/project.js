@@ -108,6 +108,13 @@ export const updateCard = async (projectId, boardId, columnId, cardId, data) => 
   return res.data;
 };
 
+export const toggleCardCompleted = async (projectId, boardId, columnId, cardId) => {
+  const res = await API.patch(
+    `/api/projects/${projectId}/boards/${boardId}/columns/${columnId}/cards/${cardId}/toggle`
+  );
+  return res.data;
+};
+
 export const deleteCard = async (projectId, boardId, columnId, cardId) => {
   const res = await API.delete(
     `/api/projects/${projectId}/boards/${boardId}/columns/${columnId}/cards/${cardId}`

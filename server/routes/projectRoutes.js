@@ -20,6 +20,7 @@ import {
   deleteColumn,
   addCard,
   updateCard,
+  toggleCard,
   deleteCard,
   deleteProject,
   changeTaskOrder,
@@ -63,6 +64,7 @@ router.post("/:projectId/boards/:boardId/columns/change-order", protect, changeC
 // Cards
 router.post("/:projectId/boards/:boardId/columns/:columnId/cards", protect, addCard);
 router.patch("/:projectId/boards/:boardId/columns/:columnId/cards/:cardId", protect, updateCard);
+router.patch("/:projectId/boards/:boardId/columns/:columnId/cards/:cardId/toggle", protect, toggleCard);
 router.delete("/:projectId/boards/:boardId/columns/:columnId/cards/:cardId", protect, deleteCard);
 router.post("/:projectId/boards/:boardId/cards/change-order", protect, changeCardOrder);
 

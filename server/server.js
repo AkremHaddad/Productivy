@@ -12,6 +12,7 @@ import projectRoutes from "./routes/projectRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import chartsRoutes from "./routes/chartsRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
 import "./cron/activityCron.js"; // just importing starts the cron job
 
 
@@ -95,6 +96,7 @@ app.use("/api/projects", projectRoutes); // GET/POST at /api/projects
 app.use("/api/auth", authRoutes);        // /login, /register, /google, /me, /logout
 app.use("/api/activity", activityRoutes);
 app.use("/api/charts", chartsRoutes);
+app.use("/api/events", eventRoutes);
 
 // Start DB + server
 connectDB()

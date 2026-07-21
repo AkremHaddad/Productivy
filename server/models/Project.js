@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 const TaskSchema = new mongoose.Schema({
   title: { type: String, required: true },
   completed: { type: Boolean, default: false },
+  note: { type: String, default: "" },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -15,8 +16,9 @@ const SprintSchema = new mongoose.Schema({
 });
 
 const CardSchema = new mongoose.Schema({
-  title: { type: String}, 
-  description: { type: String }, 
+  title: { type: String},
+  description: { type: String },
+  completed: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

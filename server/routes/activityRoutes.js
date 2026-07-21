@@ -5,7 +5,12 @@ import {
   // addActivityMinute,
   setOffline,
   setOnline,
-  getTodayProductiveTime
+  getTodayProductiveTime,
+  getStreak,
+  getHeatmap,
+  getGoal,
+  setGoal,
+  getTotalFocusMinutes
 } from "../controllers/activityController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -23,6 +28,11 @@ router.get("/current", protect, getCurrentActivity);
 // router.post("/tick", protect, addActivityMinute);
 
 router.get("/today", protect, getTodayProductiveTime);
+router.get("/streak", protect, getStreak);
+router.get("/heatmap", protect, getHeatmap);
+router.get("/total", protect, getTotalFocusMinutes);
+router.get("/goal", protect, getGoal);
+router.patch("/goal", protect, setGoal);
 
 export default router;
 

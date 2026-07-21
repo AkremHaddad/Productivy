@@ -1,6 +1,7 @@
 import Activity from "../models/Activity.js";
 import CurrentActivity from "../models/CurrentActivity.js";
 import ProductiveTime from "../models/ProductiveTime.js";
+import User from "../models/User.js";
 
 // export const addActivityMinute = async (req, res) => {
 //   try {
@@ -84,7 +85,7 @@ export const getCurrentActivity = async (req, res) => {
     const userId = req.user._id;
     const record = await CurrentActivity.findOne({ user: userId });
 
-    res.json({ activity: record?.activity || "working" });
+    res.json({ activity: record?.activity || "working", isOnline: record?.isOnline || false });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch current activity" });
@@ -141,6 +142,107 @@ export const getTodayProductiveTime = async (req, res) => {
     }
 
     res.json({ minutes: record.minutes });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET consecutive days worked (ProductiveTime.minutes > 0), walking
+// backwards from today. If today has no minutes yet, that's not a break
+// in the streak - it just isn't counted until the user actually works.
+export const getStreak = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+
+    const todayRecord = await ProductiveTime.findOne({ user: userId, date: cursor });
+    if (!todayRecord || todayRecord.minutes <= 0) {
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
+    let streak = 0;
+    // Sanity cap so a data anomaly can't turn this into a runaway loop.
+    while (streak < 3650) {
+      const record = await ProductiveTime.findOne({ user: userId, date: cursor });
+      if (!record || record.minutes <= 0) break;
+      streak += 1;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
+    res.json({ streak });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET the last N days of worked minutes (oldest first), for the dashboard
+// heatmap/sparkline.
+export const getHeatmap = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const days = Math.min(Math.max(parseInt(req.query.days, 10) || 7, 1), 90);
+
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - (days - 1));
+
+    const records = await ProductiveTime.find({ user: userId, date: { $gte: start } });
+    const byDate = new Map(records.map((r) => [r.date.getTime(), r.minutes]));
+
+    const result = [];
+    const cursor = new Date(start);
+    for (let i = 0; i < days; i++) {
+      result.push({ date: cursor.toISOString(), minutes: byDate.get(cursor.getTime()) || 0 });
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET all-time total focus minutes, for the dashboard "Milestones" panel
+export const getTotalFocusMinutes = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const [agg] = await ProductiveTime.aggregate([
+      { $match: { user: userId } },
+      { $group: { _id: null, total: { $sum: "$minutes" } } },
+    ]);
+
+    res.json({ totalMinutes: agg?.total || 0 });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET the user's daily focus goal (minutes)
+export const getGoal = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("dailyGoalMinutes");
+    res.json({ dailyGoalMinutes: user?.dailyGoalMinutes ?? 360 });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// PATCH the user's daily focus goal (minutes)
+export const setGoal = async (req, res) => {
+  try {
+    const minutes = Number(req.body.dailyGoalMinutes);
+    if (!Number.isFinite(minutes) || minutes < 15 || minutes > 24 * 60) {
+      return res.status(400).json({ message: "dailyGoalMinutes must be between 15 and 1440" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { dailyGoalMinutes: minutes },
+      { new: true }
+    ).select("dailyGoalMinutes");
+
+    res.json({ dailyGoalMinutes: user.dailyGoalMinutes });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
