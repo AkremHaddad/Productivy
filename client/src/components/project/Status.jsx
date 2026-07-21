@@ -1,29 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import API from "../../api/API";
 
-const activities = ["working", "learning", "training", "playing", "socializing", "off"];
-
-// Old 8-category values collapse onto the new 6: sleeping+others -> off,
-// hobbying -> playing. Handles records written before this change without
-// a DB migration - they get overwritten the next time status changes.
-const LEGACY_ACTIVITY_MAP = { sleeping: "off", others: "off", hobbying: "playing" };
-const normalizeActivity = (act) => LEGACY_ACTIVITY_MAP[act] || act;
-
-const ACTIVITY_DOT = {
-  working: "bg-[#8B7CF6]",
-  learning: "bg-[#3FCB6B]",
-  training: "bg-amber",
-  playing: "bg-[#E5484D]",
-  socializing: "bg-[#D6538E]",
-  off: "bg-secondary-dark",
-};
+// Collapsed further to just working/off (feedback after real use: the
+// in-between categories never got used). Any older multi-category value
+// still sitting in the DB normalizes to "off" here rather than a migration -
+// it gets overwritten the next time status changes anyway.
+const normalizeActivity = (act) => (act === "working" ? "working" : "off");
 
 const Status = ({ onMinutesUpdate }) => {
   const [currentActivity, setCurrentActivity] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const popoverRef = useRef(null);
   const timeoutRef = useRef(null);
   const intervalRef = useRef(null);
   const lastTickRef = useRef(new Date()); // keep last increment timestamp
@@ -41,17 +28,6 @@ const Status = ({ onMinutesUpdate }) => {
       }
     };
     fetchActivity();
-  }, []);
-
-  // Close popover on outside click
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
-        setShowPopup(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Heartbeat: mark online every 30s if activity exists
@@ -160,16 +136,11 @@ const Status = ({ onMinutesUpdate }) => {
     }, [currentActivity, onMinutesUpdate]);
 
 
-  // Handle activity change
-  const saveActivity = async (activity) => {
-    if (activity === currentActivity) {
-      setShowPopup(false);
-      return;
-    }
-
+  // Flip working <-> off directly - only two states, a picker is overkill.
+  const toggleActivity = async () => {
+    const activity = currentActivity === "working" ? "off" : "working";
     const previousActivity = currentActivity;
     setCurrentActivity(activity);
-    setShowPopup(false);
     setLoading(true);
 
     try {
@@ -183,44 +154,25 @@ const Status = ({ onMinutesUpdate }) => {
     }
   };
 
+  const isWorking = currentActivity === "working";
+
   return (
-    <div ref={popoverRef} className="relative flex-1 flex bg-inherit h-[150px] border-x-[1px] border-border-light dark:border-border-dark">
-      {/* Status pill */}
+    <div className="flex-1 flex bg-inherit h-[150px] border-x-[1px] border-border-light dark:border-border-dark">
       <button
-        onClick={() => !loading && setShowPopup((prev) => !prev)}
+        onClick={() => !loading && toggleActivity()}
+        title="Click to toggle working / off"
         className="flex-1 flex flex-col justify-evenly items-center p-2 cursor-pointer"
       >
         <div className="font-normal text-md text-black dark:text-white text-center font-jaro">
           status
         </div>
         <div className="flex items-center gap-1.5">
-          <span className={`w-1.5 h-1.5 rounded-full flex-none ${ACTIVITY_DOT[currentActivity] || "bg-secondary-dark"}`} />
+          <span className={`w-1.5 h-1.5 rounded-full flex-none ${isWorking ? "bg-[#8B7CF6]" : "bg-secondary-dark"}`} />
           <span className="font-normal text-sm text-black dark:text-white text-center font-jaro capitalize">
             {loading ? "Saving..." : currentActivity || "No activity"}
           </span>
         </div>
       </button>
-
-      {/* Popover - non-blocking, closes on outside click */}
-      {showPopup && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-56 bg-header-light dark:bg-header-dark border-[1px] border-border-light dark:border-border-dark rounded-xl shadow-xl p-2 flex flex-wrap gap-1.5">
-          {activities.map((act) => (
-            <button
-              key={act}
-              disabled={loading}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold capitalize transition-all ${
-                currentActivity === act
-                  ? "bg-black/10 dark:bg-white/10 border-[1px] border-black dark:border-white text-black dark:text-white"
-                  : "border-[1px] border-transparent text-black dark:text-white hover:border-border-light dark:hover:border-border-dark"
-              }`}
-              onClick={() => saveActivity(act)}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full flex-none ${ACTIVITY_DOT[act]}`} />
-              {act}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

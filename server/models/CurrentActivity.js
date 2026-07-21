@@ -3,21 +3,13 @@ import mongoose from "mongoose";
 
 const currentActivitySchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
-  // Collapsed from 8 to 6 categories (design review, Phase 3): merged
-  // sleeping + others -> off, hobbying -> playing, to cut choice overload.
-  // Old stale values from before this change are handled client-side
-  // (Status.jsx normalizes them on read) rather than via a DB migration -
-  // they get overwritten the next time the user changes status anyway.
+  // Collapsed further to just working/off (feedback after real use: the
+  // in-between categories from Phase 3 never got used - only "working" vs
+  // "not" actually mattered). Same no-migration approach as before -
+  // Status.jsx normalizes any stale multi-category values it reads.
   activity: {
     type: String,
-    enum: [
-      "working",
-      "learning",
-      "training",
-      "playing",
-      "socializing",
-      "off",
-    ],
+    enum: ["working", "off"],
     default: "working",
   },
   isOnline: { type: Boolean, default: false },

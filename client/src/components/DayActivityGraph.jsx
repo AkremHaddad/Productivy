@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { activityColors, activities } from "./pages/chartsHelper";
+import { activityColors, activities, LEGACY_COLOR } from "./pages/chartsHelper";
 import API from "../api/API";
 
 const DayActivityGraph = () => {
@@ -193,7 +193,7 @@ const DayActivityGraph = () => {
                   y={y}
                   width={hourWidth}
                   height={rectHeight}
-                  fill={activityColors[activity.activity]}
+                  fill={activityColors[activity.activity] || LEGACY_COLOR}
                   opacity={hoveredActivity ? (isHovered ? 0.9 : 0.3) : 0.7}
                   rx={2}
                   stroke={isHovered ? "#ffffff" : "none"}
@@ -217,7 +217,7 @@ const DayActivityGraph = () => {
             left: `${tooltipData.x}px`,
             top: `${tooltipData.y}px`,
             backgroundColor: "#1f2937",
-            borderLeft: `4px solid ${activityColors[tooltipData.activity] || "#6b7280"}`,
+            borderLeft: `4px solid ${activityColors[tooltipData.activity] || LEGACY_COLOR}`,
           }}
         >
           <div className="capitalize font-medium mb-1">{tooltipData.activity}</div>
