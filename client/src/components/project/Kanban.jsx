@@ -17,6 +17,8 @@ const Kanban = ({ projectId, selectedSprint }) => {
   const [editTitle, setEditTitle] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [openNoteId, setOpenNoteId] = useState(null);
+  const [noteDraft, setNoteDraft] = useState("");
 
   // Fetch tasks whenever selectedSprint changes
   useEffect(() => {
@@ -147,6 +149,26 @@ const Kanban = ({ projectId, selectedSprint }) => {
     setEditTitle("");
   };
 
+  const saveNote = async (taskId) => {
+    const taskIndex = tasks.findIndex((t) => t._id === taskId);
+    if (taskIndex === -1) return;
+
+    const previousNote = tasks[taskIndex].note;
+    setTasks((prev) => prev.map((t) => (t._id === taskId ? { ...t, note: noteDraft } : t)));
+    setOpenNoteId(null);
+
+    try {
+      const res = await API.patch(
+        `/api/projects/${projectId}/sprints/${selectedSprint._id}/tasks/${taskId}`,
+        { note: noteDraft }
+      );
+      setTasks((prev) => prev.map((t) => (t._id === taskId ? res.data : t)));
+    } catch (err) {
+      console.error("Error saving note:", err);
+      setTasks((prev) => prev.map((t) => (t._id === taskId ? { ...t, note: previousNote } : t)));
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleAddTask();
@@ -244,67 +266,100 @@ const Kanban = ({ projectId, selectedSprint }) => {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`flex items-center justify-between text-sm p-2 rounded-xl shadow-sm transition-all duration-200 ease-in-out group  border border-border-light dark:border-border-dark
-                          ${ 
+                        className={`flex flex-col text-sm p-2 rounded-xl transition-all duration-200 ease-in-out group border-[1px] border-border-light dark:border-border-dark
+                          ${
                             task.completed
-                              ? "bg-white dark:bg-background-dark text-gray-500"
-                              : "bg-white dark:bg-background-dark dark:text-text-dark hover:shadow-md"
+                              ? "bg-header-light dark:bg-header-dark text-secondary-light dark:text-secondary-dark"
+                              : "bg-header-light dark:bg-header-dark text-text-light dark:text-text-dark hover:shadow-md"
                           }
                           ${snapshot.isDragging ? "opacity-70 scale-[1.02] shadow-lg" : ""}
                         `}
                       >
-                        <div className="flex items-center space-x-3 flex-1">
-                          <button
-                            onClick={() => toggleTask(task._id)}
-                            className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200
-                              ${
-                                task.completed
-  ? "border-black bg-black/10 dark:border-white dark:bg-white/10"
-  : "border-black/30 dark:border-white/30 group-hover:border-black dark:group-hover:border-white"
-
-                              }`}
-                          >
-                            {task.completed && (
-                              <svg
-                                className="w-3 h-3 text-black dark:text-white"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="3"
-                                  d="M5 13l4 4L19 7"
-                                ></path>
-                              </svg>
-                            )}
-                          </button>
-
-                          {editingTask === task._id ? (
-                            <input
-                              type="text"
-                              value={editTitle}
-                              onChange={(e) => setEditTitle(e.target.value)}
-                              onKeyPress={(e) =>
-                                handleEditKeyPress(e, task._id)
-                              }
-                              onBlur={() => handleEditTask(task._id)}
-                              className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              className={`flex-1 cursor-pointer ${
-                                task.completed ? "line-through" : ""
-                              }`}
-                              onDoubleClick={() => handleDoubleClick(task)}
-                              title="Double-click to edit"
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3 flex-1 min-w-0">
+                            <button
+                              onClick={() => toggleTask(task._id)}
+                              className={`flex-shrink-0 w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-colors duration-200
+                                ${
+                                  task.completed
+                                    ? "bg-accent border-accent"
+                                    : "border-border-light dark:border-border-dark group-hover:border-accent-light dark:group-hover:border-accent"
+                                }`}
                             >
-                              {task.title}
-                            </span>
+                              {task.completed && (
+                                <svg
+                                  className="w-3 h-3 text-black"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="3"
+                                    d="M5 13l4 4L19 7"
+                                  ></path>
+                                </svg>
+                              )}
+                            </button>
+
+                            {editingTask === task._id ? (
+                              <input
+                                type="text"
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                onKeyPress={(e) =>
+                                  handleEditKeyPress(e, task._id)
+                                }
+                                onBlur={() => handleEditTask(task._id)}
+                                className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
+                                autoFocus
+                              />
+                            ) : (
+                              <span
+                                className={`flex-1 truncate cursor-pointer ${
+                                  task.completed ? "line-through" : ""
+                                }`}
+                                onDoubleClick={() => handleDoubleClick(task)}
+                                title="Double-click to edit"
+                              >
+                                {task.title}
+                              </span>
+                            )}
+                          </div>
+
+                          {!task.note && openNoteId !== task._id && (
+                            <button
+                              onClick={() => { setOpenNoteId(task._id); setNoteDraft(""); }}
+                              className="opacity-0 group-hover:opacity-100 flex-shrink-0 text-[10px] font-semibold text-secondary-light dark:text-secondary-dark hover:text-accent-light dark:hover:text-accent transition ml-2"
+                            >
+                              + Note
+                            </button>
                           )}
                         </div>
+
+                        {(task.note || openNoteId === task._id) && (
+                          <div className="mt-1.5 ml-8">
+                            {openNoteId === task._id ? (
+                              <textarea
+                                autoFocus
+                                value={noteDraft}
+                                onChange={(e) => setNoteDraft(e.target.value)}
+                                onBlur={() => saveNote(task._id)}
+                                rows={2}
+                                placeholder="Add a note..."
+                                className="w-full text-xs italic px-2 py-1.5 rounded-lg border-[1px] border-border-light dark:border-border-dark bg-ui-light dark:bg-ui-dark text-secondary-light dark:text-secondary-dark focus:outline-none resize-y"
+                              />
+                            ) : (
+                              <p
+                                onClick={() => { setOpenNoteId(task._id); setNoteDraft(task.note || ""); }}
+                                className="text-xs italic text-secondary-light dark:text-secondary-dark cursor-text whitespace-pre-line"
+                              >
+                                {task.note}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                   </Draggable>

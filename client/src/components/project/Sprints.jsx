@@ -2,6 +2,28 @@ import React, { useState, useEffect } from "react";
 import API from "../../api/API";
 import Modal from "../common/Modal"; // Adjust path to your Modal.jsx
 
+const DIAL_RADIUS = 10;
+const DIAL_CIRCUMFERENCE = 2 * Math.PI * DIAL_RADIUS;
+
+const CompletionDial = ({ sprint }) => {
+  const total = sprint.tasks?.length || 0;
+  const done = sprint.tasks?.filter((t) => t.completed).length || 0;
+  const percent = total > 0 ? done / total : 0;
+
+  return (
+    <svg width="26" height="26" viewBox="0 0 26 26" className="flex-none">
+      <circle cx="13" cy="13" r={DIAL_RADIUS} fill="none" className="stroke-border-light dark:stroke-border-dark" strokeWidth="3" />
+      <circle
+        cx="13" cy="13" r={DIAL_RADIUS} fill="none"
+        className={total > 0 ? "stroke-accent-light dark:stroke-accent" : "stroke-border-light dark:stroke-border-dark"}
+        strokeWidth="3" strokeLinecap="round"
+        strokeDasharray={`${percent * DIAL_CIRCUMFERENCE} ${DIAL_CIRCUMFERENCE}`}
+        transform="rotate(-90 13 13)"
+      />
+    </svg>
+  );
+};
+
 const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
   const [sprints, setSprints] = useState([]);
   const [sprintTitle, setSprintTitle] = useState("");
@@ -141,10 +163,10 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
             <div
               key={s._id}
               onClick={() => handleSprintClick(s)}
-              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex font-medium m-2 rounded-lg text-black dark:text-white
-                          items-center justify-between ${
+              className={`cursor-pointer px-3 py-2 transition-all duration-200 group flex font-medium m-2 rounded-lg text-text-light dark:text-text-dark
+                          items-center justify-between gap-2 ${
                 selectedSprintId === s._id
-                  ? "bg-background-light dark:bg-background-dark  border border-border-light dark:border-border-dark shadow-sm "
+                  ? "bg-accent/[.08]"
                   : ""
               }`}
             >
@@ -172,23 +194,26 @@ const Sprints = ({ projectId, selectedSprintId, onSprintSelect }) => {
                 )}
               </div>
               {editingSprint !== s._id && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDeleteConfirm(s._id);
-                  }}
-                  className="opacity-0 group-hover:opacity-100 text-white hover:text-red-500 p-1 transition-opacity duration-200 ml-2 rounded bg-black/50"
-                  title="Delete sprint"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    ></path>
-                  </svg>
-                </button>
+                <div className="flex items-center flex-none">
+                  <CompletionDial sprint={s} />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteConfirm(s._id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 text-secondary-light dark:text-secondary-dark hover:text-red-500 dark:hover:text-red-400 p-1 transition-opacity duration-200 ml-1 rounded"
+                    title="Delete sprint"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
               )}
             </div>
           ))
