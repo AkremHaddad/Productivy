@@ -46,6 +46,20 @@ Akram floated an alternative/complementary approach: a small script running loca
 
 No implementation started yet as of 2026-07-14. Currently dormant — Akram isn't actively using it since starting at Nouvelair.
 
+## Design review pass (Claude Design, imported 2026-07-21)
+
+Akram screenshotted every page (dark theme) and ran them through Claude Design for a full visual + UX review. Full source: `design/Productivy Design Review.dc.html` in this repo (also live at `claude.ai/design/p/45190a6d-8c7e-4990-ac09-0a244058e587`) — **not yet implemented**, this is direction only. Key decisions, not yet built:
+
+- **Visual system**: dark theme kept close to current, de-flattened (`#0B0D0F` bg / `#14171A` surface / `#1C2023` raised / `#262B30` border / `#F3F4F1` text). Light theme rebuilt from a warm-paper base rather than an inverted dark theme (`#F3EFE6` bg / `#FFFEFB` surface / `#24211B` ink), lime accent (`#C9F24C`) shifted to a deeper olive (`#5C7A12`) for text in light mode so it holds contrast — full-brightness lime reserved for filled buttons only. Type: Manrope (UI) + IBM Plex Mono (data/stats). Cards 16px radius, buttons 10px, chips full, 4px spacing unit.
+- **Landing page**: drop any fabricated social-proof language, tighten to a one-sentence pitch, add real credibility signals (stack badges, source link) — framed as a portfolio piece built/used solo, not enterprise SaaS.
+- **Dashboard — "time worked" redesigned as a motivator, not a decimal**: a Focus module leads the page — goal ring (daily focus goal, default 6h, user-editable — doesn't exist yet), a live pulsing indicator while a session is active, a 7-day streak counter, and a GitHub-style weekly heatmap. New below it: **"Today's recap"** (auto-summarized from card moves + timer events, no new tracking needed) and **"Milestones"** (quiet running totals: total focus hours, longest streak, sprints shipped, cards completed) — both are new features, not reskins.
+- **Activity status overhaul**: the core insight is that the 8-option full-screen modal is friction, not polish — Akram doesn't bother switching it. Fix: auto-infer "Working" whenever a Pomodoro/work timer is running, and shrink manual override to a one-click header popover pill that never blocks the UI. Also collapses from 8 categories to 6 (merge Sleeping + Others → "Off"; Hobbying → "Playing").
+- **Board**: solid saturated card fills read as template-y — replace with a small color dot + label chip on a neutral card surface; edit/delete actions only appear on hover instead of always showing.
+- **Sprints**: active sprint gets a subtle lime background wash instead of a border accent, each sprint gets a completion dial, tasks get real checkmarks, and a new lightweight **"+ note" per-task field** (a sprint journal) — another new feature, not a reskin.
+- **Doc's own "Next steps" list**: set a real per-user daily focus goal (default 6h, editable); wire session recap off existing card-move + timer events; auto-infer "Working" from timer state; apply the light palette to Board/Sprints too; replace "Others" with the merged "Off" state end-to-end; swap in real screenshots once the rebuild matches the mocks.
+
+**Scope note**: this is bigger than a styling pass — several pieces (recap, milestones, streak, heatmap, per-user daily goal, the activity-picker rearchitecture, sprint notes) are new features requiring new data model fields, not just component restyling. Treat as its own planned implementation effort, not something to build inline.
+
 ## Progress Tracking & GitHub Hygiene (standing rules, set 2026-07-14)
 
 - **Write/maintain a real README.md** — ✅ `client/README.md` written 2026-07-17 (commit `2b52dd5`), was still Vite boilerplate before. `server/` still has no README.

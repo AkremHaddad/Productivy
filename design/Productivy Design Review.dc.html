@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121316;font-family:Manrope,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#C9F24C;text-decoration:none}
+a:hover{opacity:.8}
+* {box-sizing:border-box}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</helmet>
+
+<div style="background:#121316;padding:0 0 120px;min-height:100vh">
+
+<div style="max-width:1280px;margin:0 auto;padding:80px 32px 56px">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:18px">Design Review · Productivy</div>
+  <h1 style="font:800 52px/1.08 Manrope,sans-serif;color:#F3F4F1;margin:0 0 20px;max-width:760px;letter-spacing:-0.01em">Making Productivy feel like a shipped product, not a prototype.</h1>
+  <p style="font:400 17px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:640px;margin:0 0 28px">A review of every screen, with a concrete direction: one considered visual system across dark and light, a rethought focus-time visualization, an activity picker that doesn't get in your way, and a landing page that reads as a real front door rather than a features dump.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="#system" style="font:600 13px Manrope,sans-serif;color:#F3F4F1;background:#1C2023;border:1px solid #262B30;padding:8px 14px;border-radius:100px">System</a>
+    <a href="#landing" style="font:600 13px Manrope,sans-serif;color:#F3F4F1;background:#1C2023;border:1px solid #262B30;padding:8px 14px;border-radius:100px">Landing</a>
+    <a href="#dashboard" style="font:600 13px Manrope,sans-serif;color:#F3F4F1;background:#1C2023;border:1px solid #262B30;padding:8px 14px;border-radius:100px">Dashboard</a>
+    <a href="#activity" style="font:600 13px Manrope,sans-serif;color:#F3F4F1;background:#1C2023;border:1px solid #262B30;padding:8px 14px;border-radius:100px">Activity status</a>
+    <a href="#board" style="font:600 13px Manrope,sans-serif;color:#F3F4F1;background:#1C2023;border:1px solid #262B30;padding:8px 14px;border-radius:100px">Board</a>
+    <a href="#sprints" style="font:600 13px Manrope,sans-serif;color:#F3F4F1;background:#1C2023;border:1px solid #262B30;padding:8px 14px;border-radius:100px">Sprints</a>
+  </div>
+</div>
+
+<div style="max-width:1280px;margin:0 auto;padding:0 32px 40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+  <div style="background:#181A1E;border:1px solid #262B30;border-radius:16px;padding:22px">
+    <div style="font:600 11px IBM Plex Mono,monospace;letter-spacing:.08em;color:#6B7178;text-transform:uppercase;margin-bottom:8px">Assumption</div>
+    <div style="font:600 15px/1.4 Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">This is a portfolio piece first</div>
+    <div style="font:400 13px/1.55 Manrope,sans-serif;color:#9BA1A6">Solo-dev context, no real team collaboration. Design reads as considered craft, not enterprise SaaS.</div>
+  </div>
+  <div style="background:#181A1E;border:1px solid #262B30;border-radius:16px;padding:22px">
+    <div style="font:600 11px IBM Plex Mono,monospace;letter-spacing:.08em;color:#6B7178;text-transform:uppercase;margin-bottom:8px">Decision</div>
+    <div style="font:600 15px/1.4 Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">Lime stays, but earns its keep</div>
+    <div style="font:400 13px/1.55 Manrope,sans-serif;color:#9BA1A6">It's your signature — kept as one accent inside a richer neutral system instead of flooding every surface.</div>
+  </div>
+  <div style="background:#181A1E;border:1px solid #262B30;border-radius:16px;padding:22px">
+    <div style="font:600 11px IBM Plex Mono,monospace;letter-spacing:.08em;color:#6B7178;text-transform:uppercase;margin-bottom:8px">Decision</div>
+    <div style="font:600 15px/1.4 Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">Activity status becomes ambient, not a chore</div>
+    <div style="font:400 13px/1.55 Manrope,sans-serif;color:#9BA1A6">You said you don't bother switching it — that's the real signal. It's redesigned to mostly set itself.</div>
+  </div>
+</div>
+
+<div id="system" style="max-width:1280px;margin:0 auto;padding:64px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">01 · Visual system</div>
+  <h2 style="font:700 30px Manrope,sans-serif;color:#F3F4F1;margin:0 0 8px">Two considered themes, one accent</h2>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:640px;margin:0 0 36px">Dark stays close to what you have, warmed slightly and de-flattened. Light is built from a warm paper base — not an inverted dark theme — so it feels calm instead of clinical.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px">
+    <div style="background:#181A1E;border:1px solid #262B30;border-radius:16px;padding:24px">
+      <div style="font:700 13px Manrope,sans-serif;color:#F3F4F1;margin-bottom:16px">Dark</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <div><div style="height:56px;border-radius:8px;background:#0B0D0F;border:1px solid #262B30"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Bg · #0B0D0F</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#14171A;border:1px solid #262B30"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Surface · #14171A</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#1C2023;border:1px solid #262B30"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Raised · #1C2023</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#262B30"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Border · #262B30</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#F3F4F1"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Text · #F3F4F1</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#9BA1A6"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Text dim · #9BA1A6</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#C9F24C"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Lime · #C9F24C</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#F2B84C"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Amber · #F2B84C</div></div>
+      </div>
+    </div>
+    <div style="background:#181A1E;border:1px solid #262B30;border-radius:16px;padding:24px">
+      <div style="font:700 13px Manrope,sans-serif;color:#F3F4F1;margin-bottom:16px">Light</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <div><div style="height:56px;border-radius:8px;background:#F3EFE6;border:1px solid #E4DDCB"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Bg · #F3EFE6</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#FFFEFB;border:1px solid #E4DDCB"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Surface · #FFFEFB</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#FBF7EF;border:1px solid #E4DDCB"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Raised · #FBF7EF</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#E4DDCB"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Border · #E4DDCB</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#24211B"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Ink · #24211B</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#6B655A"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Ink dim · #6B655A</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#C9F24C"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Lime fill · #C9F24C</div></div>
+        <div><div style="height:56px;border-radius:8px;background:#5C7A12"></div><div style="font:500 10px IBM Plex Mono,monospace;color:#9BA1A6;margin-top:6px">Lime ink · #5C7A12</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#181A1E;border:1px solid #262B30;border-radius:16px;padding:28px 32px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px">
+    <div>
+      <div style="font:700 13px Manrope,sans-serif;color:#F3F4F1;margin-bottom:18px">Type — Manrope for UI, IBM Plex Mono for data</div>
+      <div style="font:800 34px/1.1 Manrope,sans-serif;color:#F3F4F1;margin-bottom:4px">Display 34/800</div>
+      <div style="font:700 22px/1.2 Manrope,sans-serif;color:#F3F4F1;margin-bottom:4px">Heading 22/700</div>
+      <div style="font:500 15px/1.5 Manrope,sans-serif;color:#9BA1A6;margin-bottom:4px">Body 15/500 — used for descriptions and copy</div>
+      <div style="font:600 22px IBM Plex Mono,monospace;color:#C9F24C">03h 49m — mono stat</div>
+    </div>
+    <div>
+      <div style="font:700 13px Manrope,sans-serif;color:#F3F4F1;margin-bottom:18px">Radius & spacing</div>
+      <div style="font:400 13px/1.7 Manrope,sans-serif;color:#9BA1A6">Cards 16px · buttons 10px · chips full · base spacing unit 4px, used in steps of 8/16/24/32.<br/>No left-border accent bars — color lives in dots, chips and fills instead.</div>
+    </div>
+  </div>
+</div>
+
+<div id="landing" style="max-width:1280px;margin:0 auto;padding:80px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">02 · Landing page</div>
+  <h2 style="font:700 30px Manrope,sans-serif;color:#F3F4F1;margin:0 0 8px">A front door, not a features dump</h2>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:680px;margin:0 0 36px">Dropped the fabricated "thousands of users" line — for a portfolio piece, honesty about scope (solo-built, actively used daily) is more persuasive than fake social proof. Tightened the pitch to one sentence, added real credibility signals (stack, source link), and gave feature cards new content that reflects what's actually being added below.</p>
+
+  <div style="border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 50px 90px -40px rgba(0,0,0,.7);background:#0B0D0F">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid #1C2023">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:9px;background:#C9F24C;display:flex;align-items:center;justify-content:center;font:800 16px Manrope,sans-serif;color:#0B0D0F">P</div>
+        <div style="font:700 17px Manrope,sans-serif;color:#F3F4F1">Productivy</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px"><div style="width:6px;height:6px;background:#6B7178;border-radius:1px"></div><div style="width:6px;height:6px;background:#6B7178;border-radius:1px"></div><div style="width:6px;height:6px;background:#6B7178;border-radius:1px"></div><div style="width:6px;height:6px;background:#6B7178;border-radius:1px"></div></div>
+        <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #6B7178"></div>
+        <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #6B7178"></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:72px 40px">
+      <div>
+        <div style="font:600 11px IBM Plex Mono,monospace;letter-spacing:.1em;color:#9DC93A;text-transform:uppercase;margin-bottom:16px">Focus tool for solo builders</div>
+        <h3 style="font:800 44px/1.08 Manrope,sans-serif;color:#F3F4F1;margin:0 0 20px;letter-spacing:-0.01em">Stay in flow.<br/>Ship the side project.</h3>
+        <p style="font:400 16px/1.6 Manrope,sans-serif;color:#9BA1A6;margin:0 0 28px;max-width:440px">Pomodoro focus, sprints, and Kanban boards in one place — built to keep you moving on your own projects, one focused session at a time.</p>
+        <div style="display:flex;gap:12px;margin-bottom:20px">
+          <div style="font:700 14px Manrope,sans-serif;color:#0B0D0F;background:#C9F24C;padding:13px 24px;border-radius:10px">Get Started Free</div>
+          <div style="font:700 14px Manrope,sans-serif;color:#F3F4F1;border:1px solid #262B30;padding:13px 24px;border-radius:10px">View Source</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;border:1px solid #262B30;border-radius:100px;padding:5px 10px">React</span>
+          <span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;border:1px solid #262B30;border-radius:100px;padding:5px 10px">Vite</span>
+          <span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;border:1px solid #262B30;border-radius:100px;padding:5px 10px">Tailwind</span>
+          <span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;border:1px solid #262B30;border-radius:100px;padding:5px 10px">Built solo · used daily</span>
+        </div>
+      </div>
+      <div style="position:relative">
+        <div style="position:absolute;inset:-30px;background:radial-gradient(circle at 60% 40%, rgba(201,242,76,.16), transparent 65%)"></div>
+        <div style="position:relative;background:#14171A;border:1px solid #262B30;border-radius:16px;padding:20px;box-shadow:0 30px 60px -30px rgba(0,0,0,.8)">
+          <div style="display:flex;gap:16px;margin-bottom:16px">
+            <svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" fill="none" stroke="#262B30" stroke-width="8"></circle><circle cx="36" cy="36" r="30" fill="none" stroke="#C9F24C" stroke-width="8" stroke-linecap="round" stroke-dasharray="120 189" transform="rotate(-90 36 36)"></circle></svg>
+            <div style="flex:1">
+              <div style="font:600 18px IBM Plex Mono,monospace;color:#F3F4F1">3h 49m</div>
+              <div style="font:500 11px Manrope,sans-serif;color:#6B7178;margin-bottom:8px">of 6h focus goal</div>
+              <div style="display:flex;gap:4px"><div style="width:14px;height:14px;border-radius:3px;background:rgba(201,242,76,.3)"></div><div style="width:14px;height:14px;border-radius:3px;background:rgba(201,242,76,.6)"></div><div style="width:14px;height:14px;border-radius:3px;background:rgba(201,242,76,.9)"></div><div style="width:14px;height:14px;border-radius:3px;background:#C9F24C;border:1.5px solid #F3F4F1"></div></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div style="background:#1C2023;border-radius:8px;padding:8px"><div style="font:600 10px Manrope,sans-serif;color:#6B7178;margin-bottom:6px">To do</div><div style="height:8px;background:#8B7CF6;border-radius:3px;margin-bottom:4px;opacity:.7"></div><div style="height:8px;background:#8B7CF6;border-radius:3px;opacity:.4"></div></div>
+            <div style="background:#1C2023;border-radius:8px;padding:8px"><div style="font:600 10px Manrope,sans-serif;color:#6B7178;margin-bottom:6px">Doing</div><div style="height:8px;background:#5B8DEF;border-radius:3px;opacity:.7"></div></div>
+            <div style="background:#1C2023;border-radius:8px;padding:8px"><div style="font:600 10px Manrope,sans-serif;color:#6B7178;margin-bottom:6px">Done</div><div style="height:8px;background:#3FCB6B;border-radius:3px;margin-bottom:4px;opacity:.7"></div><div style="height:8px;background:#3FCB6B;border-radius:3px;opacity:.4"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:56px 40px;border-top:1px solid #1C2023">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:14px;padding:22px">
+          <svg width="26" height="26" viewBox="0 0 26 26" style="margin-bottom:12px"><rect x="1" y="1" width="7" height="24" rx="2" fill="none" stroke="#C9F24C" stroke-width="1.6"></rect><rect x="10" y="1" width="7" height="15" rx="2" fill="none" stroke="#C9F24C" stroke-width="1.6"></rect><rect x="19" y="1" width="6" height="19" rx="2" fill="none" stroke="#C9F24C" stroke-width="1.6"></rect></svg>
+          <div style="font:700 15px Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">Kanban boards</div>
+          <div style="font:400 13px/1.5 Manrope,sans-serif;color:#9BA1A6">Multiple boards per project, custom column colors, drag-and-drop cards.</div>
+        </div>
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:14px;padding:22px">
+          <svg width="26" height="26" viewBox="0 0 26 26" style="margin-bottom:12px"><circle cx="13" cy="13" r="11" fill="none" stroke="#C9F24C" stroke-width="1.6"></circle><path d="M8 13l3.5 3.5L18 9" fill="none" stroke="#C9F24C" stroke-width="1.6"></path></svg>
+          <div style="font:700 15px Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">Sprint planning</div>
+          <div style="font:400 13px/1.5 Manrope,sans-serif;color:#9BA1A6">Break projects into sprints with their own task lists and progress.</div>
+        </div>
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:14px;padding:22px">
+          <svg width="26" height="26" viewBox="0 0 26 26" style="margin-bottom:12px"><circle cx="13" cy="13" r="11" fill="none" stroke="#C9F24C" stroke-width="1.6"></circle><line x1="13" y1="13" x2="13" y2="6" stroke="#C9F24C" stroke-width="1.6"></line><line x1="13" y1="13" x2="18" y2="15" stroke="#C9F24C" stroke-width="1.6"></line></svg>
+          <div style="font:700 15px Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">Pomodoro timer</div>
+          <div style="font:400 13px/1.5 Manrope,sans-serif;color:#9BA1A6">Customizable work/break intervals with an alarm to protect deep focus.</div>
+        </div>
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:14px;padding:22px">
+          <svg width="26" height="26" viewBox="0 0 26 26" style="margin-bottom:12px"><circle cx="13" cy="13" r="11" fill="none" stroke="#262B30" stroke-width="3"></circle><circle cx="13" cy="13" r="11" fill="none" stroke="#C9F24C" stroke-width="3" stroke-dasharray="42 69" transform="rotate(-90 13 13)"></circle></svg>
+          <div style="font:700 15px Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">Focus tracking</div>
+          <div style="font:400 13px/1.5 Manrope,sans-serif;color:#9BA1A6">Time worked shown against a daily goal, streaks and a weekly heatmap.</div>
+        </div>
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:14px;padding:22px">
+          <svg width="26" height="26" viewBox="0 0 26 26" style="margin-bottom:12px"><rect x="2" y="4" width="22" height="4" rx="2" fill="#C9F24C"></rect><rect x="2" y="11" width="16" height="4" rx="2" fill="#C9F24C" opacity=".6"></rect><rect x="2" y="18" width="10" height="4" rx="2" fill="#C9F24C" opacity=".3"></rect></svg>
+          <div style="font:700 15px Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">Session recaps</div>
+          <div style="font:400 13px/1.5 Manrope,sans-serif;color:#9BA1A6">A daily summary auto-written from what moved on your boards and timer.</div>
+        </div>
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:14px;padding:22px">
+          <svg width="26" height="26" viewBox="0 0 26 26" style="margin-bottom:12px"><polygon points="13,2 24,22 2,22" fill="none" stroke="#C9F24C" stroke-width="1.6"></polygon></svg>
+          <div style="font:700 15px Manrope,sans-serif;color:#F3F4F1;margin-bottom:6px">Milestones</div>
+          <div style="font:400 13px/1.5 Manrope,sans-serif;color:#9BA1A6">Total focus hours, longest streak, sprints shipped — quiet, not gamey.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 40px;border-top:1px solid #1C2023">
+      <div style="font:500 13px Manrope,sans-serif;color:#6B7178">Developed with ♥ by Akrem Haddad · © 2026</div>
+      <div style="display:flex;gap:14px"><div style="width:16px;height:16px;border-radius:3px;border:1.5px solid #6B7178"></div><div style="width:16px;height:16px;border-radius:50%;border:1.5px solid #6B7178"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="dashboard" style="max-width:1280px;margin:0 auto;padding:80px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">03 · Dashboard</div>
+  <h2 style="font:700 30px Manrope,sans-serif;color:#F3F4F1;margin:0 0 8px">Time worked, redesigned as a motivator</h2>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:680px;margin:0 0 36px">Instead of a raw decimal minute count, one "Focus" module leads the page: a goal ring, a live session pulse while you're actively working, a 7-day streak, and a GitHub-style heatmap. Below it, three new features you asked for — a recap, milestones, and the existing activity timeline restyled.</p>
+
+  <div style="border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 50px 90px -40px rgba(0,0,0,.7);background:#0B0D0F;padding-bottom:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid #1C2023">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:9px;background:#C9F24C;display:flex;align-items:center;justify-content:center;font:800 16px Manrope,sans-serif;color:#0B0D0F">P</div>
+        <div style="font:700 17px Manrope,sans-serif;color:#F3F4F1">Productivy</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="display:flex;align-items:center;gap:8px;background:#14171A;border:1px solid #262B30;border-radius:100px;padding:6px 12px 6px 8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#8B7CF6;animation:pulseDot 2s ease-in-out infinite"></div>
+          <span style="font:600 12px Manrope,sans-serif;color:#F3F4F1">Working</span>
+          <span style="font:600 10px Manrope,sans-serif;color:#6B7178">▾</span>
+        </div>
+        <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #6B7178"></div>
+        <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #6B7178"></div>
+      </div>
+    </div>
+
+    <div style="padding:36px 40px 8px">
+      <div style="font:700 24px Manrope,sans-serif;color:#F3F4F1;margin-bottom:2px">Welcome back, Akrem</div>
+      <div style="font:400 14px Manrope,sans-serif;color:#6B7178;margin-bottom:28px">Here's where your focus went.</div>
+
+      <div style="background:#14171A;border:1px solid #262B30;border-radius:16px;padding:28px;display:grid;grid-template-columns:200px 1fr 1fr;gap:32px;margin-bottom:20px">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center">
+          <div style="position:relative;width:160px;height:160px;margin-bottom:8px">
+            <svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="70" fill="none" stroke="#262B30" stroke-width="12"></circle><circle cx="80" cy="80" r="70" fill="none" stroke="#C9F24C" stroke-width="12" stroke-linecap="round" stroke-dasharray="280 440" transform="rotate(-90 80 80)"></circle></svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <div style="font:600 24px IBM Plex Mono,monospace;color:#F3F4F1">3h 49m</div>
+              <div style="font:500 11px Manrope,sans-serif;color:#6B7178">of 6h goal</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="width:7px;height:7px;border-radius:50%;background:#8B7CF6;animation:pulseDot 2s ease-in-out infinite"></div>
+            <span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Live · session 42m</span>
+          </div>
+        </div>
+
+        <div style="border-left:1px solid #262B30;padding-left:32px">
+          <div style="font:600 11px IBM Plex Mono,monospace;letter-spacing:.08em;color:#6B7178;text-transform:uppercase;margin-bottom:14px">Momentum</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:14px">
+            <div style="font:700 32px IBM Plex Mono,monospace;color:#C9F24C">5</div>
+            <div style="font:500 13px Manrope,sans-serif;color:#9BA1A6">day streak — longest this month</div>
+          </div>
+          <svg width="140" height="40" viewBox="0 0 140 40">
+            <polyline points="4,25 24,20 44,32 64,14 84,6 104,12 122,15" fill="none" stroke="#C9F24C" stroke-width="2"></polyline>
+            <circle cx="122" cy="15" r="3.5" fill="#C9F24C"></circle>
+          </svg>
+          <div style="font:500 11px Manrope,sans-serif;color:#6B7178;margin-top:4px">Last 7 days</div>
+        </div>
+
+        <div style="border-left:1px solid #262B30;padding-left:32px">
+          <div style="font:600 11px IBM Plex Mono,monospace;letter-spacing:.08em;color:#6B7178;text-transform:uppercase;margin-bottom:14px">This week</div>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(201,242,76,.25)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(201,242,76,.55)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(201,242,76,.15)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(201,242,76,.7)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(201,242,76,.9)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(201,242,76,.8)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:#C9F24C;border:1.5px solid #F3F4F1"></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <div style="width:26px;font:500 9px Manrope,sans-serif;color:#6B7178;text-align:center">M</div>
+            <div style="width:26px;font:500 9px Manrope,sans-serif;color:#6B7178;text-align:center">T</div>
+            <div style="width:26px;font:500 9px Manrope,sans-serif;color:#6B7178;text-align:center">W</div>
+            <div style="width:26px;font:500 9px Manrope,sans-serif;color:#6B7178;text-align:center">T</div>
+            <div style="width:26px;font:500 9px Manrope,sans-serif;color:#6B7178;text-align:center">F</div>
+            <div style="width:26px;font:500 9px Manrope,sans-serif;color:#6B7178;text-align:center">S</div>
+            <div style="width:26px;font:500 9px Manrope,sans-serif;color:#C9F24C;text-align:center">S</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:12px;padding:16px 18px"><div style="font:500 11px Manrope,sans-serif;color:#6B7178;margin-bottom:6px">Projects</div><div style="font:700 22px IBM Plex Mono,monospace;color:#F3F4F1">2</div></div>
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:12px;padding:16px 18px"><div style="font:500 11px Manrope,sans-serif;color:#6B7178;margin-bottom:6px">Tasks</div><div style="font:700 22px IBM Plex Mono,monospace;color:#F3F4F1">12 <span style="font:500 12px Manrope,sans-serif;color:#6B7178">· 1 done</span></div></div>
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:12px;padding:16px 18px"><div style="font:500 11px Manrope,sans-serif;color:#6B7178;margin-bottom:6px">Boards / Columns</div><div style="font:700 22px IBM Plex Mono,monospace;color:#F3F4F1">3 / 4</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:20px">
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:16px;padding:22px">
+          <div style="font:700 14px Manrope,sans-serif;color:#F3F4F1;margin-bottom:2px">Today's recap</div>
+          <div style="font:400 12px Manrope,sans-serif;color:#6B7178;margin-bottom:16px">Auto-summarized from your boards and timer</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:baseline;gap:10px"><div style="width:6px;height:6px;border-radius:50%;background:#3FCB6B;flex:none"></div><div style="flex:1;font:500 13px Manrope,sans-serif;color:#F3F4F1">Completed "enhance add transaction button style"</div><div style="font:500 11px IBM Plex Mono,monospace;color:#6B7178">14:02</div></div>
+            <div style="display:flex;align-items:baseline;gap:10px"><div style="width:6px;height:6px;border-radius:50%;background:#5B8DEF;flex:none"></div><div style="flex:1;font:500 13px Manrope,sans-serif;color:#F3F4F1">Moved "cashflow page" to Doing</div><div style="font:500 11px IBM Plex Mono,monospace;color:#6B7178">15:40</div></div>
+            <div style="display:flex;align-items:baseline;gap:10px"><div style="width:6px;height:6px;border-radius:50%;background:#8B7CF6;flex:none"></div><div style="flex:1;font:500 13px Manrope,sans-serif;color:#F3F4F1">42m deep-focus session</div><div style="font:500 11px IBM Plex Mono,monospace;color:#6B7178">17:20</div></div>
+            <div style="display:flex;align-items:baseline;gap:10px"><div style="width:6px;height:6px;border-radius:50%;background:#F2B84C;flex:none"></div><div style="flex:1;font:500 13px Manrope,sans-serif;color:#F3F4F1">Started Sprint 2</div><div style="font:500 11px IBM Plex Mono,monospace;color:#6B7178">18:10</div></div>
+          </div>
+        </div>
+        <div style="background:#14171A;border:1px solid #262B30;border-radius:16px;padding:22px">
+          <div style="font:700 14px Manrope,sans-serif;color:#F3F4F1;margin-bottom:2px">Milestones</div>
+          <div style="font:400 12px Manrope,sans-serif;color:#6B7178;margin-bottom:16px">Quiet totals, not badges to chase</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:#C9F24C"></div><span style="font:500 13px Manrope,sans-serif;color:#F3F4F1">42h total focus</span></div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:#F2B84C"></div><span style="font:500 13px Manrope,sans-serif;color:#F3F4F1">5-day streak</span></div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:#C9F24C"></div><span style="font:500 13px Manrope,sans-serif;color:#F3F4F1">12 sprints shipped</span></div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:#F2B84C"></div><span style="font:500 13px Manrope,sans-serif;color:#F3F4F1">128 cards completed</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#14171A;border:1px solid #262B30;border-radius:16px;padding:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font:700 14px Manrope,sans-serif;color:#F3F4F1">Daily activity timeline</div>
+          <div style="display:flex;gap:6px">
+            <span style="font:600 11px Manrope,sans-serif;color:#0B0D0F;background:#C9F24C;padding:5px 10px;border-radius:100px">Today</span>
+            <span style="font:600 11px Manrope,sans-serif;color:#9BA1A6;padding:5px 10px;border-radius:100px">Mon</span>
+            <span style="font:600 11px Manrope,sans-serif;color:#9BA1A6;padding:5px 10px;border-radius:100px">Sun</span>
+          </div>
+        </div>
+        <div style="height:64px;border-radius:10px;background:#0B0D0F;position:relative;overflow:hidden">
+          <div style="position:absolute;left:44%;bottom:0;width:14%;height:60%;background:#8B7CF6;border-radius:4px 4px 0 0"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="dashboard-light" style="max-width:1280px;margin:0 auto;padding:56px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#F2B84C;text-transform:uppercase;margin-bottom:10px">Light theme — same screen</div>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:680px;margin:0 0 24px">Warm paper background, ink text instead of pure black, and the lime accent shifted to a deeper olive tone for text so it holds contrast — full-brightness lime is reserved for filled buttons.</p>
+
+  <div style="border-radius:22px;overflow:hidden;border:1px solid rgba(0,0,0,.06);box-shadow:0 50px 90px -40px rgba(0,0,0,.35);background:#F3EFE6">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid #E4DDCB">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:9px;background:#C9F24C;display:flex;align-items:center;justify-content:center;font:800 16px Manrope,sans-serif;color:#24211B">P</div>
+        <div style="font:700 17px Manrope,sans-serif;color:#24211B">Productivy</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="display:flex;align-items:center;gap:8px;background:#FFFEFB;border:1px solid #E4DDCB;border-radius:100px;padding:6px 12px 6px 8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#6E5AC4"></div>
+          <span style="font:600 12px Manrope,sans-serif;color:#24211B">Working</span>
+          <span style="font:600 10px Manrope,sans-serif;color:#9C9484">▾</span>
+        </div>
+        <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #9C9484"></div>
+        <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #9C9484"></div>
+      </div>
+    </div>
+
+    <div style="padding:36px 40px 40px">
+      <div style="font:700 24px Manrope,sans-serif;color:#24211B;margin-bottom:2px">Welcome back, Akrem</div>
+      <div style="font:400 14px Manrope,sans-serif;color:#9C9484;margin-bottom:28px">Here's where your focus went.</div>
+
+      <div style="background:#FFFEFB;border:1px solid #E4DDCB;border-radius:16px;padding:28px;display:grid;grid-template-columns:200px 1fr 1fr;gap:32px;margin-bottom:20px">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center">
+          <div style="position:relative;width:160px;height:160px;margin-bottom:8px">
+            <svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="70" fill="none" stroke="#E4DDCB" stroke-width="12"></circle><circle cx="80" cy="80" r="70" fill="none" stroke="#5C7A12" stroke-width="12" stroke-linecap="round" stroke-dasharray="280 440" transform="rotate(-90 80 80)"></circle></svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <div style="font:600 24px IBM Plex Mono,monospace;color:#24211B">3h 49m</div>
+              <div style="font:500 11px Manrope,sans-serif;color:#9C9484">of 6h goal</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="width:7px;height:7px;border-radius:50%;background:#6E5AC4"></div>
+            <span style="font:600 11px Manrope,sans-serif;color:#6B655A">Live · session 42m</span>
+          </div>
+        </div>
+        <div style="border-left:1px solid #E4DDCB;padding-left:32px">
+          <div style="font:600 11px IBM Plex Mono,monospace;letter-spacing:.08em;color:#9C9484;text-transform:uppercase;margin-bottom:14px">Momentum</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:14px">
+            <div style="font:700 32px IBM Plex Mono,monospace;color:#5C7A12">5</div>
+            <div style="font:500 13px Manrope,sans-serif;color:#6B655A">day streak — longest this month</div>
+          </div>
+          <svg width="140" height="40" viewBox="0 0 140 40"><polyline points="4,25 24,20 44,32 64,14 84,6 104,12 122,15" fill="none" stroke="#5C7A12" stroke-width="2"></polyline><circle cx="122" cy="15" r="3.5" fill="#5C7A12"></circle></svg>
+        </div>
+        <div style="border-left:1px solid #E4DDCB;padding-left:32px">
+          <div style="font:600 11px IBM Plex Mono,monospace;letter-spacing:.08em;color:#9C9484;text-transform:uppercase;margin-bottom:14px">This week</div>
+          <div style="display:flex;gap:6px">
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(92,122,18,.15)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(92,122,18,.35)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(92,122,18,.1)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(92,122,18,.5)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(92,122,18,.7)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:rgba(92,122,18,.6)"></div>
+            <div style="width:26px;height:26px;border-radius:5px;background:#5C7A12;border:1.5px solid #24211B"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div style="background:#FFFEFB;border:1px solid #E4DDCB;border-radius:12px;padding:16px 18px"><div style="font:500 11px Manrope,sans-serif;color:#9C9484;margin-bottom:6px">Projects</div><div style="font:700 22px IBM Plex Mono,monospace;color:#24211B">2</div></div>
+        <div style="background:#FFFEFB;border:1px solid #E4DDCB;border-radius:12px;padding:16px 18px"><div style="font:500 11px Manrope,sans-serif;color:#9C9484;margin-bottom:6px">Tasks</div><div style="font:700 22px IBM Plex Mono,monospace;color:#24211B">12 <span style="font:500 12px Manrope,sans-serif;color:#9C9484">· 1 done</span></div></div>
+        <div style="background:#FFFEFB;border:1px solid #E4DDCB;border-radius:12px;padding:16px 18px"><div style="font:500 11px Manrope,sans-serif;color:#9C9484;margin-bottom:6px">Boards / Columns</div><div style="font:700 22px IBM Plex Mono,monospace;color:#24211B">3 / 4</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="activity" style="max-width:1280px;margin:0 auto;padding:80px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">04 · Activity status</div>
+  <h2 style="font:700 30px Manrope,sans-serif;color:#F3F4F1;margin:0 0 8px">From a full-screen chore to something ambient</h2>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:700px;margin:0 0 8px">You said it yourself: you don't bother switching it. That's not a UI polish problem, it's a friction problem — an 8-option modal takeover for something that should be a glance. The fix is two-fold: infer the status automatically whenever a timer is running, and shrink manual switching down to a one-click popover that lives in the header, always visible, never blocking. Down to 6 categories (merged Sleeping + Others into "Off"; Hobbying into "Playing") to cut choice overload.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px">
+    <div>
+      <div style="font:600 12px Manrope,sans-serif;color:#6B7178;margin-bottom:12px">BEFORE — full-screen modal, 8 equally-weighted choices</div>
+      <div style="border-radius:16px;overflow:hidden;border:1px solid #262B30;background:#0B0D0F;padding:40px 24px;position:relative">
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
+        <div style="position:relative;background:#14171A;border:1px solid #262B30;border-radius:14px;padding:20px;max-width:340px;margin:0 auto">
+          <div style="display:flex;justify-content:space-between;margin-bottom:14px"><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">Set your status</span><span style="font:600 13px Manrope,sans-serif;color:#6B7178">✕</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="border:1.5px solid #8B7CF6;border-radius:8px;padding:8px;font:600 11px Manrope,sans-serif;color:#F3F4F1;text-align:center">Working</div>
+            <div style="border:1.5px solid #3FCB6B;border-radius:8px;padding:8px;font:600 11px Manrope,sans-serif;color:#F3F4F1;text-align:center">Learning</div>
+            <div style="border:1.5px solid #5B8DEF;border-radius:8px;padding:8px;font:600 11px Manrope,sans-serif;color:#F3F4F1;text-align:center">Sleeping</div>
+            <div style="border:1.5px solid #F2B84C;border-radius:8px;padding:8px;font:600 11px Manrope,sans-serif;color:#F3F4F1;text-align:center">Training</div>
+            <div style="border:1.5px solid #E5484D;border-radius:8px;padding:8px;font:600 11px Manrope,sans-serif;color:#F3F4F1;text-align:center">Playing</div>
+            <div style="border:1.5px solid #D6538E;border-radius:8px;padding:8px;font:600 11px Manrope,sans-serif;color:#F3F4F1;text-align:center">Socializing</div>
+            <div style="border:1.5px solid #E08A3C;border-radius:8px;padding:8px;font:600 11px Manrope,sans-serif;color:#F3F4F1;text-align:center">Hobbying</div>
+            <div style="border:1.5px solid #6B7178;border-radius:8px;padding:8px;font:600 11px Manrope,sans-serif;color:#F3F4F1;text-align:center">Others</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font:600 12px Manrope,sans-serif;color:#6B7178;margin-bottom:12px">AFTER — header pill, auto-set, one click to override</div>
+      <div style="border-radius:16px;overflow:hidden;border:1px solid #262B30;background:#0B0D0F;padding:40px 24px;display:flex;align-items:center;justify-content:center">
+        <div style="max-width:340px;width:100%">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:8px;background:#14171A;border:1px solid #262B30;border-radius:100px;padding:7px 14px 7px 10px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#8B7CF6;animation:pulseDot 2s ease-in-out infinite"></div>
+              <span style="font:600 12px Manrope,sans-serif;color:#F3F4F1">Working</span>
+              <span style="font:600 10px Manrope,sans-serif;color:#6B7178">▾</span>
+            </div>
+          </div>
+          <div style="background:#14171A;border:1px solid #262B30;border-radius:12px;padding:12px;display:flex;flex-wrap:wrap;gap:6px">
+            <div style="display:flex;align-items:center;gap:6px;background:#1C2023;border:1px solid #8B7CF6;border-radius:100px;padding:6px 10px"><div style="width:6px;height:6px;border-radius:50%;background:#8B7CF6"></div><span style="font:600 11px Manrope,sans-serif;color:#F3F4F1">Working</span></div>
+            <div style="display:flex;align-items:center;gap:6px;border-radius:100px;padding:6px 10px"><div style="width:6px;height:6px;border-radius:50%;background:#3FCB6B"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Learning</span></div>
+            <div style="display:flex;align-items:center;gap:6px;border-radius:100px;padding:6px 10px"><div style="width:6px;height:6px;border-radius:50%;background:#F2B84C"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Training</span></div>
+            <div style="display:flex;align-items:center;gap:6px;border-radius:100px;padding:6px 10px"><div style="width:6px;height:6px;border-radius:50%;background:#E5484D"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Playing</span></div>
+            <div style="display:flex;align-items:center;gap:6px;border-radius:100px;padding:6px 10px"><div style="width:6px;height:6px;border-radius:50%;background:#D6538E"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Social</span></div>
+            <div style="display:flex;align-items:center;gap:6px;border-radius:100px;padding:6px 10px"><div style="width:6px;height:6px;border-radius:50%;background:#6B7178"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Off</span></div>
+          </div>
+          <div style="font:400 11px/1.5 Manrope,sans-serif;color:#6B7178;margin-top:10px">Set automatically to "Working" when a Pomodoro or work timer starts. Entirely optional otherwise.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="board" style="max-width:1280px;margin:0 auto;padding:80px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">05 · Kanban board</div>
+  <h2 style="font:700 30px Manrope,sans-serif;color:#F3F4F1;margin:0 0 8px">Quieter cards, clearer hierarchy</h2>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:680px;margin:0 0 36px">Solid saturated card fills read as a template. Color now lives in a small dot + label chip, cards sit on a neutral raised surface, and edit/delete actions only appear on hover — the board looks calmer at rest and just as functional.</p>
+
+  <div style="border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 50px 90px -40px rgba(0,0,0,.7);background:#0B0D0F;padding:36px 40px">
+    <div style="display:flex;gap:28px;border-bottom:1px solid #1C2023;margin-bottom:24px">
+      <div style="font:700 14px Manrope,sans-serif;color:#F3F4F1;padding-bottom:12px;border-bottom:2px solid #C9F24C">Main Board</div>
+      <div style="font:600 14px Manrope,sans-serif;color:#6B7178;padding-bottom:12px">Second Board</div>
+    </div>
+    <div style="display:flex;gap:16px;overflow-x:auto;padding-bottom:8px">
+      <div style="width:220px;flex:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#E5484D"></div><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">To dos</span><span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;background:#1C2023;border-radius:100px;padding:1px 7px">2</span></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+          <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#E5484D"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">To dos</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Account page</div></div>
+          <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#E5484D"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">To dos</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Firebase</div></div>
+        </div>
+        <div style="font:600 12px Manrope,sans-serif;color:#6B7178;padding:8px 0">+ Add card</div>
+      </div>
+      <div style="width:220px;flex:none">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#5B8DEF"></div><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">Doing</span><span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;background:#1C2023;border-radius:100px;padding:1px 7px">1</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+          <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#5B8DEF"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Doing</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Cashflow page</div></div>
+        </div>
+        <div style="font:600 12px Manrope,sans-serif;color:#6B7178;padding:8px 0">+ Add card</div>
+      </div>
+      <div style="width:220px;flex:none">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#3FCB6B"></div><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">Done</span><span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;background:#1C2023;border-radius:100px;padding:1px 7px">4</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+          <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#3FCB6B"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Done</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Figma</div></div>
+          <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#3FCB6B"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Done</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Learn Flutter</div></div>
+        </div>
+        <div style="font:600 12px Manrope,sans-serif;color:#6B7178;padding:8px 0">+ Add card</div>
+      </div>
+      <div style="width:220px;flex:none">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#8B7CF6"></div><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">Bugs</span><span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;background:#1C2023;border-radius:100px;padding:1px 7px">3</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+          <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#8B7CF6"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Bugs</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Graphs</div></div>
+          <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#8B7CF6"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Bugs</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Database</div></div>
+        </div>
+        <div style="font:600 12px Manrope,sans-serif;color:#6B7178;padding:8px 0">+ Add card</div>
+      </div>
+      <div style="width:180px;flex:none;display:flex;align-items:flex-start"><div style="font:600 13px Manrope,sans-serif;color:#6B7178;background:#14171A;border:1px solid #262B30;border-radius:10px;padding:12px 16px;width:100%;text-align:center">+ Add column</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="sprints" style="max-width:1280px;margin:0 auto;padding:80px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">06 · Sprints</div>
+  <h2 style="font:700 30px Manrope,sans-serif;color:#F3F4F1;margin:0 0 8px">Progress you can see, plus a place to reflect</h2>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:680px;margin:0 0 36px">Active sprint gets a subtle lime wash instead of a border accent. Each sprint shows a completion dial. Tasks get real checkmarks and a lightweight "+ note" field — a sprint journal, so you can capture what you learned without leaving the flow.</p>
+
+  <div style="border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 50px 90px -40px rgba(0,0,0,.7);background:#0B0D0F;padding:36px 40px">
+    <div style="display:grid;grid-template-columns:260px 1fr;gap:24px">
+      <div>
+        <div style="font:700 13px Manrope,sans-serif;color:#F3F4F1;margin-bottom:14px">Sprints</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(201,242,76,.08);border-radius:10px;padding:12px 14px">
+            <span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">Sprint 2</span>
+            <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" fill="none" stroke="#262B30" stroke-width="3"></circle><circle cx="13" cy="13" r="10" fill="none" stroke="#C9F24C" stroke-width="3" stroke-dasharray="38 63" transform="rotate(-90 13 13)"></circle></svg>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;border-radius:10px;padding:12px 14px">
+            <span style="font:500 13px Manrope,sans-serif;color:#9BA1A6">Sprint 1</span>
+            <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" fill="none" stroke="#262B30" stroke-width="3"></circle><circle cx="13" cy="13" r="10" fill="none" stroke="#6B7178" stroke-width="3" stroke-dasharray="63 63" transform="rotate(-90 13 13)"></circle></svg>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;border-radius:10px;padding:12px 14px">
+            <span style="font:500 13px Manrope,sans-serif;color:#9BA1A6">Sprint 0</span>
+            <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" fill="none" stroke="#262B30" stroke-width="3"></circle><circle cx="13" cy="13" r="10" fill="none" stroke="#6B7178" stroke-width="3" stroke-dasharray="63 63" transform="rotate(-90 13 13)"></circle></svg>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font:700 13px Manrope,sans-serif;color:#F3F4F1;margin-bottom:14px">Sprint 2 tasks</div>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid #1C2023">
+            <div style="width:20px;height:20px;border-radius:50%;background:#C9F24C;display:flex;align-items:center;justify-content:center;font:700 11px Manrope,sans-serif;color:#0B0D0F">✓</div>
+            <span style="font:500 14px Manrope,sans-serif;color:#6B7178;text-decoration:line-through">Enhance add transaction button style</span>
+          </div>
+          <div style="padding:10px 4px 16px 46px;border-bottom:1px solid #1C2023">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;margin-left:-46px">
+              <div style="width:20px;height:20px;border-radius:50%;border:1.5px solid #6B7178"></div>
+              <span style="font:500 14px Manrope,sans-serif;color:#F3F4F1">Make cashflow page navigated by date</span>
+            </div>
+            <div style="font:400 12px/1.5 Manrope,sans-serif;color:#6B7178;font-style:italic;background:#14171A;border:1px solid #262B30;border-radius:8px;padding:10px 12px">+ Note: switched to date-fns for range filtering, cleaner than manual Date math.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid #1C2023">
+            <div style="width:20px;height:20px;border-radius:50%;border:1.5px solid #6B7178"></div>
+            <span style="font:500 14px Manrope,sans-serif;color:#F3F4F1">Deleted categories must show names</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 4px">
+            <div style="width:20px;height:20px;border-radius:50%;border:1.5px solid #6B7178"></div>
+            <span style="font:500 14px Manrope,sans-serif;color:#F3F4F1">Make sure pie chart doesn't overflow</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1280px;margin:0 auto;padding:80px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">Next steps</div>
+  <div style="background:#181A1E;border:1px solid #262B30;border-radius:16px;padding:28px 32px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div style="font:400 14px/1.7 Manrope,sans-serif;color:#9BA1A6">→ Set a real daily focus goal per user (default 6h, editable) to drive the ring<br/>→ Wire session recap off existing card-move + timer events, no new tracking needed<br/>→ Auto-infer "Working" from timer state; keep manual popover for everything else</div>
+      <div style="font:400 14px/1.7 Manrope,sans-serif;color:#9BA1A6">→ Apply the light palette across Board and Sprints screens<br/>→ Replace the "Others" catch-all category with the merged "Off" state end-to-end<br/>→ Swap in real product screenshots once the rebuild matches these mocks</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</x-dc>
+</body>
+</html>
