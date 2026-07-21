@@ -10,30 +10,46 @@ export default {
     extend: {
       colors: {
         'primary-light': 'rgba(74, 111, 165, 1)',
-        'secondary-light': '#6D8134',
-        'text-light': 'rgba(51, 51, 51, 1)',
-        // 'navbar-light': 'rgba(78, 84, 94, 1)', 
         'primary-dark': 'rgba(23, 43, 77, 1)',
-        'secondary-dark': '#6D8134',
-        'accent': '#BEFF00',
-        // 'background-dark': 'rgba(0, 37, 43, 1)',
-        'text-dark': 'rgba(224, 224, 224, 1)',
-        // 'navbar-dark': '#010409',
-        // 'accent-dark': '#11576D',
-        'accent-dark': '#40c1bb',
-        'accent-light': '#2D8984',
-        // -------------------------
-        'background-dark': '#0D1117',
-        'background-light': '#FFFFFF',
-        'border-dark': '#3D444D',
-        'border-light': '#D1D9E0',
-        'ui-light': '#F2F2F2',
-        'ui-dark': '#010409',
-        'header-light': '#F6F8FA',
-        'header-dark': '#010409',
+
+        // Dim/secondary text
+        'secondary-light': '#6B655A',
+        'secondary-dark': '#9BA1A6',
+
+        // Ink / text
+        'text-light': '#24211B',
+        'text-dark': '#F3F4F1',
+
+        // Lime accent — full-brightness for fills (both themes), a
+        // darker olive variant for text on the light (paper) background
+        // so it still holds contrast.
+        'accent': '#C9F24C',
+        'accent-dark': '#C9F24C',
+        'accent-light': '#5C7A12',
+
+        // Amber, secondary accent used for streaks/milestones
+        'amber': '#F2B84C',
+
+        'background-dark': '#0B0D0F',
+        'background-light': '#F3EFE6',
+
+        'border-dark': '#262B30',
+        'border-light': '#E4DDCB',
+
+        // Surface (cards/panels)
+        'ui-light': '#FFFEFB',
+        'ui-dark': '#14171A',
+
+        // Raised surface (headers, popovers, modals)
+        'header-light': '#FBF7EF',
+        'header-dark': '#1C2023',
+        'navbar-light': '#FBF7EF',
+        'navbar-dark': '#1C2023',
       },
       fontFamily: {
         'jaro': ['Jaro', 'sans-serif'],
+        'sans': ['Manrope', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        'mono': ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
       keyframes: {
         fadeScale: {
