@@ -81,17 +81,17 @@ const handleGoogleLogin = () => {
         {loading ? (
           <p className="text-lg text-text-light dark:text-text-dark">Loading...</p>
         ) : user ? (
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex flex-columns items-center justify-between w-full">
+          <div className="flex flex-col items-center justify-center w-full max-w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
               <h1 className="text-2xl font-bold mb-4 text-text-light dark:text-text-dark">
                 Welcome, {user.username || user.email}! enjoy your experience.
               </h1>
               <button
-                className="px-4 py-2 bg-red-400 dark:bg-red-600 text-white rounded-md hover:opacity-90 transition"
+                className="self-start sm:self-auto px-4 py-2 bg-red-400 dark:bg-red-600 text-white rounded-md hover:opacity-90 transition flex-none"
                 onClick={handleLogout}
               >
                 Logout
-              </button>  
+              </button>
             </div>
 
             <div className="mt-6 w-full mt-6 w-full rounded-md border-[1px] border-border-light dark:border-border-dark">

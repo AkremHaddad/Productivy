@@ -89,21 +89,27 @@ const Project = () => {
 
       <Tabs showTools={showTools} setShowTools={setShowTools} />
 
-      <div className="flex-1 flex  p-5 pb-0 gap-2.5">
+      {/* Below md, showTools hard-switches between the tools panel and the
+          board (one full-width pane at a time) instead of squeezing both
+          into a too-narrow viewport. At md+ both stay visible and showTools
+          only drives the existing smooth collapse-to-widen-board animation. */}
+      <div className="flex-1 flex p-5 pb-0 gap-2.5 min-w-0">
         <div
           id="tools"
-          className={`flex flex-col gap-2.5 overflow-hidden transition-all duration-500 ease-in-out
-            ${showTools ? "max-w-[500px] opacity-100" : "max-w-0 opacity-0 mr-0"}
+          className={`flex-col gap-2.5 overflow-hidden transition-all duration-500 ease-in-out w-full
+            ${showTools ? "flex" : "hidden"}
+            md:flex
+            ${showTools ? "md:max-w-[500px] md:opacity-100" : "md:max-w-0 md:opacity-0 md:mr-0"}
           `}
         >
-          <div className="select-none flex flex-row bg-ui-light dark:bg-ui-dark rounded-md border border-border-light dark:border-border-dark">
+          <div className="select-none flex flex-col sm:flex-row bg-ui-light dark:bg-ui-dark rounded-md border border-border-light dark:border-border-dark">
             <Pomodoro />
             {/* ✅ Status updates minutesWorked; Time only displays */}
             <Status onMinutesUpdate={setMinutesWorked} />
             <Time minutesWorked={minutesWorked} />
           </div>
 
-          <div className="flex flex-row gap-2.5">
+          <div className="flex flex-col md:flex-row gap-2.5">
             <Sprints
               projectId={project._id}
               sprints={sprints}
@@ -119,7 +125,9 @@ const Project = () => {
           </div>
         </div>
 
-        <Board projectId={project._id} boards={project.boards} />
+        <div className={`${showTools ? "hidden" : "flex"} md:flex flex-1 min-w-0`}>
+          <Board projectId={project._id} boards={project.boards} />
+        </div>
       </div>
     </div>
   );
