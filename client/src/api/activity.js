@@ -29,3 +29,8 @@ export const getEvents = async (limit = 10) => {
   const res = await API.get(`/api/events?limit=${limit}`);
   return res.data;
 };
+
+export const getTodayEventCounts = async () => {
+  const res = await API.get("/api/events/today-counts");
+  return res.data;
+};

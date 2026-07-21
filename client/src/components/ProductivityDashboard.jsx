@@ -9,6 +9,7 @@ import {
   setGoal as setGoalApi,
   getTotalFocusMinutes,
   getEvents,
+  getTodayEventCounts,
 } from "../api/activity";
 
 const formatTime = (totalMinutes) => {
@@ -25,6 +26,7 @@ const EVENT_DOT = {
   card_completed: "bg-accent",
   card_moved: "bg-[#5B8DEF]",
   sprint_started: "bg-amber",
+  sprint_completed: "bg-accent",
   session_ended: "bg-[#8B7CF6]",
 };
 
@@ -41,6 +43,7 @@ const ProductivityDashboard = () => {
   const [heatmap, setHeatmap] = useState([]);
   const [totalMinutes, setTotalMinutes] = useState(0);
   const [events, setEvents] = useState([]);
+  const [todayCounts, setTodayCounts] = useState({ sprint_started: 0, sprint_completed: 0, task_completed: 0 });
   const [isLive, setIsLive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -66,7 +69,7 @@ const ProductivityDashboard = () => {
         return fallback;
       });
 
-      const [today, goal, streakRes, heatmapRes, totalRes, eventsRes, currentRes] = await Promise.all([
+      const [today, goal, streakRes, heatmapRes, totalRes, eventsRes, currentRes, todayCountsRes] = await Promise.all([
         safe(API.get("/api/activity/today", { withCredentials: true }), { data: { minutes: 0 } }),
         safe(getGoal(), { dailyGoalMinutes: 360 }),
         safe(getStreak(), { streak: 0 }),
@@ -74,6 +77,7 @@ const ProductivityDashboard = () => {
         safe(getTotalFocusMinutes(), { totalMinutes: 0 }),
         safe(getEvents(6), []),
         safe(API.get("/api/activity/current", { withCredentials: true }), { data: { activity: "working", isOnline: false } }),
+        safe(getTodayEventCounts(), { sprint_started: 0, sprint_completed: 0, task_completed: 0 }),
       ]);
 
       if (!mounted) return;
@@ -86,6 +90,7 @@ const ProductivityDashboard = () => {
       setEvents(Array.isArray(eventsRes) ? eventsRes : []);
       const current = currentRes.data ?? currentRes;
       setIsLive(Boolean(current?.isOnline) && current?.activity === "working");
+      setTodayCounts(todayCountsRes);
       setLoading(false);
     };
 
@@ -119,6 +124,14 @@ const ProductivityDashboard = () => {
       completed += s.tasks?.filter((t) => t.completed).length || 0;
     }));
     return { tasks, completed };
+  }, [projects]);
+
+  const projectsDone = useMemo(() => {
+    const done = projects.filter((p) => {
+      const allTasks = p.sprints?.flatMap((s) => s.tasks || []) || [];
+      return allTasks.length > 0 && allTasks.every((t) => t.completed);
+    }).length;
+    return { done, total: projects.length };
   }, [projects]);
 
   const saveGoal = async () => {
@@ -233,30 +246,50 @@ const ProductivityDashboard = () => {
           <div className="text-[11px] text-secondary-light dark:text-secondary-dark mt-1">Last {heatmap.length || 7} days</div>
         </div>
 
-        {/* Weekly heatmap */}
+        {/* 7-day trend */}
         <div className="md:border-l-[1px] border-border-light dark:border-border-dark md:pl-6">
-          <div className="font-mono text-[11px] font-semibold tracking-widest uppercase text-secondary-light dark:text-secondary-dark mb-3">This week</div>
-          <div className="flex gap-1.5 mb-2 flex-wrap">
+          <div className="font-mono text-[11px] font-semibold tracking-widest uppercase text-secondary-light dark:text-secondary-dark mb-3">Time worked, last 7 days</div>
+          <div className="flex items-end gap-2 h-[52px] mb-2">
             {heatmap.map((d) => {
               const isToday = new Date(d.date).getTime() === todayKey.getTime();
-              const opacity = d.minutes > 0 ? Math.max(d.minutes / maxHeatmapMinutes, 0.15) : 0.08;
+              const heightPct = Math.max((d.minutes / maxHeatmapMinutes) * 100, d.minutes > 0 ? 8 : 3);
               return (
                 <div
                   key={d.date}
                   title={`${new Date(d.date).toLocaleDateString()}: ${formatTime(d.minutes)}`}
-                  className={`w-6 h-6 rounded-md bg-accent ${isToday ? "ring-2 ring-text-light dark:ring-text-dark" : ""}`}
-                  style={{ opacity }}
-                />
+                  className="flex-1 flex items-end h-full"
+                >
+                  <div
+                    className={`w-full rounded-t-sm transition-all ${isToday ? "bg-accent" : "bg-accent-light/60 dark:bg-accent/50"}`}
+                    style={{ height: `${heightPct}%` }}
+                  />
+                </div>
               );
             })}
           </div>
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="flex gap-2">
             {heatmap.map((d) => (
-              <div key={d.date} className="w-6 text-center text-[9px] font-medium text-secondary-light dark:text-secondary-dark">
+              <div key={d.date} className="flex-1 text-center text-[9px] font-medium text-secondary-light dark:text-secondary-dark">
                 {new Date(d.date).toLocaleDateString(undefined, { weekday: "narrow" })}
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Today */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="bg-header-light dark:bg-header-dark border-[1px] border-border-light dark:border-border-dark rounded-xl px-4 py-3">
+          <div className="text-xs text-secondary-light dark:text-secondary-dark mb-1">Sprints created today</div>
+          <div className="font-mono font-bold text-xl text-text-light dark:text-text-dark">{todayCounts.sprint_started}</div>
+        </div>
+        <div className="bg-header-light dark:bg-header-dark border-[1px] border-border-light dark:border-border-dark rounded-xl px-4 py-3">
+          <div className="text-xs text-secondary-light dark:text-secondary-dark mb-1">Sprints shipped today</div>
+          <div className="font-mono font-bold text-xl text-text-light dark:text-text-dark">{todayCounts.sprint_completed}</div>
+        </div>
+        <div className="bg-header-light dark:bg-header-dark border-[1px] border-border-light dark:border-border-dark rounded-xl px-4 py-3">
+          <div className="text-xs text-secondary-light dark:text-secondary-dark mb-1">Tasks completed today</div>
+          <div className="font-mono font-bold text-xl text-text-light dark:text-text-dark">{todayCounts.task_completed}</div>
         </div>
       </div>
 
@@ -322,6 +355,10 @@ const ProductivityDashboard = () => {
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-amber" />
               <span className="text-sm font-medium text-text-light dark:text-text-dark">{projectStats.cardsCompleted} cards completed</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+              <span className="text-sm font-medium text-text-light dark:text-text-dark">{projectsDone.done} of {projectsDone.total} projects done</span>
             </div>
           </div>
         </div>

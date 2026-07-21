@@ -8,7 +8,7 @@ const eventSchema = new mongoose.Schema({
   project: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
   type: {
     type: String,
-    enum: ["task_completed", "card_completed", "card_moved", "sprint_started", "session_ended"],
+    enum: ["task_completed", "card_completed", "card_moved", "sprint_started", "sprint_completed", "session_ended"],
     required: true,
   },
   message: { type: String, required: true },

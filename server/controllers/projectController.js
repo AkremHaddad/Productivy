@@ -260,6 +260,19 @@ export const toggleTask = async (req, res) => {
         type: "task_completed",
         message: `Completed "${task.title}"`,
       });
+
+      // task.completed just flipped false->true, so the sprint definitely
+      // wasn't fully complete a moment ago - if it is now, this is the
+      // exact toggle that shipped it.
+      const sprintNowComplete = sprint.tasks.every((t) => t.completed);
+      if (sprintNowComplete) {
+        logEvent({
+          user: req.user.id,
+          project: project._id,
+          type: "sprint_completed",
+          message: `Shipped "${sprint.title}"`,
+        });
+      }
     }
 
     res.json(task);
