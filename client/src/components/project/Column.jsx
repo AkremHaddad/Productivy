@@ -5,7 +5,7 @@ import Card from "./Card";
 import EditColumnModal from "../common/EditColumnModal";
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
-import { addCard, updateCard, deleteCard } from "../../api/project";
+import { addCard, updateCard, deleteCard, toggleCardCompleted } from "../../api/project";
 import API from "../../api/API";
 
 export const COLOR_MAP = {
@@ -81,6 +81,23 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
     }
   };
 
+  // Toggle a card's completed state
+  const handleToggleCardLocal = async (cardId) => {
+    try {
+      const updatedCard = await toggleCardCompleted(projectId, boardId, column._id, cardId);
+      onColumnsUpdate(prevCols =>
+        prevCols.map(col =>
+          col._id === column._id
+            ? { ...col, cards: col.cards.map(c => (c._id === cardId ? updatedCard : c)) }
+            : col
+        )
+      );
+    } catch (err) {
+      console.error("Error toggling card:", err);
+      onError("Failed to update card. Please try again.");
+    }
+  };
+
   // Delete a card
   const handleDeleteCardLocal = async (cardId) => {
     try {
@@ -109,19 +126,19 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
   };
 
   return (
-    <div 
-      className="bg-white dark:bg-background-dark rounded-lg p-4 min-w-[280px] max-w-[300px] flex flex-col gap-2 shadow-md group transition-all hover:shadow-lg"
-      style={{ backgroundColor: isDarkMode ? undefined : fillColor }}
-    >
+    <div className="bg-ui-light dark:bg-ui-dark border-[1px] border-border-light dark:border-border-dark rounded-2xl p-4 min-w-[280px] max-w-[300px] flex flex-col gap-2 group transition-all">
 
       {/* Column Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-1">
-          <div className="w-4 h-4 rounded-full border-[2.5px]" style={{ backgroundColor: fillColor, borderColor }} />
-          <h3 className="text-md font-medium text-black dark:text-white flex-1 truncate">{column.title}</h3>
+          <div className="w-2.5 h-2.5 rounded-full flex-none" style={{ backgroundColor: fillColor, border: `1.5px solid ${borderColor}` }} />
+          <h3 className="text-md font-semibold text-text-light dark:text-text-dark flex-1 truncate">{column.title}</h3>
+          <span className="font-mono text-[11px] text-secondary-light dark:text-secondary-dark bg-header-light dark:bg-header-dark rounded-full px-2 py-0.5">
+            {column.cards?.length || 0}
+          </span>
         </div>
-        <div className="flex items-center gap-1">
-          <button onClick={() => setShowEditColumn(true)} className="text-gray-500 hover:text-blue-600 p-1 transition-opacity">
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={() => setShowEditColumn(true)} className="text-secondary-light dark:text-secondary-dark hover:text-accent-light dark:hover:text-accent p-1 transition">
             <PencilSquareIcon className="w-4 h-4" />
           </button>
           <button onClick={() => setDeleteConfirm(true)} className="p-1 ml-1 rounded-full text-red-500 dark:text-red-400 hover:bg-black/10 dark:hover:bg-white/10 transition">
@@ -155,7 +172,9 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
                       setEditCardData={setEditCardData}
                       handleEditCard={handleEditCardLocal}
                       handleDeleteCard={handleDeleteCardLocal}
-                      cardBg={isDarkMode ? fillColor : undefined}
+                      handleToggleCard={handleToggleCardLocal}
+                      columnTitle={column.title}
+                      columnColor={{ fill: fillColor, border: borderColor }}
                     />
                   </div>
                 )}
@@ -170,7 +189,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
       <button
         onClick={handleAddCard}
         disabled={isAddingLoading}
-        className="mt-2 px-3 py-2 bg-inherit dark:bg-background-dark text-gray-800 dark:text-gray-300 rounded hover:bg-white/40 dark:hover:bg-gray-700 transition"
+        className="mt-2 px-3 py-2 rounded-lg text-sm font-semibold text-secondary-light dark:text-secondary-dark hover:bg-header-light dark:hover:bg-header-dark transition"
       >
         {isAddingLoading ? "Adding..." : "+ Add Card"}
       </button>
@@ -197,7 +216,7 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
           onMouseDown={(e) => { if (e.target === e.currentTarget) setDeleteConfirm(false); }}
         >
           <div 
-            className="bg-background-light dark:bg-black  p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4"
+            className="bg-background-light dark:bg-background-dark p-6 rounded-xl shadow-2xl flex flex-col gap-4 w-full max-w-md mx-4"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-2xl font-bold text-center text-black dark:text-white">Delete Column</h2>

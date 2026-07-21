@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, PencilSquareIcon, CheckIcon } from "@heroicons/react/24/outline";
 
 const ModalPortal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
@@ -11,7 +11,7 @@ const ModalPortal = ({ isOpen, onClose, children }) => {
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }} // close only if the drag/click started on the overlay itself
     >
       <div
-        className="bg-background-light dark:bg-black rounded-lg p-6 relative max-w-lg w-full shadow-2xl"
+        className="bg-background-light dark:bg-background-dark rounded-lg p-6 relative max-w-lg w-full shadow-2xl"
         onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
       >
         {children}
@@ -30,7 +30,9 @@ const Card = ({
   setEditCardData,
   handleEditCard,
   handleDeleteCard,
-  cardBg
+  handleToggleCard,
+  columnTitle,
+  columnColor,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -38,12 +40,51 @@ const Card = ({
   return (
     <>
       {/* Card preview */}
-      <div
-        className="bg-white p-2 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-        style={{ backgroundColor: cardBg }}
-        onClick={() => setIsOpen(true)}
-      >
-        <h4 className="text-sm text-gray-900 dark:text-gray-100 truncate">{card.title}</h4>
+      <div className="group/card relative bg-header-light dark:bg-header-dark border-[1px] border-border-light dark:border-border-dark p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+        <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover/card:opacity-100 transition-opacity">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditingCard(card._id);
+              setEditCardData({ title: card.title, description: card.description || "" });
+              setIsOpen(true);
+            }}
+            className="p-1 rounded-full text-secondary-light dark:text-secondary-dark hover:bg-black/10 dark:hover:bg-white/10 transition"
+            title="Edit"
+          >
+            <PencilSquareIcon className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setDeleteConfirm(true); }}
+            className="p-1 rounded-full text-secondary-light dark:text-secondary-dark hover:text-red-500 dark:hover:text-red-400 hover:bg-black/10 dark:hover:bg-white/10 transition"
+            title="Delete"
+          >
+            <TrashIcon className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div onClick={() => setIsOpen(true)}>
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <span className="w-1.5 h-1.5 rounded-full flex-none" style={{ backgroundColor: columnColor?.fill }} />
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-secondary-light dark:text-secondary-dark truncate">{columnTitle}</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); handleToggleCard(card._id); }}
+              title={card.completed ? "Mark incomplete" : "Mark complete"}
+              className={`flex-none w-4 h-4 mt-0.5 rounded-full border-[1.5px] flex items-center justify-center transition ${
+                card.completed
+                  ? "bg-accent border-accent"
+                  : "border-border-light dark:border-border-dark hover:border-accent-light dark:hover:border-accent"
+              }`}
+            >
+              {card.completed && <CheckIcon className="w-2.5 h-2.5 text-black" strokeWidth={3} />}
+            </button>
+            <h4 className={`text-sm flex-1 truncate ${card.completed ? "line-through text-secondary-light dark:text-secondary-dark" : "text-text-light dark:text-text-dark"}`}>
+              {card.title}
+            </h4>
+          </div>
+        </div>
       </div>
 
       {/* Modal via Portal */}
@@ -54,6 +95,17 @@ const Card = ({
           <div className="flex items-center justify-between">
             <h2 className="text-xl text-black dark:text-white">Card Details</h2>
             <div className="flex gap-2">
+              <button
+                onClick={() => handleToggleCard(card._id)}
+                className={`p-2 rounded-full transition ${
+                  card.completed
+                    ? "bg-accent text-black"
+                    : "text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10"
+                }`}
+                title={card.completed ? "Mark incomplete" : "Mark complete"}
+              >
+                <CheckIcon className="w-5 h-5" strokeWidth={2.5} />
+              </button>
               <button
                 onClick={() => {
                   setEditingCard(card._id);
