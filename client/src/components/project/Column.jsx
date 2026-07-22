@@ -133,9 +133,9 @@ const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {
 
       {/* Column Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 flex-1">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           <div className="w-2.5 h-2.5 rounded-full flex-none" style={{ backgroundColor: fillColor, border: `1.5px solid ${borderColor}` }} />
-          <h3 className="text-md font-semibold text-text-light dark:text-text-dark flex-1 truncate">{column.title}</h3>
+          <h3 className="text-md font-semibold text-text-light dark:text-text-dark flex-1 min-w-0 truncate" title={column.title}>{column.title}</h3>
           <span className="font-mono text-[11px] text-secondary-light dark:text-secondary-dark bg-header-light dark:bg-header-dark rounded-full px-2 py-0.5">
             {column.cards?.length || 0}
           </span>
