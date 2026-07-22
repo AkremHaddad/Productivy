@@ -139,53 +139,63 @@ const Pomodoro = () => {
     alarmPlayedRef.current = false;
   };
 
+  // Ring depletes as the session runs down - the standard focus-timer
+  // convention (starts full, empties toward the end), same stroke-dasharray
+  // technique as Sprints.jsx's CompletionDial / the dashboard's goal ring.
+  const duration = isWork ? workTime : breakTime;
+  const percent = duration > 0 ? timeLeft / duration : 0;
+  const RING_RADIUS = 56;
+  const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
   return (
     <div
       id="pomodoro"
-      className="flex-1 flex bg-inherit h-[150px] rounded-l-md seperate"
+      className="bg-ui-light dark:bg-ui-dark rounded-2xl border border-border-light dark:border-border-dark p-5 flex flex-col items-center"
     >
-      {/* Left side with buttons */}
-      <div className="flex flex-col justify-evenly border-r-[1px] border-border-light dark:border-border-dark divide-y-[1px] divide-border-light dark:divide-border-dark">
+      <div className="font-mono text-[11px] font-semibold tracking-widest uppercase text-secondary-light dark:text-secondary-dark mb-3">
+        Pomodoro
+      </div>
+
+      <div className="relative w-[132px] h-[132px] mb-3">
+        <svg width="132" height="132" viewBox="0 0 132 132">
+          <circle cx="66" cy="66" r={RING_RADIUS} fill="none" className="stroke-border-light dark:stroke-border-dark" strokeWidth="10" />
+          <circle
+            cx="66" cy="66" r={RING_RADIUS} fill="none" className="stroke-accent" strokeWidth="10"
+            strokeLinecap="round"
+            strokeDasharray={`${percent * RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`}
+            transform="rotate(-90 66 66)"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div className="font-mono font-bold text-xl text-text-light dark:text-text-dark">{formatTime(timeLeft)}</div>
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-secondary-light dark:text-secondary-dark">
+            {isWork ? "Focus" : "Break"}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-2">
         <button
           onClick={toggleStart}
-          className="p-2 flex-grow transition-all duration-200"
+          title={isRunning ? "Pause" : "Start"}
+          className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center hover:opacity-90 transition"
         >
-          <img
-            src={isRunning ? "../pause.svg" : "../start.svg"}
-            alt="start/pause"
-            className="w-4 h-4 dark:invert "
-          />
+          <img src={isRunning ? "../pause.svg" : "../start.svg"} alt="start/pause" className="w-4 h-4" />
         </button>
         <button
           onClick={restart}
-          className="p-2 flex-grow transition-all duration-200"
+          title="Restart"
+          className="w-9 h-9 rounded-lg bg-header-light dark:bg-header-dark border border-border-light dark:border-border-dark flex items-center justify-center hover:opacity-80 transition"
         >
-          <img
-            src="../restart.svg"
-            alt="restart"
-            className="w-4 h-4 dark:invert"
-          />
+          <img src="../restart.svg" alt="restart" className="w-4 h-4 dark:invert" />
         </button>
         <button
           onClick={() => setShowSettings(true)}
-          className="p-2 flex-grow transition-all duration-200"
+          title="Timer settings"
+          className="w-9 h-9 rounded-lg bg-header-light dark:bg-header-dark border border-border-light dark:border-border-dark flex items-center justify-center hover:opacity-80 transition"
         >
-          <img
-            src="../timer.svg"
-            alt="timer"
-            className="w-4 h-4 dark:invert"
-          />
+          <img src="../timer.svg" alt="timer" className="w-4 h-4 dark:invert" />
         </button>
-      </div>
-
-      {/* Right side */}
-      <div className="flex-1 flex flex-col justify-evenly items-center p-2">
-        <div className="font-jaro text-md text-black dark:text-white text-center drop-shadow-md tracking-wider">
-          {isWork ? "work!" : "break!"}
-        </div>
-        <div className="font-jaro text-md text-black dark:text-white text-center">
-          {formatTime(timeLeft)}
-        </div>
       </div>
 
       {/* Settings Modal */}

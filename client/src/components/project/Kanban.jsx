@@ -205,11 +205,10 @@ const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
   };
 
   return (
-    <div className="flex-1 bg-ui-light dark:bg-ui-dark h-[460px] rounded-md shadow-lg overflow-hidden flex flex-col border-[1px] border-border-light dark:border-border-dark">
+    <div className="bg-ui-light dark:bg-ui-dark rounded-2xl border border-border-light dark:border-border-dark p-4 flex flex-col gap-3">
       {/* Header */}
-      <div className="bg-header-light dark:bg-header-dark h-[40px] text-black dark:text-white text-center text-lg font-jaro flex border-b-[1px] border-border-light dark:border-border-dark
-                       items-center justify-center rounded-t-md relative">
-        <span className="drop-shadow-md">Sprint Tasks</span>
+      <div className="font-mono text-[11px] font-semibold tracking-widest uppercase text-secondary-light dark:text-secondary-dark">
+        Sprint tasks
       </div>
 
       {/* Task List */}
@@ -217,15 +216,15 @@ const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
         <Droppable droppableId="taskList">
           {(provided) => (
             <div
-              className="flex-1 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-lg dark:scrollbar-thumb-rounded-lg-dark space-y-2"
+              className="max-h-[220px] overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-lg dark:scrollbar-thumb-rounded-lg-dark space-y-2"
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
               {tasks.length === 0 ? (
-                <div className="text-center py-8 text-text-light dark:text-text-dark/70">
-                  <div className="text-4xl mb-2">📋</div>
-                  <p>No tasks yet</p>
-                  <p className="text-sm mt-1">Add your first task below</p>
+                <div className="text-center py-6 text-text-light dark:text-text-dark/70">
+                  <div className="text-3xl mb-2">📋</div>
+                  <p className="text-sm">No tasks yet</p>
+                  <p className="text-xs mt-1">Add your first task below</p>
                 </div>
               ) : (
                 tasks.map((task, index) => (
@@ -377,7 +376,7 @@ const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
                   </div>
                 </div>
               ) : (
-                <div className="flex gap-2 items-center p-2 bg-header-light dark:bg-header-dark border-t-[1px] border-border-light dark:border-border-dark">
+                <div className="flex gap-2 items-center p-2">
                   <input
                     type="text"
                     value={newTaskTitle}
@@ -385,17 +384,17 @@ const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
                     onKeyPress={handleKeyPress}
                     maxLength={200}
                     placeholder="Enter a new task..."
-                    className="flex-1 min-w-0 px-2 py-1 rounded-xl border-[1px] border-border-light dark:border-border-dark
-                               bg-ui-light dark:bg-ui-dark text-text-light dark:text-text-dark
+                    className="flex-1 min-w-0 px-2.5 py-1.5 text-sm rounded-lg border-[1px] border-border-light dark:border-border-dark
+                               bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark
                               focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all"
                     disabled={!selectedSprint}
                   />
                   <button
                     onClick={handleAddTask}
                     disabled={!selectedSprint || !newTaskTitle.trim()}
-                    className="shrink-0 w-8 h-8 bg-white dark:bg-black  text-black dark:text-white rounded-xl
+                    className="shrink-0 w-8 h-8 bg-header-light dark:bg-header-dark text-black dark:text-white rounded-lg
                               hover:opacity-70 disabled:opacity-50 disabled:cursor-not-allowed
-                              transition-all shadow-sm hover:shadow-lg flex items-center justify-center
+                              transition-all flex items-center justify-center
                               border-[1px] border-border-light dark:border-border-dark"
                   >
                     <svg

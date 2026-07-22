@@ -3,7 +3,6 @@ import { useParams } from "react-router";
 import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
 import Pomodoro from "../project/Pomodoro";
-import Status from "../project/Status";
 import Time from "../project/Time";
 import Sprints from "../project/Sprints";
 import Kanban from "../project/Kanban";
@@ -70,45 +69,40 @@ const Project = () => {
     <div className="flex flex-col min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark">
       <Navbar />
 
-      <Tabs showTools={showTools} setShowTools={setShowTools} />
+      {/* Mobile-only: md+ always shows sidebar and board side by side in
+          the grid below, so there's nothing left to toggle there. */}
+      <div className="md:hidden">
+        <Tabs showTools={showTools} setShowTools={setShowTools} />
+      </div>
 
-      {/* Below md, showTools hard-switches between the tools panel and the
-          board (one full-width pane at a time) instead of squeezing both
-          into a too-narrow viewport. At md+ both stay visible and showTools
-          only drives the existing smooth collapse-to-widen-board animation. */}
-      <div className="flex-1 flex p-5 pb-0 gap-2.5 min-w-0">
-        <div
-          id="tools"
-          className={`flex-col gap-2.5 overflow-hidden transition-all duration-500 ease-in-out w-full
-            ${showTools ? "flex" : "hidden"}
-            md:flex
-            ${showTools ? "md:max-w-[500px] md:opacity-100" : "md:max-w-0 md:opacity-0 md:mr-0"}
-          `}
-        >
-          <div className="select-none flex flex-col sm:flex-row bg-ui-light dark:bg-ui-dark rounded-md border border-border-light dark:border-border-dark">
-            <Pomodoro />
-            <Status />
-            <Time />
+      <div className="flex-1 p-5 min-w-0">
+        <div className="bg-ui-light dark:bg-ui-dark rounded-2xl border border-border-light dark:border-border-dark shadow-lg">
+          <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 items-start">
+            {/* Below md, showTools hard-switches between this sidebar and
+                the board (one full-width pane at a time) instead of
+                squeezing both into a too-narrow viewport. At md+ both
+                always show, side by side in the grid. */}
+            <div className={`flex-col gap-4 min-w-0 ${showTools ? "flex" : "hidden"} md:flex`}>
+              <Pomodoro />
+              <Time />
+              <Sprints
+                projectId={project._id}
+                sprints={sprints}
+                onSprintsChange={setSprints}
+                selectedSprintId={selectedSprintId}
+                onSprintSelect={(s) => setSelectedSprintId(s?._id ?? null)}
+              />
+              <Kanban
+                projectId={project._id}
+                selectedSprint={selectedSprint}
+                onTasksChange={(newTasks) => updateSprintTasks(selectedSprintId, newTasks)}
+              />
+            </div>
+
+            <div className={`min-w-0 ${showTools ? "hidden" : "flex"} md:flex`}>
+              <Board projectId={project._id} boards={project.boards} />
+            </div>
           </div>
-
-          <div className="flex flex-col md:flex-row gap-2.5">
-            <Sprints
-              projectId={project._id}
-              sprints={sprints}
-              onSprintsChange={setSprints}
-              selectedSprintId={selectedSprintId}
-              onSprintSelect={(s) => setSelectedSprintId(s?._id ?? null)}
-            />
-            <Kanban
-              projectId={project._id}
-              selectedSprint={selectedSprint}
-              onTasksChange={(newTasks) => updateSprintTasks(selectedSprintId, newTasks)}
-            />
-          </div>
-        </div>
-
-        <div className={`${showTools ? "hidden" : "flex"} md:flex flex-1 min-w-0`}>
-          <Board projectId={project._id} boards={project.boards} />
         </div>
       </div>
     </div>
