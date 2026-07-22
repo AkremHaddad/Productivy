@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import Navbar from "../allPages/Navbar";
-import Footer from "../allPages/Footer";
-import Pomodoro from "../project/Pomodoro";
-import Time from "../project/Time";
 import Sprints from "../project/Sprints";
 import Kanban from "../project/Kanban";
 import Tabs from "../project/Tabs";
@@ -67,8 +63,6 @@ const Project = () => {
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark">
-      <Navbar />
-
       {/* Mobile-only: md+ always shows sidebar and board side by side in
           the grid below, so there's nothing left to toggle there. */}
       <div className="md:hidden">
@@ -77,14 +71,15 @@ const Project = () => {
 
       <div className="flex-1 p-5 min-w-0">
         <div className="bg-ui-light dark:bg-ui-dark rounded-2xl border border-border-light dark:border-border-dark shadow-lg">
-          <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 items-start">
+          {/* Pomodoro/Time-worked now live as pills in the navbar (see
+              Navbar.jsx) - this body is just Sprints, Sprint tasks, and the
+              Board, per the design review. Sidebar narrowed to match. */}
+          <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-5 items-start">
             {/* Below md, showTools hard-switches between this sidebar and
                 the board (one full-width pane at a time) instead of
                 squeezing both into a too-narrow viewport. At md+ both
                 always show, side by side in the grid. */}
             <div className={`flex-col gap-4 min-w-0 ${showTools ? "flex" : "hidden"} md:flex`}>
-              <Pomodoro />
-              <Time />
               <Sprints
                 projectId={project._id}
                 sprints={sprints}

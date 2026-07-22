@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
 import Modal from "../common/Modal";
 import { getProjects, createProject, deleteProject } from "../../api/project";
@@ -78,7 +77,6 @@ const Projects = () => {
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark transition-colors duration-300">
-      <Navbar />
       <main className="flex-1 p-6 max-w-6xl mx-auto w-full">
         <div className="flex justify-between items-center mb-8 mt-4">
           <div>

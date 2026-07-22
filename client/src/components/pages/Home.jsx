@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -117,11 +116,7 @@ function Home() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark">
-      <div className="fixed inset-x-0 top-0 z-50">
-        <Navbar />
-      </div>
-
-      <main className="pt-14">
+      <main>
         {/* Hero Section */}
         <section className="min-h-[92vh] flex items-center">
           <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center px-4 lg:px-8">

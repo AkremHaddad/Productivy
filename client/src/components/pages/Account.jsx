@@ -1,6 +1,5 @@
 // src/pages/Account.jsx
 import React, { useState, useEffect } from "react";
-import Navbar from "../allPages/Navbar";
 import Footer from "../allPages/Footer";
 import { FcGoogle } from "react-icons/fc";
 import { getUser, login, register, logout } from "../../api/auth";
@@ -79,7 +78,6 @@ const handleGoogleLogin = () => {
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden bg-background-light dark:bg-background-dark ">
-      <Navbar />
       <div className="flex-1 min-w-full p-6 flex items-center justify-center">
         {loading ? (
           <p className="text-lg text-text-light dark:text-text-dark">Loading...</p>
