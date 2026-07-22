@@ -5,7 +5,10 @@ import Footer from "../allPages/Footer";
 import { FcGoogle } from "react-icons/fc";
 import { getUser, login, register, logout } from "../../api/auth";
 import ProductivityDashboard from "../ProductivityDashboard";
-import DayActivityGraph from "../DayActivityGraph";
+// Commented out per Akram's feedback 2026-07-22 - the timeline felt
+// pointless once he actually used the dashboard. Left in place, not
+// deleted, in case it's worth revisiting later.
+// import DayActivityGraph from "../DayActivityGraph";
 
 const Account = () => {
   const [activeTab, setActiveTab] = useState("login");
@@ -98,10 +101,10 @@ const handleGoogleLogin = () => {
 
               <ProductivityDashboard />
             </div>
-            <div className="mt-6 w-full rounded-md border-[1px] border-border-light dark:border-border-dark">
+            {/* <div className="mt-6 w-full rounded-md border-[1px] border-border-light dark:border-border-dark">
 
               <DayActivityGraph />
-            </div>
+            </div> */}
             {/* <div className="mt-6 w-full rounded-md border-[1px] border-border-light dark:border-border-dark">
 
               <WeeklyActivityGraph />
@@ -145,6 +148,7 @@ const handleGoogleLogin = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
+                    maxLength={30}
                     className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark"
                   />
                 </div>
@@ -159,6 +163,7 @@ const handleGoogleLogin = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  maxLength={254}
                   className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark"
                 />
               </div>
@@ -172,6 +177,7 @@ const handleGoogleLogin = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  maxLength={72} // bcrypt silently truncates beyond 72 bytes
                   className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark"
                 />
               </div>

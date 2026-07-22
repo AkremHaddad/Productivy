@@ -58,6 +58,7 @@ const EditColumnModal = ({ projectId, boardId, column, colors, onClose, onUpdate
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            maxLength={40}
             className="w-full px-4 py-2 rounded-lg border-2 border-black dark:border-white
                       bg-black/10 dark:bg-white/20
                       text-text-light dark:text-text-dark

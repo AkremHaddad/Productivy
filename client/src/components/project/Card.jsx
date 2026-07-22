@@ -134,6 +134,7 @@ const Card = ({
                 value={editCardData.title}
                 onChange={(e) => setEditCardData(prev => ({ ...prev, title: e.target.value }))}
                 rows={2}
+                maxLength={150}
                 className="w-full px-4 py-2 rounded-lg border-[1px] border-border-light dark:border-border-dark bg-black/20 dark:bg-white/20 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:border-black focus:ring-black dark:focus:ring-white"
                 autoFocus
               />
@@ -152,6 +153,7 @@ const Card = ({
                 value={editCardData.description}
                 onChange={(e) => setEditCardData(prev => ({ ...prev, description: e.target.value }))}
                 rows={5}
+                maxLength={2000}
                 className="w-full px-4 py-2 rounded-lg border-[1px] border-border-light dark:border-border-dark bg-black/20 dark:bg-white/20 text-text-light dark:text-text-dark focus:outline-none focus:ring-2 focus:border-black focus:ring-black dark:focus:ring-white resize-y"
               />
             ) : (

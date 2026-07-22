@@ -141,6 +141,7 @@ const Projects = () => {
             placeholder="Enter project name"
             value={newProjectName}
             onChange={(e) => setNewProjectName(e.target.value)}
+            maxLength={60}
             className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-white/10 text-text-light dark:text-text-dark focus:ring-2 focus:ring-black dark:focus:ring-white outline-none mb-4"
             autoFocus
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}

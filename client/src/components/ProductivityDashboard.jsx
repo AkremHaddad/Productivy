@@ -202,6 +202,7 @@ const ProductivityDashboard = () => {
                   <input
                     type="number"
                     min="0.25"
+                    max="24"
                     step="0.25"
                     value={goalInput}
                     onChange={(e) => setGoalInput(e.target.value)}

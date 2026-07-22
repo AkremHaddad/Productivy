@@ -362,6 +362,7 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
                       }}
                       onBlur={() => handleEditBoard(board._id)}
                       autoFocus
+                      maxLength={60}
                       className="bg-transparent text-black dark:text-white border-none outline-none px-2 py-1 font-semibold text-lg"
                       style={{ minWidth: 24 }}
                       onClick={(e) => e.stopPropagation()}

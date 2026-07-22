@@ -281,6 +281,7 @@ const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
                                   handleEditKeyPress(e, task._id)
                                 }
                                 onBlur={() => handleEditTask(task._id)}
+                                maxLength={200}
                                 className="flex-1 px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
                                 autoFocus
                               />
@@ -316,6 +317,7 @@ const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
                                 onChange={(e) => setNoteDraft(e.target.value)}
                                 onBlur={() => saveNote(task._id)}
                                 rows={2}
+                                maxLength={500}
                                 placeholder="Add a note..."
                                 className="w-full text-xs italic px-2 py-1.5 rounded-lg border-[1px] border-border-light dark:border-border-dark bg-ui-light dark:bg-ui-dark text-secondary-light dark:text-secondary-dark focus:outline-none resize-y"
                               />
@@ -381,6 +383,7 @@ const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
                     onKeyPress={handleKeyPress}
+                    maxLength={200}
                     placeholder="Enter a new task..."
                     className="flex-1 min-w-0 px-2 py-1 rounded-xl border-[1px] border-border-light dark:border-border-dark
                                bg-ui-light dark:bg-ui-dark text-text-light dark:text-text-dark
