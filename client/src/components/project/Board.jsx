@@ -21,6 +21,41 @@ const Board = ({ projectId }) => {
   const boardsContainerRef = useRef(null);
   const inputRef = useRef(null);
   const measureRef = useRef(null);
+  const columnsScrollRef = useRef(null);
+  const panRef = useRef({ active: false, startX: 0, startScrollLeft: 0 });
+
+  // Trello-style click-and-drag panning on the columns' empty background.
+  // Only starts when the mousedown target is the scroll container itself
+  // (not a column/card), so it never fights with @hello-pangea/dnd's own
+  // drag handles on columns/cards.
+  const handleColumnsMouseDown = (e) => {
+    if (e.target !== e.currentTarget) return;
+    const el = columnsScrollRef.current;
+    if (!el) return;
+    panRef.current = { active: true, startX: e.clientX, startScrollLeft: el.scrollLeft };
+    el.style.cursor = "grabbing";
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!panRef.current.active) return;
+      const el = columnsScrollRef.current;
+      if (!el) return;
+      el.scrollLeft = panRef.current.startScrollLeft - (e.clientX - panRef.current.startX);
+    };
+    const handleMouseUp = () => {
+      if (!panRef.current.active) return;
+      panRef.current.active = false;
+      const el = columnsScrollRef.current;
+      if (el) el.style.cursor = "grab";
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
 
   const currentBoard =
     boards.length > 0
@@ -315,8 +350,7 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
 
 
   return (
-    <div className="bg-ui-light dark:bg-ui-dark rounded-md flex-1 overflow-hidden w-full h-[622px] flex flex-col
-    border-[1px] border-border-light dark:border-border-dark">
+    <div className="flex-1 overflow-hidden w-full min-h-[500px] md:min-h-[600px] flex flex-col">
 
       {actionError && (
         <div className="flex items-center justify-between gap-3 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm rounded-t-md">
@@ -400,8 +434,12 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
         <Droppable droppableId="board" direction="horizontal" type="COLUMN">
           {(provided) => (
             <div
-              className="flex overflow-x-auto overflow-y-auto p-4 gap-4 items-start scrollbar-none scrollbar-thumb-gray-500 dark:scrollbar-thumb-gray-700 h-full"
-              ref={provided.innerRef}
+              className="flex overflow-x-auto overflow-y-auto p-4 gap-4 items-start scrollbar-none scrollbar-thumb-gray-500 dark:scrollbar-thumb-gray-700 h-full cursor-grab select-none"
+              ref={(node) => {
+                provided.innerRef(node);
+                columnsScrollRef.current = node;
+              }}
+              onMouseDown={handleColumnsMouseDown}
               {...provided.droppableProps}
             >
               {isLoading ? (
