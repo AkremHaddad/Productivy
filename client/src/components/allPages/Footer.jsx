@@ -11,34 +11,34 @@ function Footer() {
         </p>
       </div>
       
-      {/* Social links */}
-      <div className="flex items-center space-x-5">
+      {/* Social links - labeled chips, not bare icons */}
+      <div className="flex items-center gap-2">
         <a
           href="mailto:akremhaddad125@gmail.com"
-          className="flex items-center gap-1.5 text-gray-500 dark:text-white transition-transform duration-200 hover:scale-110"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:bg-header-light dark:hover:bg-header-dark transition-colors"
         >
-          <FaEnvelope className="w-5 h-5" />
-          <span className="text-sm">Contact</span>
+          <FaEnvelope className="w-4 h-4" />
+          <span className="text-sm font-semibold">Contact</span>
         </a>
 
         <a
           href="https://github.com/akremhaddad"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-gray-500 dark:text-white transition-transform duration-200 hover:scale-110"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:bg-header-light dark:hover:bg-header-dark transition-colors"
         >
-          <FaGithub className="w-5 h-5" />
-          <span className="text-sm">GitHub</span>
+          <FaGithub className="w-4 h-4" />
+          <span className="text-sm font-semibold">GitHub</span>
         </a>
 
         <a
           href="https://www.linkedin.com/in/akrem-haddad"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-gray-500 dark:text-white transition-transform duration-200 hover:scale-110"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:bg-header-light dark:hover:bg-header-dark transition-colors"
         >
-          <FaLinkedin className="w-5 h-5" />
-          <span className="text-sm">LinkedIn</span>
+          <FaLinkedin className="w-4 h-4" />
+          <span className="text-sm font-semibold">LinkedIn</span>
         </a>
       </div>
     </footer>
