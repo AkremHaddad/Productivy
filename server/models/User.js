@@ -2,9 +2,11 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // Will be hashed
+  username: { type: String, required: true, unique: true, maxlength: 30 },
+  email: { type: String, required: true, unique: true, maxlength: 254 },
+  // Will be hashed. maxlength caps the pre-hash plaintext, since bcrypt
+  // silently truncates anything past 72 bytes anyway.
+  password: { type: String, required: true, maxlength: 72 },
   googleId: String, // For OAuth
 
   // 🔥 For activity/status tracking

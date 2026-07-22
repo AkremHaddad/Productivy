@@ -42,6 +42,15 @@ router.post("/register", async (req, res) => {
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
+    if (username.length > 30) {
+      return res.status(400).json({ message: "Username must be 30 characters or fewer" });
+    }
+    if (email.length > 254) {
+      return res.status(400).json({ message: "Email must be 254 characters or fewer" });
+    }
+    if (password.length > 72) {
+      return res.status(400).json({ message: "Password must be 72 characters or fewer" });
+    }
 
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {

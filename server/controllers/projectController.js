@@ -2,6 +2,20 @@
 import Project from "../models/Project.js";
 import { logEvent } from "../utils/logEvent.js";
 
+// Mirrors the maxlength values on the Project schema (models/Project.js) -
+// checked here too so oversized input gets a clean 400 instead of a raw
+// Mongoose ValidationError.
+const MAX_LEN = {
+  projectName: 60,
+  sprintTitle: 80,
+  taskTitle: 200,
+  taskNote: 500,
+  boardTitle: 60,
+  columnTitle: 40,
+  cardTitle: 150,
+  cardDescription: 2000,
+};
+
 // Helper function to find project with user validation
 const findProjectByUser = async (projectId, userId) => {
   const project = await Project.findOne({ _id: projectId, userId });
@@ -47,6 +61,9 @@ export const addProject = async (req, res) => {
   try {
     const { name } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: "Project name is required" });
+    if (name.trim().length > MAX_LEN.projectName) {
+      return res.status(400).json({ error: `Project name must be ${MAX_LEN.projectName} characters or fewer` });
+    }
 
     const newProject = new Project({
       name: name.trim(),
@@ -68,6 +85,9 @@ export const addSprint = async (req, res) => {
     const { projectId } = req.params;
     const { title } = req.body;
     if (!title?.trim()) return res.status(400).json({ error: "Sprint title required" });
+    if (title.trim().length > MAX_LEN.sprintTitle) {
+      return res.status(400).json({ error: `Sprint title must be ${MAX_LEN.sprintTitle} characters or fewer` });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
     project.sprints.push({ title: title.trim(), tasks: [] });
@@ -94,6 +114,9 @@ export const updateSprint = async (req, res) => {
     const { projectId, sprintId } = req.params;
     const { title } = req.body;
     if (!title?.trim()) return res.status(400).json({ error: "Sprint title required" });
+    if (title.trim().length > MAX_LEN.sprintTitle) {
+      return res.status(400).json({ error: `Sprint title must be ${MAX_LEN.sprintTitle} characters or fewer` });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
     const sprint = project.sprints.id(sprintId);
@@ -194,6 +217,9 @@ export const addTask = async (req, res) => {
     const { projectId, sprintId } = req.params;
     const { title } = req.body;
     if (!title?.trim()) return res.status(400).json({ error: "Task title required" });
+    if (title.trim().length > MAX_LEN.taskTitle) {
+      return res.status(400).json({ error: `Task title must be ${MAX_LEN.taskTitle} characters or fewer` });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
     const sprint = project.sprints.id(sprintId);
@@ -217,6 +243,12 @@ export const updateTask = async (req, res) => {
     const { title, note } = req.body;
     if (title !== undefined && !title.trim()) {
       return res.status(400).json({ error: "Task title required" });
+    }
+    if (title !== undefined && title.trim().length > MAX_LEN.taskTitle) {
+      return res.status(400).json({ error: `Task title must be ${MAX_LEN.taskTitle} characters or fewer` });
+    }
+    if (note !== undefined && note.length > MAX_LEN.taskNote) {
+      return res.status(400).json({ error: `Task note must be ${MAX_LEN.taskNote} characters or fewer` });
     }
 
     const project = await findProjectByUser(projectId, req.user.id);
@@ -312,11 +344,14 @@ export const addBoard = async (req, res) => {
   try {
     const { projectId } = req.params;
     const { title } = req.body;
+    if (title?.trim().length > MAX_LEN.boardTitle) {
+      return res.status(400).json({ error: `Board title must be ${MAX_LEN.boardTitle} characters or fewer` });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
-    const newBoard = { 
-      title: title?.trim() || "New Board", 
-      columns: [] 
+    const newBoard = {
+      title: title?.trim() || "New Board",
+      columns: []
     };
     project.boards.push(newBoard);
     await project.save();
@@ -335,6 +370,9 @@ export const updateBoard = async (req, res) => {
     const { projectId, boardId } = req.params;
     const { title } = req.body;
     if (!title?.trim()) return res.status(400).json({ error: "Board title required" });
+    if (title.trim().length > MAX_LEN.boardTitle) {
+      return res.status(400).json({ error: `Board title must be ${MAX_LEN.boardTitle} characters or fewer` });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
     const board = project.boards.id(boardId);
@@ -379,6 +417,9 @@ export const addColumn = async (req, res) => {
   try {
     const { projectId, boardId } = req.params;
     const { title, color } = req.body;
+    if (title?.trim().length > MAX_LEN.columnTitle) {
+      return res.status(400).json({ error: `Column title must be ${MAX_LEN.columnTitle} characters or fewer` });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
     if (!project) return res.status(404).json({ error: "Project not found" });
@@ -426,6 +467,9 @@ export const updateColumn = async (req, res) => {
     if (title !== undefined) {
       const trimmed = title.trim();
       if (!trimmed) return res.status(400).json({ error: "Title cannot be empty" });
+      if (trimmed.length > MAX_LEN.columnTitle) {
+        return res.status(400).json({ error: `Column title must be ${MAX_LEN.columnTitle} characters or fewer` });
+      }
       column.title = trimmed;
     }
 
@@ -492,6 +536,12 @@ export const addCard = async (req, res) => {
     const { projectId, boardId, columnId } = req.params;
     const { title, description } = req.body;
     if (!title?.trim()) return res.status(400).json({ error: "Card title required" });
+    if (title.trim().length > MAX_LEN.cardTitle) {
+      return res.status(400).json({ error: `Card title must be ${MAX_LEN.cardTitle} characters or fewer` });
+    }
+    if (description?.trim().length > MAX_LEN.cardDescription) {
+      return res.status(400).json({ error: `Card description must be ${MAX_LEN.cardDescription} characters or fewer` });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
     const board = project.boards.id(boardId);
@@ -500,7 +550,7 @@ export const addCard = async (req, res) => {
     const column = board.columns.id(columnId);
     if (!column) return res.status(404).json({ error: "Column not found" });
 
-    const newCard = { 
+    const newCard = {
       title: title.trim(),
       description: description?.trim() || ""
     };
@@ -520,6 +570,12 @@ export const updateCard = async (req, res) => {
   try {
     const { projectId, boardId, columnId, cardId } = req.params;
     const { title, description } = req.body;
+    if (title?.trim().length > MAX_LEN.cardTitle) {
+      return res.status(400).json({ error: `Card title must be ${MAX_LEN.cardTitle} characters or fewer` });
+    }
+    if (description?.trim().length > MAX_LEN.cardDescription) {
+      return res.status(400).json({ error: `Card description must be ${MAX_LEN.cardDescription} characters or fewer` });
+    }
 
     const project = await findProjectByUser(projectId, req.user.id);
     const board = project.boards.id(boardId);
