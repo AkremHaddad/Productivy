@@ -11,7 +11,7 @@ const ModalPortal = ({ isOpen, onClose, children }) => {
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }} // close only if the drag/click started on the overlay itself
     >
       <div
-        className="bg-background-light dark:bg-background-dark rounded-lg p-6 relative max-w-lg w-full shadow-2xl"
+        className="bg-background-light dark:bg-background-dark rounded-lg p-6 relative max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from closing it
       >
         {children}
@@ -63,10 +63,10 @@ const Card = ({
           </button>
         </div>
 
-        <div onClick={() => setIsOpen(true)}>
-          <div className="flex items-center gap-1.5 mb-1.5">
+        <div onClick={() => setIsOpen(true)} className="pr-11">
+          <div className="flex items-center gap-1.5 mb-1.5 min-w-0">
             <span className="w-1.5 h-1.5 rounded-full flex-none" style={{ backgroundColor: columnColor?.fill }} />
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-secondary-light dark:text-secondary-dark truncate">{columnTitle}</span>
+            <span className="flex-1 min-w-0 text-[10px] font-semibold uppercase tracking-wide text-secondary-light dark:text-secondary-dark truncate">{columnTitle}</span>
           </div>
           <div className="flex items-start gap-2">
             <button
