@@ -1,12 +1,16 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+// No schema-level maxlength here on purpose: user.save() gets called for
+// unrelated updates (isOnline, lastActivity) on every login/logout/activity
+// ping, which would re-validate username/email/password against limits
+// that didn't exist when the account was created. Length limits (username
+// 30, email 254, password 72 - bcrypt's silent-truncation limit) are
+// enforced once, at registration, in routes/authRoutes.js.
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true, maxlength: 30 },
-  email: { type: String, required: true, unique: true, maxlength: 254 },
-  // Will be hashed. maxlength caps the pre-hash plaintext, since bcrypt
-  // silently truncates anything past 72 bytes anyway.
-  password: { type: String, required: true, maxlength: 72 },
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true }, // Will be hashed
   googleId: String, // For OAuth
 
   // 🔥 For activity/status tracking
