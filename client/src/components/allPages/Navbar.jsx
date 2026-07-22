@@ -1,11 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router';
-import { Squares2X2Icon, UserCircleIcon } from "@heroicons/react/24/outline";
 import ThemeToggle from './ThemeToggle';
 import { useActivity } from '../../api/useActivity';
 
 const navLinkClass = ({ isActive }) =>
-  `text-sm font-semibold pb-1 border-b-2 transition-colors ${
+  `text-sm font-semibold pb-1 border-b-2 transition-colors whitespace-nowrap ${
     isActive
       ? "text-text-light dark:text-text-dark border-accent"
       : "text-secondary-light dark:text-secondary-dark border-transparent hover:text-text-light dark:hover:text-text-dark"
@@ -33,36 +32,23 @@ function Navbar() {
   const { authenticated } = useActivity();
 
   return (
-    <nav className='bg-ui-light dark:bg-ui-dark w-screen h-14 flex items-center select-none border-b border-border-light dark:border-border-dark px-4 gap-6'>
-      <a href="/" className="flex items-center gap-2 flex-none">
-        <img src="/logo.svg" alt="Productivy Logo" className="h-9 rounded-sm" />
-        <span className='text-text-light dark:text-text-dark text-xl font-bold'>Productivy</span>
+    <nav className='bg-ui-light dark:bg-ui-dark w-full h-14 flex items-center justify-between select-none border-b border-border-light dark:border-border-dark px-3 sm:px-4 gap-2'>
+      {/* Left: brand only. Wordmark text drops below sm - logo + everything
+          on the right was overflowing a 375px viewport otherwise. */}
+      <a href="/" className="flex items-center gap-2 flex-none min-w-0">
+        <img src="/logo.svg" alt="Productivy Logo" className="h-9 rounded-sm flex-none" />
+        <span className='hidden sm:inline text-text-light dark:text-text-dark text-xl font-bold whitespace-nowrap'>Productivy</span>
       </a>
 
-      <div className="hidden sm:flex items-center gap-6">
+      {/* Right: everything else - nav, status, theme. No separate account icon:
+          "Dashboard" already goes to /account, a second icon for the same
+          destination was pure redundancy. */}
+      <div className="flex items-center gap-2 sm:gap-5 min-w-0">
         <NavLink to="/projects" className={navLinkClass}>Projects</NavLink>
         <NavLink to="/account" className={navLinkClass}>Dashboard</NavLink>
+        {authenticated && <StatusPill />}
+        <ThemeToggle />
       </div>
-
-      <a href="/projects" className="sm:hidden flex items-center justify-center">
-        <Squares2X2Icon className="h-6 w-6 text-black dark:text-white" />
-      </a>
-
-      <ul className='flex ml-auto items-center gap-3'>
-        {authenticated && (
-          <li>
-            <StatusPill />
-          </li>
-        )}
-        <li>
-          <ThemeToggle />
-        </li>
-        <li>
-          <a href="/account" className="flex items-center justify-center">
-            <UserCircleIcon className="h-6 w-6 text-black dark:text-white" />
-          </a>
-        </li>
-      </ul>
     </nav>
   );
 }
