@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import API from "../../api/API";
 import Modal from "../common/Modal"; // Adjust path to your Modal.jsx
 
@@ -29,6 +29,7 @@ const Sprints = ({ projectId, sprints, onSprintsChange, selectedSprintId, onSpri
   const [editingSprint, setEditingSprint] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const clickTimeoutRef = useRef(null);
 
   const handleAddSprint = async () => {
     if (!sprintTitle.trim()) return;
@@ -53,6 +54,14 @@ const Sprints = ({ projectId, sprints, onSprintsChange, selectedSprintId, onSpri
 
   const handleDoubleClick = (sprint, e) => {
     e.stopPropagation();
+    // A double-click fires two ordinary click events first (which would
+    // otherwise switch the selected sprint via handleSprintClick below,
+    // reloading the task list) before the dblclick event itself arrives.
+    // Cancel whichever of those the debounce below is still holding.
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+    }
     setEditingSprint(sprint._id);
     setEditTitle(sprint.title);
   };
@@ -121,7 +130,15 @@ const Sprints = ({ projectId, sprints, onSprintsChange, selectedSprintId, onSpri
   };
 
   const handleSprintClick = (sprint) => {
-    if (editingSprint !== sprint._id) onSprintSelect(sprint);
+    if (editingSprint === sprint._id) return;
+    // Delay the selection briefly so a second click arriving within the
+    // window (i.e. this is actually a double-click headed for rename mode)
+    // can cancel it instead of switching sprints first.
+    if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
+    clickTimeoutRef.current = setTimeout(() => {
+      clickTimeoutRef.current = null;
+      onSprintSelect(sprint);
+    }, 220);
   };
 
   return (
@@ -160,6 +177,7 @@ const Sprints = ({ projectId, sprints, onSprintsChange, selectedSprintId, onSpri
                     onChange={(e) => setEditTitle(e.target.value)}
                     onKeyPress={(e) => handleEditKeyPress(e, s._id)}
                     onBlur={() => handleEditSprint(s._id)}
+                    maxLength={80}
                     className="flex-1 w-full px-0 py-0 bg-transparent border-none focus:outline-none focus:ring-0 text-inherit font-inherit"
                     style={{ fontSize: "inherit", lineHeight: "inherit" }}
                     autoFocus
@@ -208,6 +226,7 @@ const Sprints = ({ projectId, sprints, onSprintsChange, selectedSprintId, onSpri
           value={sprintTitle}
           onChange={(e) => setSprintTitle(e.target.value)}
           onKeyPress={handleKeyPress}
+          maxLength={80}
           placeholder="Enter a new sprint..."
           className="flex-1 min-w-0 px-2 py-1 rounded-xl border-[1px] border-border-light dark:border-border-dark bg-ui-light
             dark:bg-ui-dark text-text-light dark:text-text-dark focus:outline-none
