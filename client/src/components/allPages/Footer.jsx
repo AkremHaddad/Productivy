@@ -11,34 +11,34 @@ function Footer() {
         </p>
       </div>
       
-      {/* Social icons */}
+      {/* Social links */}
       <div className="flex items-center space-x-5">
         <a
           href="mailto:akremhaddad125@gmail.com"
-          aria-label="Email"
-          className="transition-transform duration-200 hover:scale-110  "
+          className="flex items-center gap-1.5 text-gray-500 dark:text-white transition-transform duration-200 hover:scale-110"
         >
-          <FaEnvelope className="w-6 h-6 text-gray-500 dark:text-white " />
+          <FaEnvelope className="w-5 h-5" />
+          <span className="text-sm">Contact</span>
         </a>
 
         <a
           href="https://github.com/akremhaddad"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="GitHub"
-          className="transition-transform duration-200 hover:scale-110 "
+          className="flex items-center gap-1.5 text-gray-500 dark:text-white transition-transform duration-200 hover:scale-110"
         >
-          <FaGithub className="w-6 h-6 text-gray-500 dark:text-white" />
+          <FaGithub className="w-5 h-5" />
+          <span className="text-sm">GitHub</span>
         </a>
 
         <a
           href="https://www.linkedin.com/in/akrem-haddad"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="LinkedIn"
-          className="transition-transform duration-200 hover:scale-110 "
+          className="flex items-center gap-1.5 text-gray-500 dark:text-white transition-transform duration-200 hover:scale-110"
         >
-          <FaLinkedin className="w-6 h-6 text-gray-500 dark:text-white " />
+          <FaLinkedin className="w-5 h-5" />
+          <span className="text-sm">LinkedIn</span>
         </a>
       </div>
     </footer>
