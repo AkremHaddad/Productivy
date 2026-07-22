@@ -5,6 +5,26 @@ import Modal from "../common/Modal";
 import { getProjects, createProject, deleteProject } from "../../api/project";
 import { useNavigate } from "react-router";
 import LoadingSpinner from "../common/LoadingSpinner";
+import { useActivity } from "../../api/useActivity";
+import { formatTime } from "../../utils/formatTime";
+
+// Cycled by card index - projects have no color field of their own, this
+// is purely a visual differentiator between cards. Reuses hex values
+// already established elsewhere in the app (lime accent, the "card_moved"
+// blue from the dashboard recap, amber, the "working" status purple)
+// rather than introducing new ones.
+const PROJECT_COLORS = ["#C9F24C", "#5B8DEF", "#F2B84C", "#8B7CF6"];
+
+const getProjectStats = (project) => {
+  let tasks = 0, completed = 0;
+  project.sprints?.forEach((s) => {
+    tasks += s.tasks?.length || 0;
+    completed += s.tasks?.filter((t) => t.completed).length || 0;
+  });
+  const boards = project.boards?.length || 0;
+  const percent = tasks > 0 ? completed / tasks : 0;
+  return { tasks, completed, boards, percent };
+};
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -14,6 +34,7 @@ const Projects = () => {
   const [newProjectName, setNewProjectName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { minutesWorkedToday } = useActivity();
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -60,9 +81,16 @@ const Projects = () => {
       <Navbar />
       <main className="flex-1 p-6 max-w-6xl mx-auto w-full">
         <div className="flex justify-between items-center mb-8 mt-4">
-          <h1 className="text-4xl font-bold text-secondary-light dark:text-accent">
-            My Projects
-          </h1>
+          <div>
+            <h1 className="text-4xl font-bold text-secondary-light dark:text-accent">
+              My Projects
+            </h1>
+            {!isLoading && (
+              <p className="text-sm text-secondary-light dark:text-secondary-dark mt-1">
+                {projects.length} project{projects.length === 1 ? "" : "s"} · {formatTime(minutesWorkedToday)} logged today
+              </p>
+            )}
+          </div>
           <button
             onClick={() => setShowCreateModal(true)}
             className="px-6 py-3 bg-secondary-light dark:bg-accent text-white dark:text-black rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md flex items-center gap-2"
@@ -80,41 +108,72 @@ const Projects = () => {
           </div>
         ) : projects.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <div
-                key={project._id}
-                className="p-6 bg-white dark:bg-ui-dark shadow-md rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300 border-[1px] border-border-light dark:border-border-dark group relative"
-                onClick={() => navigate(`/project/${project._id}`)}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-text-light dark:text-text-dark group-hover:text-secondary-light dark:group-hover:text-accent transition-colors line-clamp-1">
-                    {project.name}
-                  </h2>
-                  <div className="flex items-center gap-2">
-                    {/* Delete Button */}
+            {projects.map((project, index) => {
+              const color = PROJECT_COLORS[index % PROJECT_COLORS.length];
+              const stats = getProjectStats(project);
+              return (
+                <div
+                  key={project._id}
+                  className="p-5 bg-white dark:bg-ui-dark shadow-md rounded-2xl cursor-pointer hover:shadow-lg transition-all duration-300 border-[1px] border-border-light dark:border-border-dark relative"
+                  onClick={() => navigate(`/project/${project._id}`)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="w-2.5 h-2.5 rounded-full flex-none" style={{ backgroundColor: color }} />
+                      <h2 className="text-lg font-bold text-text-light dark:text-text-dark line-clamp-1">
+                        {project.name}
+                      </h2>
+                    </div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setProjectToDelete(project);
                         setShowDeleteModal(true);
                       }}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
+                      className="flex-none text-gray-400 hover:text-red-500 transition-colors"
+                      title="Delete project"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
-                    {/* Navigation Arrow */}
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 group-hover:text-secondary-light dark:group-hover:text-accent transition-colors" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                    </svg>
+                  </div>
+
+                  <div className="h-1.5 rounded-full bg-border-light dark:bg-border-dark overflow-hidden mb-4">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${stats.percent * 100}%`, backgroundColor: color }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="font-mono text-sm font-bold text-text-light dark:text-text-dark">
+                      {stats.completed}
+                      <span className="font-sans font-medium text-xs text-secondary-light dark:text-secondary-dark">/{stats.tasks} tasks</span>
+                    </div>
+                    <div className="font-mono text-sm font-bold text-text-light dark:text-text-dark">
+                      {stats.boards}
+                      <span className="font-sans font-medium text-xs text-secondary-light dark:text-secondary-dark"> board{stats.boards === 1 ? "" : "s"}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-border-light dark:border-border-dark pt-3">
+                    <span className="text-xs text-secondary-light dark:text-secondary-dark">
+                      Created {new Date(project.createdAt).toLocaleDateString()}
+                    </span>
+                    <span className="text-xs font-semibold" style={{ color }}>Open →</span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                  Created: {new Date(project.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
+              );
+            })}
+
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="border-2 border-dashed border-border-light dark:border-border-dark rounded-2xl p-5 flex flex-col items-center justify-center gap-2 min-h-[180px] text-secondary-light dark:text-secondary-dark hover:border-secondary-light dark:hover:border-secondary-dark hover:text-text-light dark:hover:text-text-dark transition-colors"
+            >
+              <span className="w-9 h-9 rounded-lg bg-header-light dark:bg-header-dark flex items-center justify-center text-lg font-semibold">+</span>
+              <span className="text-sm font-semibold">Start a new project</span>
+            </button>
           </div>
         ) : (
           <div className="text-center py-16">

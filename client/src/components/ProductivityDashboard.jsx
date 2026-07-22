@@ -11,15 +11,7 @@ import {
   getEvents,
   getTodayEventCounts,
 } from "../api/activity";
-
-const formatTime = (totalMinutes) => {
-  const rounded = Math.round(totalMinutes);
-  const h = Math.floor(rounded / 60);
-  const m = rounded % 60;
-  if (h > 0 && m > 0) return `${h}h ${m}m`;
-  if (h > 0) return `${h}h`;
-  return `${m}m`;
-};
+import { formatTime } from "../utils/formatTime";
 
 const EVENT_DOT = {
   task_completed: "bg-accent",
