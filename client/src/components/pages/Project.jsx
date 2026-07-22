@@ -10,7 +10,6 @@ import Kanban from "../project/Kanban";
 import Tabs from "../project/Tabs";
 import Board from "../project/Board";
 import { getProject } from "../../api/project";
-import API from "../../api/API"; // ✅ import API for fetching minutes
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const Project = () => {
@@ -24,9 +23,6 @@ const Project = () => {
   const [sprints, setSprints] = useState([]);
   const [selectedSprintId, setSelectedSprintId] = useState(null);
   const [showTools, setShowTools] = useState(true);
-
-  // ✅ shared state
-  const [minutesWorked, setMinutesWorked] = useState(0);
 
   // Fetch project
   useEffect(() => {
@@ -49,19 +45,6 @@ const Project = () => {
     setSprints((prev) => prev.map((s) => (s._id === sprintId ? { ...s, tasks: newTasks } : s)));
   };
 
-  // ✅ Fetch initial minutes worked
-  useEffect(() => {
-    const fetchMinutesWorked = async () => {
-      try {
-        const res = await API.get("/api/activity/today", { withCredentials: true });
-        setMinutesWorked(res.data?.minutes || 0);
-      } catch (err) {
-        console.error("❌ Failed to fetch minutes worked:", err);
-      }
-    };
-
-    fetchMinutesWorked();
-  }, []);
   if (!project) return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center p-4">
       <div className="text-center space-y-6">
@@ -104,9 +87,8 @@ const Project = () => {
         >
           <div className="select-none flex flex-col sm:flex-row bg-ui-light dark:bg-ui-dark rounded-md border border-border-light dark:border-border-dark">
             <Pomodoro />
-            {/* ✅ Status updates minutesWorked; Time only displays */}
-            <Status onMinutesUpdate={setMinutesWorked} />
-            <Time minutesWorked={minutesWorked} />
+            <Status />
+            <Time />
           </div>
 
           <div className="flex flex-col md:flex-row gap-2.5">
