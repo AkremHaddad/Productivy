@@ -928,6 +928,224 @@ a:hover{opacity:.8}
   </div>
 </div>
 
+<div id="project-page-v2" style="max-width:1360px;margin:0 auto;padding:80px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">09 · Timers move into the nav</div>
+  <h2 style="font:700 30px Manrope,sans-serif;color:#F3F4F1;margin:0 0 8px">Pomodoro + Time Worked as nav pills, expanding on click</h2>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:700px;margin:0 0 36px">Both timers sit permanently in the nav as compact pills — a countdown and a progress ring, always visible while you work anywhere in the app. Click either to expand a popover with full controls; click elsewhere to collapse. The project page body is now just the three things it should be: Sprints, Sprint tasks, and the Board — full width, nothing competing with them.</p>
+
+  <div style="border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 50px 90px -40px rgba(0,0,0,.7);background:#0B0D0F">
+    <div style="position:relative;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid #1C2023">
+      <div style="display:flex;align-items:center;gap:36px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:9px;background:#C9F24C;display:flex;align-items:center;justify-content:center;font:800 16px Manrope,sans-serif;color:#0B0D0F">P</div>
+          <div style="font:700 17px Manrope,sans-serif;color:#F3F4F1">Productivy</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:24px">
+          <span style="font:600 13px Manrope,sans-serif;color:#F3F4F1;border-bottom:2px solid #C9F24C;padding-bottom:18px">Projects</span>
+          <span style="font:600 13px Manrope,sans-serif;color:#6B7178">Dashboard</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:6px;background:#14171A;border:1px solid #262B30;border-radius:100px;padding:6px 12px 6px 8px">
+          <div style="width:7px;height:7px;border-radius:50%;background:#8B7CF6;animation:pulseDot 2s ease-in-out infinite"></div>
+          <span style="font:600 12px Manrope,sans-serif;color:#F3F4F1">Working</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;background:#1C2023;border:1.5px solid #C9F24C;border-radius:100px;padding:6px 14px 6px 8px">
+          <svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7.2" fill="none" stroke="#3a3f22" stroke-width="2.6"></circle><circle cx="9" cy="9" r="7.2" fill="none" stroke="#C9F24C" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="28 45" transform="rotate(-90 9 9)"></circle></svg>
+          <span style="font:700 12px IBM Plex Mono,monospace;color:#F3F4F1">21:34</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;background:#14171A;border:1px solid #262B30;border-radius:100px;padding:6px 14px 6px 8px">
+          <svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7.2" fill="none" stroke="#262B30" stroke-width="2.6"></circle><circle cx="9" cy="9" r="7.2" fill="none" stroke="#5B8DEF" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="8 45" transform="rotate(-90 9 9)"></circle></svg>
+          <span style="font:700 12px IBM Plex Mono,monospace;color:#F3F4F1">51m</span>
+        </div>
+        <div style="width:34px;height:34px;border-radius:9px;background:#14171A;border:1px solid #262B30;display:flex;align-items:center;justify-content:center;font:600 13px Manrope,sans-serif;color:#9BA1A6">☀</div>
+        <div style="width:34px;height:34px;border-radius:50%;border:1.5px solid #262B30"></div>
+      </div>
+
+      <div style="position:absolute;top:66px;right:210px;width:260px;background:#181A1E;border:1px solid #2b3a17;border-radius:16px;box-shadow:0 24px 48px -16px rgba(0,0,0,.6);padding:20px;z-index:2">
+        <div style="font:600 10px IBM Plex Mono,monospace;letter-spacing:.08em;color:#6B7178;text-transform:uppercase;margin-bottom:14px">Pomodoro · expanded</div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+          <svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" fill="none" stroke="#262B30" stroke-width="8"></circle><circle cx="36" cy="36" r="30" fill="none" stroke="#C9F24C" stroke-width="8" stroke-linecap="round" stroke-dasharray="115 189" transform="rotate(-90 36 36)"></circle></svg>
+          <div><div style="font:700 24px IBM Plex Mono,monospace;color:#F3F4F1">21:34</div><div style="font:600 11px Manrope,sans-serif;color:#6B7178;text-transform:uppercase">Focus · round 2/4</div></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;background:#C9F24C;border-radius:9px;padding:9px;text-align:center;font:700 12px Manrope,sans-serif;color:#0B0D0F">Pause</div>
+          <div style="width:36px;background:#1C2023;border:1px solid #262B30;border-radius:9px;display:flex;align-items:center;justify-content:center;font:700 12px Manrope,sans-serif;color:#9BA1A6">↻</div>
+          <div style="width:36px;background:#1C2023;border:1px solid #262B30;border-radius:9px;display:flex;align-items:center;justify-content:center;font:700 12px Manrope,sans-serif;color:#9BA1A6">⚙</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:28px 40px 40px">
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="background:#14171A;border:1px solid #262B30;border-radius:16px;padding:18px">
+            <div style="font:700 13px Manrope,sans-serif;color:#F3F4F1;margin-bottom:12px">Sprints</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(201,242,76,.08);border-radius:10px;padding:10px 12px">
+                <span style="font:600 12px Manrope,sans-serif;color:#F3F4F1">Sprint 2</span>
+                <svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#262B30" stroke-width="2.5"></circle><circle cx="11" cy="11" r="8.5" fill="none" stroke="#C9F24C" stroke-width="2.5" stroke-dasharray="34 53" transform="rotate(-90 11 11)"></circle></svg>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;border-radius:10px;padding:10px 12px">
+                <span style="font:500 12px Manrope,sans-serif;color:#9BA1A6">Sprint 1</span>
+                <svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#262B30" stroke-width="2.5"></circle><circle cx="11" cy="11" r="8.5" fill="none" stroke="#3FCB6B" stroke-width="2.5" stroke-dasharray="53 53" transform="rotate(-90 11 11)"></circle></svg>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;border-radius:10px;padding:10px 12px">
+                <span style="font:500 12px Manrope,sans-serif;color:#9BA1A6">Sprint 0</span>
+                <svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#262B30" stroke-width="2.5"></circle></svg>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <div style="flex:1;background:#0B0D0F;border:1px solid #262B30;border-radius:8px;padding:8px 10px;font:400 12px Manrope,sans-serif;color:#6B7178">Enter a new sprint…</div>
+              <div style="width:32px;height:32px;border-radius:8px;background:#1C2023;border:1px solid #262B30;display:flex;align-items:center;justify-content:center;font:700 13px Manrope,sans-serif;color:#9BA1A6">+</div>
+            </div>
+          </div>
+
+          <div style="background:#14171A;border:1px solid #262B30;border-radius:16px;padding:18px">
+            <div style="font:700 13px Manrope,sans-serif;color:#F3F4F1;margin-bottom:12px">Sprint 2 tasks</div>
+            <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #1C2023">
+                <div style="width:18px;height:18px;border-radius:50%;background:#C9F24C;flex:none;display:flex;align-items:center;justify-content:center;font:700 10px Manrope,sans-serif;color:#0B0D0F">✓</div>
+                <span style="font:500 13px Manrope,sans-serif;color:#6B7178;text-decoration:line-through">Enhance add transaction style</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #1C2023">
+                <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #6B7178;flex:none"></div>
+                <span style="font:500 13px Manrope,sans-serif;color:#F3F4F1">Cashflow page by date</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 2px">
+                <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #6B7178;flex:none"></div>
+                <span style="font:500 13px Manrope,sans-serif;color:#F3F4F1">Pie chart overflow fix</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <div style="flex:1;background:#0B0D0F;border:1px solid #262B30;border-radius:8px;padding:8px 10px;font:400 12px Manrope,sans-serif;color:#6B7178">Enter a new task…</div>
+              <div style="width:32px;height:32px;border-radius:8px;background:#1C2023;border:1px solid #262B30;display:flex;align-items:center;justify-content:center;font:700 13px Manrope,sans-serif;color:#9BA1A6">+</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display:flex;align-items:center;gap:24px;border-bottom:1px solid #1C2023;margin-bottom:20px;overflow-x:auto">
+            <div style="font:700 14px Manrope,sans-serif;color:#F3F4F1;padding-bottom:12px;border-bottom:2px solid #C9F24C;white-space:nowrap">Main Board</div>
+            <div style="font:600 14px Manrope,sans-serif;color:#6B7178;padding-bottom:12px;white-space:nowrap">Second Board</div>
+            <div style="margin-left:auto;font:600 12px Manrope,sans-serif;color:#6B7178;padding-bottom:12px">+ Add Board</div>
+          </div>
+          <div style="display:flex;gap:16px;overflow-x:auto;padding-bottom:8px">
+            <div style="width:230px;flex:none">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#E5484D"></div><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">To dos</span><span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;background:#1C2023;border-radius:100px;padding:1px 7px;margin-left:auto">2</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+                <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#E5484D"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">To dos</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Account page</div></div>
+                <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#E5484D"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">To dos</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Firebase</div></div>
+              </div>
+              <div style="font:600 12px Manrope,sans-serif;color:#6B7178;padding:8px 0">+ Add card</div>
+            </div>
+            <div style="width:230px;flex:none">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#5B8DEF"></div><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">Doing</span><span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;background:#1C2023;border-radius:100px;padding:1px 7px;margin-left:auto">1</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+                <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#5B8DEF"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Doing</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Cashflow page</div></div>
+              </div>
+              <div style="font:600 12px Manrope,sans-serif;color:#6B7178;padding:8px 0">+ Add card</div>
+            </div>
+            <div style="width:230px;flex:none">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#3FCB6B"></div><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">Done</span><span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;background:#1C2023;border-radius:100px;padding:1px 7px;margin-left:auto">4</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+                <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#3FCB6B"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Done</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Figma</div></div>
+                <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#3FCB6B"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Done</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Learn Flutter</div></div>
+              </div>
+              <div style="font:600 12px Manrope,sans-serif;color:#6B7178;padding:8px 0">+ Add card</div>
+            </div>
+            <div style="width:230px;flex:none">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#8B7CF6"></div><span style="font:700 13px Manrope,sans-serif;color:#F3F4F1">Bugs</span><span style="font:600 11px IBM Plex Mono,monospace;color:#6B7178;background:#1C2023;border-radius:100px;padding:1px 7px;margin-left:auto">3</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+                <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#8B7CF6"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Bugs</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Graphs</div></div>
+                <div style="background:#1C2023;border:1px solid #262B30;border-radius:10px;padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#8B7CF6"></div><span style="font:600 11px Manrope,sans-serif;color:#9BA1A6">Bugs</span></div><div style="font:600 13px Manrope,sans-serif;color:#F3F4F1">Database</div></div>
+              </div>
+              <div style="font:600 12px Manrope,sans-serif;color:#6B7178;padding:8px 0">+ Add card</div>
+            </div>
+            <div style="width:180px;flex:none;display:flex;align-items:flex-start"><div style="font:600 13px Manrope,sans-serif;color:#6B7178;background:#14171A;border:1px solid #262B30;border-radius:10px;padding:12px 16px;width:100%;text-align:center">+ Add column</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="final-nav" style="max-width:1280px;margin:0 auto;padding:80px 32px 0">
+  <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">10 · Final nav — desktop &amp; mobile</div>
+  <h2 style="font:700 30px Manrope,sans-serif;color:#F3F4F1;margin:0 0 8px">One consistent row of pills, logo left</h2>
+  <p style="font:400 15px/1.6 Manrope,sans-serif;color:#9BA1A6;max-width:700px;margin:0 0 36px">Dropped the underlined "elevated" tab label and the duplicate empty avatar circle. Everything now lives on the right as the same pill: grey surface, hairline border, small icon + label — Projects and Dashboard styled identically to the Working / Pomodoro / Time-worked pills, active tab just gets a lime border. Theme toggle is the last pill in the row.</p>
+
+  <div style="font:600 12px Manrope,sans-serif;color:#6B7178;margin-bottom:12px">Desktop</div>
+  <div style="border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#0B0D0F;margin-bottom:36px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:9px;background:#C9F24C;display:flex;align-items:center;justify-content:center;font:800 16px Manrope,sans-serif;color:#0B0D0F">P</div>
+        <div style="font:700 17px Manrope,sans-serif;color:#F3F4F1">Productivy</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="display:flex;align-items:center;gap:6px;background:#1C2023;border:1.5px solid #C9F24C;border-radius:100px;padding:7px 13px">
+          <svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="12" rx="1.2" fill="none" stroke="#F3F4F1" stroke-width="1.3"></rect><rect x="8" y="1" width="5" height="7.5" rx="1.2" fill="none" stroke="#F3F4F1" stroke-width="1.3"></rect></svg>
+          <span style="font:600 12px Manrope,sans-serif;color:#F3F4F1">Projects</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;background:#1C2023;border:1px solid #262B30;border-radius:100px;padding:7px 13px">
+          <svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="5.5" height="5.5" rx="1" fill="none" stroke="#9BA1A6" stroke-width="1.3"></rect><rect x="7.5" y="1" width="5.5" height="5.5" rx="1" fill="none" stroke="#9BA1A6" stroke-width="1.3"></rect><rect x="1" y="7.5" width="5.5" height="5.5" rx="1" fill="none" stroke="#9BA1A6" stroke-width="1.3"></rect><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="none" stroke="#9BA1A6" stroke-width="1.3"></rect></svg>
+          <span style="font:600 12px Manrope,sans-serif;color:#9BA1A6">Dashboard</span>
+        </div>
+        <div style="width:1px;height:20px;background:#262B30;margin:0 2px"></div>
+        <div style="display:flex;align-items:center;gap:6px;background:#1C2023;border:1px solid #262B30;border-radius:100px;padding:7px 13px">
+          <div style="width:7px;height:7px;border-radius:50%;background:#8B7CF6;animation:pulseDot 2s ease-in-out infinite"></div>
+          <span style="font:600 12px Manrope,sans-serif;color:#F3F4F1">Working</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;background:#1C2023;border:1px solid #262B30;border-radius:100px;padding:7px 13px 7px 9px">
+          <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#3a3f22" stroke-width="2.4"></circle><circle cx="8" cy="8" r="6.4" fill="none" stroke="#C9F24C" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="25 40" transform="rotate(-90 8 8)"></circle></svg>
+          <span style="font:700 12px IBM Plex Mono,monospace;color:#F3F4F1">21:34</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;background:#1C2023;border:1px solid #262B30;border-radius:100px;padding:7px 13px 7px 9px">
+          <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#262B30" stroke-width="2.4"></circle><circle cx="8" cy="8" r="6.4" fill="none" stroke="#5B8DEF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 40" transform="rotate(-90 8 8)"></circle></svg>
+          <span style="font:700 12px IBM Plex Mono,monospace;color:#F3F4F1">51m</span>
+        </div>
+        <div style="width:1px;height:20px;background:#262B30;margin:0 2px"></div>
+        <div style="width:30px;height:30px;border-radius:100px;background:#1C2023;border:1px solid #262B30;display:flex;align-items:center;justify-content:center;font:600 13px Manrope,sans-serif;color:#9BA1A6">☀</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font:600 12px Manrope,sans-serif;color:#6B7178;margin-bottom:12px">Mobile</div>
+  <div style="width:375px;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#0B0D0F">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px 14px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:28px;height:28px;border-radius:8px;background:#C9F24C;display:flex;align-items:center;justify-content:center;font:800 14px Manrope,sans-serif;color:#0B0D0F">P</div>
+        <div style="font:700 15px Manrope,sans-serif;color:#F3F4F1">Productivy</div>
+      </div>
+      <div style="width:28px;height:28px;border-radius:100px;background:#1C2023;border:1px solid #262B30;display:flex;align-items:center;justify-content:center;font:600 12px Manrope,sans-serif;color:#9BA1A6">☀</div>
+    </div>
+    <div style="display:flex;gap:8px;padding:0 18px 16px;overflow-x:auto">
+      <div style="display:flex;align-items:center;gap:5px;background:#1C2023;border:1.5px solid #C9F24C;border-radius:100px;padding:7px 12px;flex:none">
+        <svg width="13" height="13" viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="12" rx="1.2" fill="none" stroke="#F3F4F1" stroke-width="1.3"></rect><rect x="8" y="1" width="5" height="7.5" rx="1.2" fill="none" stroke="#F3F4F1" stroke-width="1.3"></rect></svg>
+        <span style="font:600 11.5px Manrope,sans-serif;color:#F3F4F1">Projects</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;background:#1C2023;border:1px solid #262B30;border-radius:100px;padding:7px 12px;flex:none">
+        <svg width="13" height="13" viewBox="0 0 14 14"><rect x="1" y="1" width="5.5" height="5.5" rx="1" fill="none" stroke="#9BA1A6" stroke-width="1.3"></rect><rect x="7.5" y="1" width="5.5" height="5.5" rx="1" fill="none" stroke="#9BA1A6" stroke-width="1.3"></rect><rect x="1" y="7.5" width="5.5" height="5.5" rx="1" fill="none" stroke="#9BA1A6" stroke-width="1.3"></rect><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="none" stroke="#9BA1A6" stroke-width="1.3"></rect></svg>
+        <span style="font:600 11.5px Manrope,sans-serif;color:#9BA1A6">Dashboard</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;background:#1C2023;border:1px solid #262B30;border-radius:100px;padding:7px 12px;flex:none">
+        <div style="width:6px;height:6px;border-radius:50%;background:#8B7CF6;animation:pulseDot 2s ease-in-out infinite"></div>
+        <span style="font:600 11.5px Manrope,sans-serif;color:#F3F4F1">Working</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;background:#1C2023;border:1px solid #262B30;border-radius:100px;padding:7px 12px 7px 8px;flex:none">
+        <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#3a3f22" stroke-width="2.4"></circle><circle cx="8" cy="8" r="6.4" fill="none" stroke="#C9F24C" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="25 40" transform="rotate(-90 8 8)"></circle></svg>
+        <span style="font:700 11.5px IBM Plex Mono,monospace;color:#F3F4F1">21:34</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;background:#1C2023;border:1px solid #262B30;border-radius:100px;padding:7px 12px 7px 8px;flex:none">
+        <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#262B30" stroke-width="2.4"></circle><circle cx="8" cy="8" r="6.4" fill="none" stroke="#5B8DEF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="8 40" transform="rotate(-90 8 8)"></circle></svg>
+        <span style="font:700 11.5px IBM Plex Mono,monospace;color:#F3F4F1">51m</span>
+      </div>
+    </div>
+    <div style="height:1px;background:#1C2023"></div>
+    <div style="padding:40px 18px;text-align:center;font:500 12px Manrope,sans-serif;color:#6B7178">Page content below — pill row scrolls horizontally, same tokens as desktop.</div>
+  </div>
+</div>
+
 <div style="max-width:1280px;margin:0 auto;padding:80px 32px 0">
   <div style="font:600 12px/1 IBM Plex Mono,monospace;letter-spacing:.12em;color:#C9F24C;text-transform:uppercase;margin-bottom:10px">Next steps</div>
   <div style="background:#181A1E;border:1px solid #262B30;border-radius:16px;padding:28px 32px">
