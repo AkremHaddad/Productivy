@@ -20,12 +20,13 @@ export default function ThemeToggle() {
       onClick={() =>
         setTheme(theme === "dark" ? "light" : "dark")
       }
-      className="p-2 rounded-lg transition-colors duration-200"
+      title="Toggle theme"
+      className="flex-none w-[34px] h-[34px] rounded-full bg-header-light dark:bg-header-dark border border-border-light dark:border-border-dark flex items-center justify-center hover:opacity-80 transition-colors duration-200"
     >
       {theme === "dark" ? (
-        <MoonIcon className="h-6 w-6 text-black dark:text-white" />
+        <MoonIcon className="h-4 w-4 text-secondary-light dark:text-secondary-dark" />
       ) : (
-        <SunIcon className="h-6 w-6 text-black dark:text-white" />
+        <SunIcon className="h-4 w-4 text-secondary-light dark:text-secondary-dark" />
       )}
     </button>
   );
