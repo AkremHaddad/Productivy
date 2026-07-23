@@ -4,6 +4,7 @@ import Footer from "../allPages/Footer";
 import { FcGoogle } from "react-icons/fc";
 import { getUser, login, register, logout } from "../../api/auth";
 import ProductivityDashboard from "../ProductivityDashboard";
+import LoadingSpinner from "../common/LoadingSpinner";
 // Commented out per Akram's feedback 2026-07-22 - the timeline felt
 // pointless once he actually used the dashboard. Left in place, not
 // deleted, in case it's worth revisiting later.
@@ -78,11 +79,19 @@ const handleGoogleLogin = () => {
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden bg-background-light dark:bg-background-dark ">
-      <div className="flex-1 min-w-full p-6 flex items-center justify-center">
-        {loading ? (
-          <p className="text-lg text-text-light dark:text-text-dark">Loading...</p>
-        ) : user ? (
-          <div className="flex flex-col items-center justify-center w-full max-w-full">
+      {loading ? (
+        // Own centered container, separate from the loaded state below -
+        // it used to share one flex items-center justify-center wrapper
+        // with the loaded content, so once the (much taller) dashboard
+        // mounted, re-centering it visibly shifted the welcome header
+        // upward. Loading state stays small and centered; loaded state
+        // below is top-aligned instead, so its height can grow freely.
+        <div className="flex-1 min-w-full p-6 flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      ) : user ? (
+        <div className="flex-1 min-w-full p-6">
+          <div className="flex flex-col items-center w-full max-w-full">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
               <h1 className="text-2xl font-bold mb-4 text-text-light dark:text-text-dark">
                 Welcome, {user.username || user.email}! enjoy your experience.
@@ -108,7 +117,9 @@ const handleGoogleLogin = () => {
               <WeeklyActivityGraph />
             </div> */}
           </div>
-        ) : (
+        </div>
+      ) : (
+        <div className="flex-1 min-w-full p-6 flex items-center justify-center">
           <div className="bg-ui-light dark:bg-black/40 rounded-lg shadow-lg w-full max-w-md p-6">
             {/* Tabs */}
             <div className="flex justify-around mb-6 border-b border-gray-300 dark:border-gray-600">
@@ -207,8 +218,8 @@ const handleGoogleLogin = () => {
               Continue with Google
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
