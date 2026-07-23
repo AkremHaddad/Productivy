@@ -39,7 +39,7 @@ const Pomodoro = () => {
         <svg width="132" height="132" viewBox="0 0 132 132">
           <circle cx="66" cy="66" r={RING_RADIUS} fill="none" className="stroke-border-light dark:stroke-border-dark" strokeWidth="10" />
           <circle
-            cx="66" cy="66" r={RING_RADIUS} fill="none" className="stroke-accent" strokeWidth="10"
+            cx="66" cy="66" r={RING_RADIUS} fill="none" className="stroke-accent-light dark:stroke-accent" strokeWidth="10"
             strokeLinecap="round"
             strokeDasharray={`${percent * RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`}
             transform="rotate(-90 66 66)"
@@ -57,7 +57,7 @@ const Pomodoro = () => {
         <button
           onClick={toggleStart}
           title={isRunning ? "Pause" : "Start"}
-          className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center hover:opacity-90 transition"
+          className="w-9 h-9 rounded-lg bg-accent-light dark:bg-accent flex items-center justify-center hover:opacity-90 transition"
         >
           <img src={isRunning ? "../pause.svg" : "../start.svg"} alt="start/pause" className="w-4 h-4" />
         </button>

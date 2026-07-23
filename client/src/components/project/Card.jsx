@@ -74,7 +74,7 @@ const Card = ({
               title={card.completed ? "Mark incomplete" : "Mark complete"}
               className={`flex-none w-4 h-4 mt-0.5 rounded-full border-[1.5px] flex items-center justify-center transition ${
                 card.completed
-                  ? "bg-accent border-accent"
+                  ? "bg-accent-light dark:bg-accent border-accent-light dark:border-accent"
                   : "border-border-light dark:border-border-dark hover:border-accent-light dark:hover:border-accent"
               }`}
             >
@@ -99,7 +99,7 @@ const Card = ({
                 onClick={() => handleToggleCard(card._id)}
                 className={`p-2 rounded-full transition ${
                   card.completed
-                    ? "bg-accent text-black"
+                    ? "bg-accent-light dark:bg-accent text-white dark:text-black"
                     : "text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10"
                 }`}
                 title={card.completed ? "Mark incomplete" : "Mark complete"}

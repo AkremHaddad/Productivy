@@ -39,7 +39,7 @@ const Time = () => {
         <svg width="64" height="64" viewBox="0 0 64 64" className="flex-none">
           <circle cx="32" cy="32" r={RING_RADIUS} fill="none" className="stroke-border-light dark:stroke-border-dark" strokeWidth="7" />
           <circle
-            cx="32" cy="32" r={RING_RADIUS} fill="none" className="stroke-accent" strokeWidth="7"
+            cx="32" cy="32" r={RING_RADIUS} fill="none" className="stroke-accent-light dark:stroke-accent" strokeWidth="7"
             strokeLinecap="round"
             strokeDasharray={`${percent * RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`}
             transform="rotate(-90 32 32)"

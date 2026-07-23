@@ -137,7 +137,7 @@ function Home() {
               <div className="mt-7 flex gap-3 flex-wrap">
                 <a
                   href="/account"
-                  className="bg-accent hover:opacity-90 text-black font-bold py-3 px-6 rounded-lg transition-all"
+                  className="bg-accent-light dark:bg-accent hover:opacity-90 text-white dark:text-black font-bold py-3 px-6 rounded-lg transition-all"
                 >
                   Get Started Free
                 </a>
@@ -165,13 +165,13 @@ function Home() {
 
             {/* Right: mini product preview */}
             <div data-aos="fade-left" data-aos-delay="150" className="relative hidden md:block">
-              <div className="absolute -inset-8 bg-accent/10 dark:bg-accent/10 blur-3xl rounded-full"></div>
+              <div className="absolute -inset-8 bg-accent-light/10 dark:bg-accent/10 blur-3xl rounded-full"></div>
               <div className="relative bg-ui-light dark:bg-ui-dark border-[1px] border-border-light dark:border-border-dark rounded-2xl p-5 shadow-2xl">
                 <div className="flex gap-4 mb-4">
                   <svg width="64" height="64" viewBox="0 0 64 64" className="flex-none">
                     <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" className="text-border-light dark:text-border-dark" strokeWidth="7" />
                     <circle
-                      cx="32" cy="32" r="26" fill="none" stroke="currentColor" className="text-accent"
+                      cx="32" cy="32" r="26" fill="none" stroke="currentColor" className="text-accent-light dark:text-accent"
                       strokeWidth="7" strokeLinecap="round" strokeDasharray="106 163" transform="rotate(-90 32 32)"
                     />
                   </svg>
@@ -180,7 +180,7 @@ function Home() {
                     <div className="text-[11px] text-secondary-light dark:text-secondary-dark mb-2">of 6h focus goal</div>
                     <div className="flex gap-1">
                       {[0.3, 0.6, 0.9, 1].map((o, i) => (
-                        <div key={i} className="w-3 h-3 rounded-sm bg-accent" style={{ opacity: o }} />
+                        <div key={i} className="w-3 h-3 rounded-sm bg-accent-light dark:bg-accent" style={{ opacity: o }} />
                       ))}
                     </div>
                   </div>
@@ -197,8 +197,8 @@ function Home() {
                   </div>
                   <div className="bg-header-light dark:bg-header-dark rounded-lg p-2">
                     <div className="text-[10px] font-semibold text-secondary-light dark:text-secondary-dark mb-1.5">Done</div>
-                    <div className="h-1.5 rounded bg-accent opacity-70 mb-1"></div>
-                    <div className="h-1.5 rounded bg-accent opacity-40"></div>
+                    <div className="h-1.5 rounded bg-accent-light dark:bg-accent opacity-70 mb-1"></div>
+                    <div className="h-1.5 rounded bg-accent-light dark:bg-accent opacity-40"></div>
                   </div>
                 </div>
               </div>
@@ -225,8 +225,8 @@ function Home() {
                   alt="Productivy App Interface Showcase"
                   className="w-full h-auto rounded-xl"
                 />
-                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-accent rounded-full opacity-20 blur-xl"></div>
-                <div className="absolute -top-4 -left-4 w-32 h-32 bg-accent rounded-full opacity-10 blur-xl"></div>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-accent-light dark:bg-accent rounded-full opacity-20 blur-xl"></div>
+                <div className="absolute -top-4 -left-4 w-32 h-32 bg-accent-light dark:bg-accent rounded-full opacity-10 blur-xl"></div>
               </div>
             </div>
           </div>

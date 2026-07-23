@@ -8,18 +8,20 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { addCard, updateCard, deleteCard, toggleCardCompleted } from "../../api/project";
 import API from "../../api/API";
 
-// Light-theme fills darkened one step from their original values (design
-// review feedback: against the newer, less-pale surface tones these read
-// as washed-out and hard to tell apart). Dark-theme values untouched.
+// Red/blue/green/purple fills are the exact hexes from Claude Design
+// section 05's Kanban board mock (light and dark both shown there) - the
+// old light-theme values were straight Tailwind palette colors, too
+// saturated/bright against the warm-paper light surface. Grey/pink/orange/
+// yellow aren't in that mock; muted to match the same softer register.
 export const COLOR_MAP = {
-  grey: { light: { fill: "#D1D5DB", border: "#4B5563" }, dark: { fill: "#374151", border: "#9CA3AF" } },
-  red: { light: { fill: "#F87171", border: "#B91C1C" }, dark: { fill: "#7F1D1D", border: "#F87171" } },
-  pink: { light: { fill: "#F9A8D4", border: "#BE185D" }, dark: { fill: "#701A3D", border: "#F472B6" } },
-  orange: { light: { fill: "#FDBA74", border: "#C2410C" }, dark: { fill: "#7C2D12", border: "#FB923C" } },
-  yellow: { light: { fill: "#FDE047", border: "#A16207" }, dark: { fill: "#713F12", border: "#FACC15" } },
-  blue: { light: { fill: "#60A5FA", border: "#2563EB" }, dark: { fill: "#1E3A8A", border: "#60A5FA" } },
-  green: { light: { fill: "#4ADE80", border: "#15803D" }, dark: { fill: "#14532D", border: "#4ADE80" } },
-  purple: { light: { fill: "#C4B5FD", border: "#6D28D9" }, dark: { fill: "#4C1D95", border: "#A78BFA" } },
+  grey: { light: { fill: "#A8A296", border: "#6B655A" }, dark: { fill: "#374151", border: "#9CA3AF" } },
+  red: { light: { fill: "#C4423B", border: "#8B2F2A" }, dark: { fill: "#E5484D", border: "#F58F92" } },
+  pink: { light: { fill: "#C4508F", border: "#8B3563" }, dark: { fill: "#E56FA8", border: "#F2A0C8" } },
+  orange: { light: { fill: "#C97A3D", border: "#8B5225" }, dark: { fill: "#E5943F", border: "#F2B676" } },
+  yellow: { light: { fill: "#B99A2E", border: "#7A6318" }, dark: { fill: "#D9BA3F", border: "#EDD676" } },
+  blue: { light: { fill: "#3D63C9", border: "#2A4690" }, dark: { fill: "#5B8DEF", border: "#8FB2F5" } },
+  green: { light: { fill: "#2F8F52", border: "#1F6339" }, dark: { fill: "#3FCB6B", border: "#7ADB98" } },
+  purple: { light: { fill: "#6E5AC4", border: "#4C3E8A" }, dark: { fill: "#8B7CF6", border: "#B3A8FA" } },
 };
 
 const Column = ({ projectId, boardId, column, onColumnsUpdate, onError }) => {

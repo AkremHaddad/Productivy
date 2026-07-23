@@ -14,11 +14,11 @@ import {
 import { formatTime } from "../utils/formatTime";
 
 const EVENT_DOT = {
-  task_completed: "bg-accent",
-  card_completed: "bg-accent",
+  task_completed: "bg-accent-light dark:bg-accent",
+  card_completed: "bg-accent-light dark:bg-accent",
   card_moved: "bg-[#5B8DEF]",
   sprint_started: "bg-amber",
-  sprint_completed: "bg-accent",
+  sprint_completed: "bg-accent-light dark:bg-accent",
   session_ended: "bg-[#8B7CF6]",
 };
 
@@ -181,7 +181,7 @@ const ProductivityDashboard = () => {
             <svg width="160" height="160" viewBox="0 0 160 160">
               <circle cx="80" cy="80" r={RING_RADIUS} fill="none" className="stroke-border-light dark:stroke-border-dark" strokeWidth="12" />
               <circle
-                cx="80" cy="80" r={RING_RADIUS} fill="none" className="stroke-accent" strokeWidth="12"
+                cx="80" cy="80" r={RING_RADIUS} fill="none" className="stroke-accent-light dark:stroke-accent" strokeWidth="12"
                 strokeLinecap="round"
                 strokeDasharray={`${goalPercent * RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`}
                 transform="rotate(-90 80 80)"
@@ -253,7 +253,7 @@ const ProductivityDashboard = () => {
                   className="flex-1 flex items-end h-full"
                 >
                   <div
-                    className={`w-full rounded-t-sm transition-all ${isToday ? "bg-accent" : "bg-accent-light/60 dark:bg-accent/50"}`}
+                    className={`w-full rounded-t-sm transition-all ${isToday ? "bg-accent-light dark:bg-accent" : "bg-accent-light/60 dark:bg-accent/50"}`}
                     style={{ height: `${heightPct}%` }}
                   />
                 </div>
@@ -334,7 +334,7 @@ const ProductivityDashboard = () => {
           <div className="text-xs text-secondary-light dark:text-secondary-dark mb-4">Quiet totals, not badges to chase</div>
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-light dark:bg-accent" />
               <span className="text-sm font-medium text-text-light dark:text-text-dark">{formatTime(totalMinutes)} total focus</span>
             </div>
             <div className="flex items-center gap-2">
@@ -342,7 +342,7 @@ const ProductivityDashboard = () => {
               <span className="text-sm font-medium text-text-light dark:text-text-dark">{streak}-day streak</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-light dark:bg-accent" />
               <span className="text-sm font-medium text-text-light dark:text-text-dark">{projectStats.sprintsShipped} sprints shipped</span>
             </div>
             <div className="flex items-center gap-2">
@@ -350,7 +350,7 @@ const ProductivityDashboard = () => {
               <span className="text-sm font-medium text-text-light dark:text-text-dark">{projectStats.cardsCompleted} cards completed</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-light dark:bg-accent" />
               <span className="text-sm font-medium text-text-light dark:text-text-dark">{projectsDone.done} of {projectsDone.total} projects done</span>
             </div>
           </div>

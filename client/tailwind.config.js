@@ -28,7 +28,7 @@ export default {
         // states — instead of everything leaning on one soft olive tone.
         'accent': '#C9F24C',
         'accent-dark': '#C9F24C',
-        'accent-light': '#4A6410',
+        'accent-light': '#5C7A12',
         'accent-deep': '#2F4A0A',
 
         // Amber, secondary accent used for streaks/milestones

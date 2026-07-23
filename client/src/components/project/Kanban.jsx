@@ -250,7 +250,7 @@ const Kanban = ({ projectId, selectedSprint, onTasksChange }) => {
                               className={`flex-shrink-0 w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-colors duration-200
                                 ${
                                   task.completed
-                                    ? "bg-accent border-accent"
+                                    ? "bg-accent-light dark:bg-accent border-accent-light dark:border-accent"
                                     : "border-border-light dark:border-border-dark group-hover:border-accent-light dark:group-hover:border-accent"
                                 }`}
                             >

@@ -112,7 +112,7 @@ const DayActivityGraph = () => {
             key={idx}
             className={`px-3 py-1 rounded-full font-semibold text-sm transition-colors ${
               selectedDay === idx
-                ? "bg-accent text-black"
+                ? "bg-accent-light dark:bg-accent text-white dark:text-black"
                 : "bg-header-light dark:bg-header-dark text-secondary-light dark:text-secondary-dark"
             }`}
             onClick={() => setSelectedDay(idx)}
