@@ -17,7 +17,10 @@ const Project = () => {
   // change updates this once, both children re-render from the same data.
   const [sprints, setSprints] = useState([]);
   const [selectedSprintId, setSelectedSprintId] = useState(null);
-  const [showTools, setShowTools] = useState(true);
+  // "all" (sprints+tasks+board), "sprints" (sprints+tasks only, side by
+  // side), or "board" (board only) - lets you focus on just what you're
+  // doing instead of always seeing all three areas at once.
+  const [viewMode, setViewMode] = useState("all");
 
   // Fetch project
   useEffect(() => {
@@ -43,12 +46,9 @@ const Project = () => {
   if (!project) return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center p-4">
       <div className="text-center space-y-6">
-        {/* Main Spinner - matches your LoadingSpinner component style */}
         <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 dark:border-white border-black"></div>
+          <LoadingSpinner />
         </div>
-
-        {/* Loading Text */}
         <div className="space-y-2">
           <h3 className="text-lg font-medium text-gray-800 dark:text-white">
             Loading Project
@@ -61,42 +61,70 @@ const Project = () => {
     </div>
   );
 
+  const sprintsAndTasks = (
+    <>
+      <Sprints
+        projectId={project._id}
+        sprints={sprints}
+        onSprintsChange={setSprints}
+        selectedSprintId={selectedSprintId}
+        onSprintSelect={(s) => setSelectedSprintId(s?._id ?? null)}
+      />
+      <Kanban
+        projectId={project._id}
+        selectedSprint={selectedSprint}
+        onTasksChange={(newTasks) => updateSprintTasks(selectedSprintId, newTasks)}
+      />
+    </>
+  );
+
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden bg-background-light dark:bg-background-dark">
-      {/* Mobile-only: md+ always shows sidebar and board side by side in
-          the grid below, so there's nothing left to toggle there. */}
-      <div className="md:hidden">
-        <Tabs showTools={showTools} setShowTools={setShowTools} />
-      </div>
+    // md:h-full + overflow-hidden: fills exactly what's left below the
+    // navbar (Layout in App.jsx already constrains that to the viewport),
+    // no page-level scroll on desktop - overflow is handled inside (the
+    // board's own column area, or the sidebar's overflow-y-auto below).
+    // Only gated at md: - mobile keeps its natural stacking/scrolling.
+    <div className="flex flex-col md:h-full overflow-x-hidden md:overflow-hidden bg-background-light dark:bg-background-dark">
+      <Tabs viewMode={viewMode} setViewMode={setViewMode} />
 
-      <div className="flex-1 p-5 min-w-0">
-        <div className="bg-ui-light dark:bg-ui-dark rounded-2xl border border-border-light dark:border-border-dark shadow-lg">
-          {/* Pomodoro/Time-worked now live as pills in the navbar (see
-              Navbar.jsx) - this body is just Sprints, Sprint tasks, and the
-              Board, per the design review. Sidebar narrowed to match. */}
-          <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-5 items-start">
-            {/* Below md, showTools hard-switches between this sidebar and
-                the board (one full-width pane at a time) instead of
-                squeezing both into a too-narrow viewport. At md+ both
-                always show, side by side in the grid. */}
-            <div className={`flex-col gap-4 min-w-0 ${showTools ? "flex" : "hidden"} md:flex`}>
-              <Sprints
-                projectId={project._id}
-                sprints={sprints}
-                onSprintsChange={setSprints}
-                selectedSprintId={selectedSprintId}
-                onSprintSelect={(s) => setSelectedSprintId(s?._id ?? null)}
-              />
-              <Kanban
-                projectId={project._id}
-                selectedSprint={selectedSprint}
-                onTasksChange={(newTasks) => updateSprintTasks(selectedSprintId, newTasks)}
-              />
-            </div>
-
-            <div className={`min-w-0 ${showTools ? "hidden" : "flex"} md:flex`}>
-              <Board projectId={project._id} boards={project.boards} />
-            </div>
+      <div className="flex-1 p-5 min-w-0 md:min-h-0 md:flex md:flex-col">
+        <div className="bg-ui-light dark:bg-ui-dark rounded-2xl border border-border-light dark:border-border-dark shadow-lg md:flex-1 md:min-h-0 md:flex md:flex-col md:overflow-hidden">
+          <div className="p-4 md:p-6 md:flex-1 md:min-h-0 md:overflow-hidden">
+            {viewMode === "board" ? (
+              <div className="md:h-full min-w-0 flex">
+                <Board projectId={project._id} boards={project.boards} />
+              </div>
+            ) : viewMode === "sprints" ? (
+              // Sprints at left, tasks (with notes) at right - side by side
+              // since the board isn't competing for width in this mode.
+              <div className="flex flex-col md:flex-row gap-4 min-w-0">
+                <div className="flex-1 min-w-0">
+                  <Sprints
+                    projectId={project._id}
+                    sprints={sprints}
+                    onSprintsChange={setSprints}
+                    selectedSprintId={selectedSprintId}
+                    onSprintSelect={(s) => setSelectedSprintId(s?._id ?? null)}
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <Kanban
+                    projectId={project._id}
+                    selectedSprint={selectedSprint}
+                    onTasksChange={(newTasks) => updateSprintTasks(selectedSprintId, newTasks)}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-5 md:h-full min-w-0">
+                <div className="flex flex-col gap-4 min-w-0 md:h-full md:overflow-y-auto">
+                  {sprintsAndTasks}
+                </div>
+                <div className="min-w-0 md:h-full flex">
+                  <Board projectId={project._id} boards={project.boards} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

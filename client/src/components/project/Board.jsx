@@ -350,7 +350,7 @@ const BoardActionsDropdown = ({ currentBoard, onAddBoard, onDeleteBoard, boards 
 
 
   return (
-    <div className="flex-1 overflow-hidden w-full min-h-[500px] md:min-h-[600px] flex flex-col">
+    <div className="flex-1 overflow-hidden w-full min-h-[500px] md:h-full md:min-h-0 flex flex-col">
 
       {actionError && (
         <div className="flex items-center justify-between gap-3 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm rounded-t-md">
